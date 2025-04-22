@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Datasource containing aggregated user features for clustering
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `avg_session_duration` Float32 `json:$.avg_session_duration`,
+    `total_sessions` UInt32 `json:$.total_sessions`,
+    `avg_clicks_per_session` Float32 `json:$.avg_clicks_per_session`,
+    `most_visited_page` String `json:$.most_visited_page`,
+    `most_used_device` String `json:$.most_used_device`,
+    `country` String `json:$.country`,
+    `last_updated` DateTime `json:$.last_updated`,
+    `cluster_id` UInt8 `json:$.cluster_id`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(last_updated)"
+ENGINE_SORTING_KEY "user_id, last_updated"
+        

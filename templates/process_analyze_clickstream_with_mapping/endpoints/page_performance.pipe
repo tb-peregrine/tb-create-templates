@@ -1,0 +1,66 @@
+
+DESCRIPTION >
+    Analyze page-level metrics like views, bounce rate, and conversion rate
+
+NODE page_performance_node
+SQL >
+    %
+    WITH page_metrics AS (
+        SELECT
+            page_url,
+            page_title,
+            count(*) as views,
+            count(DISTINCT user_id) as unique_visitors,
+            count(DISTINCT session_id) as sessions,
+            countIf(event_type = 'conversion') as conversions
+        FROM clickstream_events
+        WHERE 1=1
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY page_url, page_title
+    ),
+    
+    bounce_data AS (
+        SELECT
+            page_url,
+            countIf(page_count = 1) as bounce_sessions,
+            count(*) as total_sessions
+        FROM (
+            SELECT
+                session_id,
+                min(page_url) as page_url,
+                count(*) as page_count
+            FROM clickstream_events
+            WHERE 1=1
+            {% if defined(start_date) %}
+                AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+            {% end %}
+            {% if defined(end_date) %}
+                AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% end %}
+            GROUP BY session_id
+        )
+        GROUP BY page_url
+    )
+    
+    SELECT
+        m.page_url,
+        m.page_title,
+        m.views,
+        m.unique_visitors,
+        m.sessions,
+        m.conversions,
+        round(m.conversions / m.views * 100, 2) as conversion_rate,
+        round(ifNull(b.bounce_sessions, 0) / b.total_sessions * 100, 2) as bounce_rate,
+        round(m.views / m.sessions, 2) as pages_per_session
+    FROM page_metrics m
+    LEFT JOIN bounce_data b ON m.page_url = b.page_url
+    ORDER BY m.views DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

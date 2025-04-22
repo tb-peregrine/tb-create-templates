@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Retrieves API usage metrics by user within a tenant
+
+NODE user_activity_node
+SQL >
+    %
+    SELECT
+        tenant_id,
+        user_id,
+        count() as total_requests,
+        countIf(status_code >= 400) as error_requests,
+        round(avg(response_time_ms), 2) as avg_response_time_ms,
+        min(timestamp) as first_seen,
+        max(timestamp) as last_seen,
+        count(distinct endpoint) as unique_endpoints_called
+    FROM api_logs
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(tenant_id) %}
+        AND tenant_id = {{String(tenant_id, '')}}
+    {% end %}
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    GROUP BY tenant_id, user_id
+    ORDER BY total_requests DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

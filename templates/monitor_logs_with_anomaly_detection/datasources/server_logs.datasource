@@ -1,0 +1,18 @@
+DESCRIPTION >
+    Server logs data source for monitoring and anomaly detection
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `server_id` String `json:$.server_id`,
+    `level` String `json:$.level`,
+    `message` String `json:$.message`,
+    `service` String `json:$.service`,
+    `resource_usage` Float64 `json:$.resource_usage`,
+    `response_time` Int32 `json:$.response_time`,
+    `status_code` Int16 `json:$.status_code`,
+    `user_id` String `json:$.user_id`,
+    `request_id` String `json:$.request_id`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, server_id, level"

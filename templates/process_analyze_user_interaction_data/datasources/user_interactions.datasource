@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Raw user interaction events data containing details about user actions and engagement
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `event_type` String `json:$.event_type`,
+    `page` String `json:$.page`,
+    `session_id` String `json:$.session_id`,
+    `duration_seconds` Float32 `json:$.duration_seconds`,
+    `engagement_score` Float32 `json:$.engagement_score`,
+    `device_type` String `json:$.device_type`,
+    `browser` String `json:$.browser`,
+    `country` String `json:$.country`,
+    `referrer` String `json:$.referrer`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, event_type"
+        

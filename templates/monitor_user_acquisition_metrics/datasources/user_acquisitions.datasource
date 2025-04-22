@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Raw user acquisition data capturing user signups with attribution information
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `signup_timestamp` DateTime `json:$.signup_timestamp`,
+    `acquisition_channel` String `json:$.acquisition_channel`,
+    `campaign` String `json:$.campaign`,
+    `device_type` String `json:$.device_type`,
+    `country` String `json:$.country`,
+    `referrer` String `json:$.referrer`,
+    `utm_source` String `json:$.utm_source`,
+    `utm_medium` String `json:$.utm_medium`,
+    `utm_campaign` String `json:$.utm_campaign`,
+    `conversion` UInt8 `json:$.conversion`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(signup_timestamp)"
+ENGINE_SORTING_KEY "signup_timestamp, acquisition_channel, country"
+        

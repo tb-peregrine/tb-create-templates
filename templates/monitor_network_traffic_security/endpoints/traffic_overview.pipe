@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Provides an overview of network traffic with filtering capabilities
+
+NODE traffic_overview_node
+SQL >
+    %
+    SELECT 
+        timestamp,
+        source_ip,
+        destination_ip,
+        protocol,
+        bytes_sent,
+        bytes_received,
+        connection_duration_ms,
+        device_id
+    FROM network_traffic
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(protocol) %}
+        AND protocol = {{String(protocol, 'TCP')}}
+    {% end %}
+    {% if defined(device_id) %}
+        AND device_id = {{String(device_id, '')}}
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{UInt16(limit, 100)}}
+
+TYPE endpoint
+        

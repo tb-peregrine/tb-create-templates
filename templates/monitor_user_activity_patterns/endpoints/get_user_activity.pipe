@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Retrieve user activity events with filtering options
+
+NODE get_user_activity_node
+SQL >
+    %
+    SELECT 
+        event_id,
+        user_id,
+        session_id,
+        event_type,
+        event_name,
+        page_url,
+        timestamp,
+        device_type,
+        country
+    FROM user_activity_events
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(event_type) %}
+        AND event_type = {{String(event_type, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(country) %}
+        AND country = {{String(country, '')}}
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

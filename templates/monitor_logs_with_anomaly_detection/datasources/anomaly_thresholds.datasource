@@ -1,0 +1,13 @@
+DESCRIPTION >
+    Configuration for anomaly detection thresholds
+
+SCHEMA >
+    `metric` String `json:$.metric`,
+    `service` String `json:$.service`,
+    `threshold_value` Float64 `json:$.threshold_value`,
+    `threshold_type` String `json:$.threshold_type`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "metric"
+ENGINE_SORTING_KEY "metric, service"

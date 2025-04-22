@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Endpoint to analyze product ratings and correlate with sentiment scores
+
+NODE product_ratings_analysis_node
+SQL >
+    %
+    SELECT
+        uf.product_id,
+        uf.product_name,
+        uf.category,
+        avg(uf.rating) AS avg_rating,
+        count() AS feedback_count,
+        avg(fs.sentiment_score) AS avg_sentiment_score,
+        countIf(fs.sentiment_label = 'positive') AS positive_count,
+        countIf(fs.sentiment_label = 'neutral') AS neutral_count,
+        countIf(fs.sentiment_label = 'negative') AS negative_count
+    FROM user_feedback AS uf
+    LEFT JOIN feedback_sentiment AS fs ON uf.feedback_id = fs.feedback_id
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND uf.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND uf.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(category) %}
+        AND uf.category = {{String(category, '')}}
+    {% end %}
+    GROUP BY uf.product_id, uf.product_name, uf.category
+    ORDER BY avg_sentiment_score DESC
+    LIMIT {{UInt16(limit, 100)}}
+
+TYPE endpoint
+        

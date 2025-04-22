@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Stores customizable resource thresholds and alerting configurations per host or host group
+
+SCHEMA >
+    `host_id` String `json:$.host_id`,
+    `host_group` String `json:$.host_group`,
+    `cpu_threshold` Float32 `json:$.cpu_threshold`,
+    `memory_threshold` Float32 `json:$.memory_threshold`,
+    `disk_threshold` Float32 `json:$.disk_threshold`,
+    `load_threshold` Float32 `json:$.load_threshold`,
+    `alert_enabled` UInt8 `json:$.alert_enabled`,
+    `alert_cooldown_minutes` UInt16 `json:$.alert_cooldown_minutes`,
+    `created_at` DateTime `json:$.created_at`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "host_id, host_group"
+        

@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Shows the timeline of email events for analyzing engagement patterns
+
+NODE event_timeline_node
+SQL >
+    %
+    SELECT 
+        toStartOfHour(event_timestamp) AS hour,
+        event_type,
+        count() AS event_count
+    FROM email_events
+    WHERE 1=1
+        {% if defined(campaign_id) %}
+        AND campaign_id = {{String(campaign_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(event_type) %}
+        AND event_type = {{String(event_type, 'open')}}
+        {% end %}
+    GROUP BY hour, event_type
+    ORDER BY hour, event_type
+TYPE endpoint
+        

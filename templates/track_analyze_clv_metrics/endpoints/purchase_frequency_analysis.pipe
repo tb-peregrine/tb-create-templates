@@ -1,0 +1,52 @@
+
+DESCRIPTION >
+    Analyze customer purchase frequency and recency patterns
+
+NODE purchase_frequency_analysis_node
+SQL >
+    %
+    WITH customer_purchases AS (
+        SELECT 
+            c.customer_id,
+            c.signup_date,
+            COUNT(p.purchase_id) AS purchase_count,
+            MIN(p.purchase_date) AS first_purchase_date,
+            MAX(p.purchase_date) AS last_purchase_date,
+            DATEDIFF('day', c.signup_date, MAX(p.purchase_date)) AS customer_lifespan_days,
+            DATEDIFF('day', MAX(p.purchase_date), now()) AS days_since_last_purchase
+        FROM customers c
+        LEFT JOIN purchases p ON c.customer_id = p.customer_id
+        WHERE 1=1
+        {% if defined(customer_segment) %}
+            AND c.customer_segment = {{String(customer_segment, '')}}
+        {% end %}
+        {% if defined(country) %}
+            AND c.country = {{String(country, '')}}
+        {% end %}
+        {% if defined(acquisition_source) %}
+            AND c.acquisition_source = {{String(acquisition_source, '')}}
+        {% end %}
+        GROUP BY c.customer_id, c.signup_date
+    )
+    SELECT 
+        CASE 
+            WHEN purchase_count = 0 THEN 'No purchases'
+            WHEN purchase_count = 1 THEN 'One-time buyers'
+            WHEN purchase_count BETWEEN 2 AND 3 THEN '2-3 purchases'
+            WHEN purchase_count BETWEEN 4 AND 10 THEN '4-10 purchases'
+            ELSE '10+ purchases'
+        END AS purchase_frequency_segment,
+        CASE 
+            WHEN days_since_last_purchase <= 30 THEN 'Recent (0-30 days)'
+            WHEN days_since_last_purchase BETWEEN 31 AND 90 THEN 'Medium (31-90 days)'
+            WHEN days_since_last_purchase BETWEEN 91 AND 365 THEN 'Lapsed (91-365 days)'
+            ELSE 'Inactive (365+ days)'
+        END AS recency_segment,
+        COUNT(*) AS customer_count,
+        AVG(customer_lifespan_days) AS avg_customer_lifespan_days,
+        AVG(purchase_count) AS avg_purchase_count
+    FROM customer_purchases
+    GROUP BY purchase_frequency_segment, recency_segment
+    ORDER BY purchase_frequency_segment, recency_segment
+TYPE endpoint
+        

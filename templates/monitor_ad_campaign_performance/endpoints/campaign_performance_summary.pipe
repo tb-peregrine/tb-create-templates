@@ -1,0 +1,55 @@
+
+DESCRIPTION >
+    Summarizes overall campaign performance metrics including impressions, clicks, conversions, and key KPIs
+
+NODE campaign_performance_summary_node
+SQL >
+    %
+    SELECT
+        c.campaign_id,
+        c.name AS campaign_name,
+        c.platform,
+        c.status,
+        c.budget,
+        c.start_date,
+        c.end_date,
+        count(DISTINCT i.impression_id) AS impressions,
+        count(DISTINCT cl.click_id) AS clicks,
+        count(DISTINCT cv.conversion_id) AS conversions,
+        sum(i.cost) AS total_cost,
+        sum(cv.revenue) AS total_revenue,
+        if(impressions > 0, clicks / impressions, 0) AS ctr,
+        if(clicks > 0, conversions / clicks, 0) AS conversion_rate,
+        if(total_cost > 0, total_revenue / total_cost, 0) AS roas
+    FROM ad_campaigns AS c
+    LEFT JOIN ad_impressions AS i ON c.campaign_id = i.campaign_id
+    LEFT JOIN ad_clicks AS cl ON i.impression_id = cl.impression_id
+    LEFT JOIN conversions AS cv ON cl.click_id = cv.click_id
+    WHERE 1=1
+    {% if defined(campaign_id) %}
+        AND c.campaign_id = {{String(campaign_id, '')}}
+    {% end %}
+    {% if defined(platform) %}
+        AND c.platform = {{String(platform, '')}}
+    {% end %}
+    {% if defined(status) %}
+        AND c.status = {{String(status, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND c.start_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND c.end_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY
+        c.campaign_id,
+        c.name,
+        c.platform,
+        c.status,
+        c.budget,
+        c.start_date,
+        c.end_date
+    ORDER BY impressions DESC
+
+TYPE endpoint
+        

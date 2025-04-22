@@ -1,0 +1,46 @@
+
+DESCRIPTION >
+    Calculates user lifetime value by cohort for customer retention analysis
+
+NODE user_lifetime_value_node
+SQL >
+    %
+    WITH cohorts AS (
+        SELECT 
+            user_id,
+            toStartOfMonth(min(timestamp)) AS cohort_date
+        FROM user_events
+        GROUP BY user_id
+    ),
+    
+    user_activity_months AS (
+        SELECT 
+            user_id,
+            count(DISTINCT toStartOfMonth(timestamp)) AS active_months
+        FROM user_events
+        GROUP BY user_id
+    )
+    
+    SELECT 
+        cohort_date,
+        avg(active_months) AS avg_lifespan,
+        count(DISTINCT c.user_id) AS cohort_size,
+        count(DISTINCT CASE WHEN ua.active_months >= 3 THEN c.user_id END) AS retained_3_months,
+        round(count(DISTINCT CASE WHEN ua.active_months >= 3 THEN c.user_id END) / count(DISTINCT c.user_id) * 100, 2) AS retention_3_months
+    FROM cohorts c
+    JOIN user_activity_months ua ON c.user_id = ua.user_id
+    WHERE 
+        cohort_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        AND cohort_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(platform) %}
+        AND c.user_id IN (
+            SELECT user_id FROM user_events 
+            WHERE platform = {{String(platform, 'all')}}
+            GROUP BY user_id
+        )
+        {% end %}
+    GROUP BY cohort_date
+    ORDER BY cohort_date
+
+TYPE endpoint
+        

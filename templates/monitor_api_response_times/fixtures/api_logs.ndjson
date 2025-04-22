@@ -1,0 +1,10 @@
+{"timestamp": "2025-04-17 12:54:51", "api_id": "api_1", "endpoint": "/users", "method": "GET", "status_code": 540, "response_time_ms": 1150, "user_id": "user_140", "region": "us-east-1", "success": 0}
+{"timestamp": "2025-03-23 21:02:54", "api_id": "api_3", "endpoint": "/orders", "method": "PUT", "status_code": 257, "response_time_ms": 1867, "user_id": "user_857", "region": "eu-west-1", "success": 1}
+{"timestamp": "2025-04-08 01:55:06", "api_id": "api_1", "endpoint": "/users", "method": "GET", "status_code": 225, "response_time_ms": 335, "user_id": "user_325", "region": "us-east-1", "success": 1}
+{"timestamp": "2025-04-14 07:16:46", "api_id": "api_1", "endpoint": "/users", "method": "GET", "status_code": 225, "response_time_ms": 635, "user_id": "user_625", "region": "us-east-1", "success": 1}
+{"timestamp": "2025-04-16 00:00:12", "api_id": "api_5", "endpoint": "/auth", "method": "PATCH", "status_code": 219, "response_time_ms": 29, "user_id": "user_19", "region": "sa-east-1", "success": 1}
+{"timestamp": "2025-03-26 02:07:51", "api_id": "api_1", "endpoint": "/users", "method": "GET", "status_code": 560, "response_time_ms": 770, "user_id": "user_760", "region": "us-east-1", "success": 0}
+{"timestamp": "2025-04-06 02:57:57", "api_id": "api_5", "endpoint": "/auth", "method": "PATCH", "status_code": 254, "response_time_ms": 1364, "user_id": "user_354", "region": "sa-east-1", "success": 1}
+{"timestamp": "2025-04-04 01:58:35", "api_id": "api_2", "endpoint": "/products", "method": "POST", "status_code": 216, "response_time_ms": 1726, "user_id": "user_716", "region": "us-west-2", "success": 1}
+{"timestamp": "2025-04-15 21:04:33", "api_id": "api_4", "endpoint": "/payments", "method": "DELETE", "status_code": 258, "response_time_ms": 568, "user_id": "user_558", "region": "ap-southeast-1", "success": 1}
+{"timestamp": "2025-03-25 06:19:31", "api_id": "api_1", "endpoint": "/users", "method": "GET", "status_code": 560, "response_time_ms": 70, "user_id": "user_60", "region": "us-east-1", "success": 0}

@@ -1,0 +1,43 @@
+
+DESCRIPTION >
+    Shows current usage against rate limits for tenants
+
+NODE rate_limit_usage_node
+SQL >
+    %
+    WITH current_usage AS (
+        SELECT
+            tenant_id,
+            endpoint,
+            countIf(timestamp >= now() - interval 1 minute) as requests_last_minute,
+            countIf(timestamp >= now() - interval 1 hour) as requests_last_hour,
+            countIf(timestamp >= now() - interval 1 day) as requests_last_day
+        FROM api_logs
+        WHERE 1=1
+        {% if defined(tenant_id) %}
+            AND tenant_id = {{String(tenant_id, '')}}
+        {% end %}
+        {% if defined(endpoint) %}
+            AND endpoint = {{String(endpoint, '')}}
+        {% end %}
+        GROUP BY tenant_id, endpoint
+    )
+    
+    SELECT
+        cu.tenant_id,
+        cu.endpoint,
+        cu.requests_last_minute,
+        rl.requests_per_minute,
+        round(cu.requests_last_minute / rl.requests_per_minute * 100, 2) as minute_limit_percent,
+        cu.requests_last_hour,
+        rl.requests_per_hour,
+        round(cu.requests_last_hour / rl.requests_per_hour * 100, 2) as hour_limit_percent,
+        cu.requests_last_day,
+        rl.requests_per_day,
+        round(cu.requests_last_day / rl.requests_per_day * 100, 2) as day_limit_percent
+    FROM current_usage cu
+    LEFT JOIN tenant_rate_limits rl ON cu.tenant_id = rl.tenant_id AND cu.endpoint = rl.endpoint
+    ORDER BY minute_limit_percent DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,63 @@
+
+DESCRIPTION >
+    Generate customer segmentation suggestions based on behavioral patterns and purchase history
+
+NODE customer_segmentation_suggestions_node
+SQL >
+    WITH purchase_metrics AS (
+        SELECT 
+            customer_id,
+            count(*) as purchase_count,
+            sum(price * quantity) as total_spent,
+            max(event_timestamp) as last_purchase_date,
+            min(event_timestamp) as first_purchase_date
+        FROM customer_events
+        WHERE event_type = 'purchase'
+        GROUP BY customer_id
+    ),
+    
+    engagement_metrics AS (
+        SELECT 
+            customer_id,
+            count(*) as total_events,
+            count(DISTINCT session_id) as session_count,
+            count(DISTINCT event_type) as event_type_variety
+        FROM customer_events
+        GROUP BY customer_id
+    )
+    
+    SELECT 
+        cp.customer_id,
+        cp.email,
+        cp.customer_segment as current_segment,
+        pm.purchase_count,
+        pm.total_spent,
+        pm.last_purchase_date,
+        datediff('day', pm.last_purchase_date, now()) as days_since_last_purchase,
+        em.total_events,
+        em.session_count,
+        
+        CASE 
+            WHEN pm.total_spent > 1000 AND em.session_count > 10 THEN 'High Value Active'
+            WHEN pm.total_spent > 1000 AND em.session_count <= 10 THEN 'High Value Inactive'
+            WHEN pm.total_spent <= 1000 AND pm.total_spent > 100 AND em.session_count > 5 THEN 'Medium Value Active'
+            WHEN pm.total_spent <= 1000 AND pm.total_spent > 100 AND em.session_count <= 5 THEN 'Medium Value Inactive'
+            WHEN pm.total_spent <= 100 AND pm.total_spent > 0 AND em.session_count > 0 THEN 'Low Value'
+            ELSE 'No Purchase'
+        END as suggested_segment,
+        
+        CASE 
+            WHEN datediff('day', pm.last_purchase_date, now()) > 60 THEN 'Churn Risk'
+            WHEN datediff('day', cp.signup_date, now()) < 30 AND pm.purchase_count > 0 THEN 'New Active'
+            WHEN datediff('day', cp.signup_date, now()) < 30 AND pm.purchase_count = 0 THEN 'New Inactive'
+            ELSE 'Regular'
+        END as lifecycle_stage
+        
+    FROM customer_profiles cp
+    LEFT JOIN purchase_metrics pm ON cp.customer_id = pm.customer_id
+    LEFT JOIN engagement_metrics em ON cp.customer_id = em.customer_id
+    ORDER BY pm.total_spent DESC
+    LIMIT 1000
+
+TYPE endpoint
+        

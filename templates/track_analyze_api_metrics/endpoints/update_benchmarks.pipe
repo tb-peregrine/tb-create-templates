@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    API to update benchmark values for product categories
+
+NODE update_benchmarks_node
+SQL >
+    %
+    SELECT
+        category,
+        AVG(sales_amount) AS avg_sales_amount,
+        AVG(units_sold) AS avg_units_sold,
+        AVG(customer_satisfaction) AS avg_customer_satisfaction,
+        AVG(conversion_rate) AS avg_conversion_rate,
+        AVG(return_rate) AS avg_return_rate
+    FROM product_metrics
+    WHERE 1=1
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY category
+
+TYPE endpoint
+        

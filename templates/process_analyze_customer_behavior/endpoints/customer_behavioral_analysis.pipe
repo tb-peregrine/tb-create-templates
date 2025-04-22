@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Analyze customer behavior patterns across different event types and time periods
+
+NODE customer_behavioral_analysis_node
+SQL >
+    %
+    SELECT 
+        event_type,
+        count(*) as event_count,
+        count(DISTINCT customer_id) as unique_customers,
+        avg(price) as avg_price,
+        sum(price * quantity) as total_value,
+        min(event_timestamp) as first_event,
+        max(event_timestamp) as last_event
+    FROM customer_events
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(event_type) %}
+        AND event_type = {{String(event_type, '')}}
+    {% end %}
+    {% if defined(country) %}
+        AND country = {{String(country, '')}}
+    {% end %}
+    {% if defined(device_type) %}
+        AND device_type = {{String(device_type, '')}}
+    {% end %}
+    GROUP BY event_type
+    ORDER BY event_count DESC
+
+TYPE endpoint
+        

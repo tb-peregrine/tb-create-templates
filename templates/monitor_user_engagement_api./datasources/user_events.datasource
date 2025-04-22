@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Tracks user interactions and events for feature usage analysis
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `event_type` String `json:$.event_type`,
+    `event_name` String `json:$.event_name`,
+    `feature_id` String `json:$.feature_id`,
+    `session_id` String `json:$.session_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `platform` String `json:$.platform`,
+    `device_type` String `json:$.device_type`,
+    `version` String `json:$.version`,
+    `duration_ms` Int32 `json:$.duration_ms`,
+    `properties` String `json:$.properties`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "user_id, timestamp, event_type, feature_id"
+        

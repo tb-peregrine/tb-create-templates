@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Analyzes feature usage patterns across the platform
+
+NODE feature_usage_stats_node
+SQL >
+    %
+    SELECT 
+        feature_id,
+        event_name,
+        COUNT() as usage_count,
+        COUNT(DISTINCT user_id) as unique_users,
+        AVG(duration_ms) as avg_duration_ms,
+        MIN(timestamp) as first_usage,
+        MAX(timestamp) as last_usage
+    FROM user_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(feature_id) %}
+        AND feature_id = {{String(feature_id, '')}}
+        {% end %}
+        {% if defined(event_name) %}
+        AND event_name = {{String(event_name, '')}}
+        {% end %}
+    GROUP BY feature_id, event_name
+    ORDER BY usage_count DESC
+
+TYPE endpoint
+        

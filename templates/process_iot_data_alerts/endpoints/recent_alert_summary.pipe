@@ -1,0 +1,42 @@
+
+DESCRIPTION >
+    API endpoint to get a summary of recent alerts grouped by device and sensor type
+
+NODE recent_alert_summary_node
+SQL >
+    %
+    SELECT 
+        device_id,
+        sensor_type,
+        count() AS alert_count,
+        min(timestamp) AS first_alert,
+        max(timestamp) AS last_alert,
+        arrayStringConcat(groupArray(distinct alert_type), ', ') AS alert_types
+    FROM alerts
+    WHERE 1=1
+    {% if defined(device_id) %}
+        AND device_id = {{String(device_id, '')}}
+    {% end %}
+    {% if defined(sensor_type) %}
+        AND sensor_type = {{String(sensor_type, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 7 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY device_id, sensor_type
+    ORDER BY alert_count DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 20)}}
+    {% else %}
+        LIMIT 20
+    {% end %}
+
+TYPE endpoint
+        

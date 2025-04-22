@@ -1,0 +1,71 @@
+
+DESCRIPTION >
+    Analyze conversion funnel steps for a defined sequence of events
+
+NODE funnel_analysis_node
+SQL >
+    %
+    SELECT
+        step_1.event_type as step_1_name,
+        count(DISTINCT step_1.user_id) as step_1_count,
+        step_2.event_type as step_2_name,
+        count(DISTINCT step_2.user_id) as step_2_count,
+        step_3.event_type as step_3_name,
+        count(DISTINCT step_3.user_id) as step_3_count,
+        step_4.event_type as step_4_name,
+        count(DISTINCT step_4.user_id) as step_4_count,
+        round(step_2_count / step_1_count * 100, 1) as step_1_to_2_conversion_rate,
+        round(step_3_count / step_2_count * 100, 1) as step_2_to_3_conversion_rate,
+        round(step_4_count / step_3_count * 100, 1) as step_3_to_4_conversion_rate,
+        round(step_4_count / step_1_count * 100, 1) as overall_conversion_rate
+    FROM
+    (
+        SELECT user_id, event_type
+        FROM clickstream_events 
+        WHERE event_type = {{String(step_1_event, 'page_view')}}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    ) as step_1
+    LEFT JOIN
+    (
+        SELECT user_id, event_type
+        FROM clickstream_events
+        WHERE event_type = {{String(step_2_event, 'add_to_cart')}}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    ) as step_2 ON step_1.user_id = step_2.user_id
+    LEFT JOIN
+    (
+        SELECT user_id, event_type
+        FROM clickstream_events
+        WHERE event_type = {{String(step_3_event, 'checkout')}}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    ) as step_3 ON step_2.user_id = step_3.user_id
+    LEFT JOIN
+    (
+        SELECT user_id, event_type
+        FROM clickstream_events
+        WHERE event_type = {{String(step_4_event, 'purchase')}}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    ) as step_4 ON step_3.user_id = step_4.user_id
+
+TYPE endpoint
+        

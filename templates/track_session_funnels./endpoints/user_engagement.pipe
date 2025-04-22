@@ -1,0 +1,41 @@
+
+DESCRIPTION >
+    Provides metrics about user engagement such as session count and duration
+
+NODE user_engagement_node
+SQL >
+    %
+    SELECT
+        user_id,
+        count(distinct session_id) as session_count,
+        sum(event_count) as total_events,
+        avg(session_duration_seconds) as avg_session_duration,
+        max(session_duration_seconds) as max_session_duration,
+        min(session_start) as first_seen,
+        max(session_end) as last_seen
+    FROM (
+        SELECT
+            session_id,
+            user_id,
+            min(timestamp) as session_start,
+            max(timestamp) as session_end,
+            toUInt32(dateDiff('second', min(timestamp), max(timestamp))) as session_duration_seconds,
+            count() as event_count
+        FROM events
+        WHERE 1=1
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY session_id, user_id
+    )
+    GROUP BY user_id
+    ORDER BY total_events DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

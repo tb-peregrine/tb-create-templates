@@ -1,0 +1,29 @@
+DESCRIPTION >
+    API endpoint that shows trends in search query intents over time
+
+NODE intent_trend_analysis_node
+SQL >
+    %
+    SELECT 
+        toStartOfInterval(timestamp, INTERVAL {{String(time_interval, '1 day')}}) AS time_bucket,
+        intent_category,
+        count() AS query_count,
+        avg(intent_confidence) AS avg_confidence
+    FROM search_query_intents
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(min_confidence) %}
+        AND intent_confidence >= {{Float32(min_confidence, 0.5)}}
+    {% end %}
+    {% if defined(intent_categories) %}
+        AND intent_category IN ({{String(intent_categories, 'purchase,information,support')}})
+    {% end %}
+    GROUP BY time_bucket, intent_category
+    ORDER BY time_bucket ASC, intent_category
+
+TYPE endpoint

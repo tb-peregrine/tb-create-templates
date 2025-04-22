@@ -1,0 +1,15 @@
+DESCRIPTION >
+    Aggregated data about transaction patterns for machine learning models
+
+SCHEMA >
+    `pattern_id` String `json:$.pattern_id`,
+    `pattern_type` String `json:$.pattern_type`,
+    `pattern_features` String `json:$.pattern_features`,
+    `confidence_score` Float64 `json:$.confidence_score`,
+    `is_fraud` UInt8 `json:$.is_fraud`,
+    `created_at` DateTime `json:$.created_at`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(created_at)"
+ENGINE_SORTING_KEY "pattern_type, confidence_score"

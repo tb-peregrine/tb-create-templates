@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    API endpoint for event metrics aggregated by type
+
+NODE event_metrics_node
+SQL >
+    %
+    SELECT 
+        event_type,
+        count() as event_count,
+        count(DISTINCT user_id) as unique_users,
+        avg(duration) as avg_duration
+    FROM user_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(platform) %}
+        AND platform = {{String(platform, 'web')}}
+        {% end %}
+        {% if defined(country) %}
+        AND country = {{String(country, 'US')}}
+        {% end %}
+    GROUP BY 
+        event_type
+    ORDER BY 
+        event_count DESC
+
+TYPE endpoint
+        

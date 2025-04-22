@@ -1,0 +1,47 @@
+
+DESCRIPTION >
+    Calculate the total lifetime value for each customer
+
+NODE total_customer_value_node
+SQL >
+    %
+    SELECT 
+        c.customer_id,
+        c.name,
+        c.email,
+        c.signup_date,
+        c.country,
+        c.customer_segment,
+        c.acquisition_source,
+        SUM(p.purchase_amount) AS total_spend,
+        COUNT(p.purchase_id) AS purchase_count,
+        MIN(p.purchase_date) AS first_purchase_date,
+        MAX(p.purchase_date) AS last_purchase_date,
+        DATEDIFF('day', c.signup_date, now()) AS days_since_signup,
+        DATEDIFF('day', MAX(p.purchase_date), now()) AS days_since_last_purchase,
+        SUM(p.purchase_amount) / GREATEST(DATEDIFF('month', c.signup_date, now()), 1) AS avg_monthly_spend
+    FROM customers c
+    LEFT JOIN purchases p ON c.customer_id = p.customer_id
+    WHERE 1=1
+    {% if defined(customer_id) %}
+        AND c.customer_id = {{String(customer_id, '')}}
+    {% end %}
+    {% if defined(country) %}
+        AND c.country = {{String(country, '')}}
+    {% end %}
+    {% if defined(customer_segment) %}
+        AND c.customer_segment = {{String(customer_segment, '')}}
+    {% end %}
+    {% if defined(acquisition_source) %}
+        AND c.acquisition_source = {{String(acquisition_source, '')}}
+    {% end %}
+    GROUP BY 
+        c.customer_id,
+        c.name,
+        c.email,
+        c.signup_date,
+        c.country,
+        c.customer_segment,
+        c.acquisition_source
+TYPE endpoint
+        

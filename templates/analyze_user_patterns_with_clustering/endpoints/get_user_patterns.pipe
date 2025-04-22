@@ -1,0 +1,45 @@
+
+DESCRIPTION >
+    Analyze user behavior patterns with clustering information
+
+NODE get_user_patterns_node
+SQL >
+    %
+    SELECT
+        uf.user_id,
+        uf.avg_session_duration,
+        uf.total_sessions,
+        uf.avg_clicks_per_session,
+        uf.most_visited_page,
+        uf.most_used_device,
+        uf.country,
+        uf.cluster_id,
+        count(ue.event_type) AS total_events,
+        uf.last_updated
+    FROM user_features uf
+    LEFT JOIN user_events ue ON uf.user_id = ue.user_id
+    WHERE 1=1
+    {% if defined(cluster_id) %}
+        AND uf.cluster_id = {{UInt8(cluster_id, 0)}}
+    {% end %}
+    {% if defined(country) %}
+        AND uf.country = {{String(country, "US")}}
+    {% end %}
+    {% if defined(min_sessions) %}
+        AND uf.total_sessions >= {{UInt32(min_sessions, 1)}}
+    {% end %}
+    GROUP BY
+        uf.user_id,
+        uf.avg_session_duration,
+        uf.total_sessions,
+        uf.avg_clicks_per_session,
+        uf.most_visited_page,
+        uf.most_used_device,
+        uf.country,
+        uf.cluster_id,
+        uf.last_updated
+    ORDER BY uf.total_sessions DESC
+    LIMIT {{UInt16(limit, 100)}}
+
+TYPE endpoint
+        

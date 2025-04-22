@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    Analyzes engagement patterns by geographic location
+
+NODE geographic_analysis_node
+SQL >
+    %
+    SELECT 
+        country,
+        platform,
+        count() AS event_count,
+        countIf(event_type = 'like') AS likes,
+        countIf(event_type = 'share') AS shares,
+        countIf(event_type = 'comment') AS comments,
+        countIf(event_type = 'view') AS views,
+        sum(engagement_value) AS total_engagement,
+        avg(engagement_value) AS avg_engagement
+    FROM social_media_events
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND event_timestamp >= '2023-01-01 00:00:00'
+    {% end %}
+    {% if defined(end_date) %}
+        AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND event_timestamp <= '2023-12-31 23:59:59'
+    {% end %}
+    {% if defined(platform) %}
+        AND platform = {{String(platform, 'all')}}
+    {% end %}
+    {% if defined(country) %}
+        AND country = {{String(country, 'all')}}
+    {% end %}
+    GROUP BY country, platform
+    ORDER BY total_engagement DESC
+
+TYPE endpoint
+        

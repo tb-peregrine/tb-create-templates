@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Analyzes engagement metrics grouped by platform
+
+NODE engagement_by_platform_node
+SQL >
+    %
+    SELECT 
+        platform,
+        event_type,
+        count() AS event_count,
+        sum(engagement_value) AS total_engagement,
+        avg(engagement_value) AS avg_engagement
+    FROM social_media_events
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND event_timestamp >= '2023-01-01 00:00:00'
+    {% end %}
+    {% if defined(end_date) %}
+        AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND event_timestamp <= '2023-12-31 23:59:59'
+    {% end %}
+    {% if defined(platform) %}
+        AND platform = {{String(platform, 'all')}}
+    {% end %}
+    GROUP BY platform, event_type
+    ORDER BY platform, total_engagement DESC
+
+TYPE endpoint
+        

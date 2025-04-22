@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Stores raw IoT sensor data from various devices
+
+SCHEMA >
+    `device_id` String `json:$.device_id`,
+    `sensor_type` String `json:$.sensor_type`,
+    `value` Float64 `json:$.value`,
+    `unit` String `json:$.unit`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `location` String `json:$.location`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "device_id, sensor_type, timestamp"
+        

@@ -1,0 +1,50 @@
+
+DESCRIPTION >
+    Compute cohort analysis metrics based on user's first seen date and subsequent activity
+
+NODE cohort_analysis_node
+SQL >
+    %
+    WITH 
+    cohort_dates AS (
+        SELECT 
+            toStartOfWeek(first_seen_date) AS cohort_date,
+            COUNT(DISTINCT user_id) AS new_users
+        FROM user_retention_events
+        WHERE first_seen_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(country) %}
+        AND country = {{String(country, 'US')}}
+        {% end %}
+        {% if defined(platform) %}
+        AND platform = {{String(platform, 'web')}}
+        {% end %}
+        GROUP BY cohort_date
+    ),
+    retention_data AS (
+        SELECT 
+            toStartOfWeek(first_seen_date) AS cohort_date,
+            toUInt32(dateDiff('week', toStartOfWeek(first_seen_date), toStartOfWeek(event_date))) AS week_number,
+            COUNT(DISTINCT user_id) AS active_users
+        FROM user_retention_events
+        WHERE first_seen_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(country) %}
+        AND country = {{String(country, 'US')}}
+        {% end %}
+        {% if defined(platform) %}
+        AND platform = {{String(platform, 'web')}}
+        {% end %}
+        GROUP BY cohort_date, week_number
+        ORDER BY cohort_date, week_number
+    )
+    SELECT 
+        rd.cohort_date,
+        rd.week_number,
+        cd.new_users,
+        rd.active_users,
+        round(rd.active_users / cd.new_users * 100, 2) AS retention_rate
+    FROM retention_data rd
+    JOIN cohort_dates cd ON rd.cohort_date = cd.cohort_date
+    ORDER BY rd.cohort_date, rd.week_number
+
+TYPE endpoint
+        

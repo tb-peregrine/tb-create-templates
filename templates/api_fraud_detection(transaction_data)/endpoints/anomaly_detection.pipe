@@ -1,0 +1,58 @@
+DESCRIPTION >
+    Detect anomalous transactions based on user behavior and transaction patterns
+
+NODE anomaly_detection_node
+SQL >
+    %
+    WITH user_stats AS (
+        SELECT
+            user_id,
+            avg(amount) as avg_amount,
+            stddevPop(amount) as stddev_amount,
+            count() as transaction_count
+        FROM payment_transactions
+        WHERE transaction_timestamp >= now() - interval 90 day
+        GROUP BY user_id
+        HAVING transaction_count >= 3
+    )
+    
+    SELECT
+        t.transaction_id,
+        t.user_id,
+        t.merchant_id,
+        t.amount,
+        t.payment_method,
+        t.transaction_timestamp,
+        t.location,
+        t.status,
+        t.is_flagged,
+        us.avg_amount,
+        us.stddev_amount,
+        (t.amount - us.avg_amount) / if(us.stddev_amount = 0, 1, us.stddev_amount) as z_score,
+        CASE
+            WHEN abs((t.amount - us.avg_amount) / if(us.stddev_amount = 0, 1, us.stddev_amount)) > 3 THEN 'Anomalous Amount'
+            WHEN t.is_flagged = 1 THEN 'Flagged'
+            ELSE 'Normal'
+        END as anomaly_status
+    FROM payment_transactions t
+    JOIN user_stats us ON t.user_id = us.user_id
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND t.transaction_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND t.transaction_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(user_id) %}
+        AND t.user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(anomaly_threshold) %}
+        HAVING abs(z_score) > {{Float64(anomaly_threshold, 3.0)}}
+    {% else %}
+        HAVING abs(z_score) > 3.0 OR t.is_flagged = 1
+    {% end %}
+    ORDER BY abs(z_score) DESC, t.transaction_timestamp DESC
+    {% if defined(limit) %}
+        LIMIT {{UInt16(limit, 100)}}
+    {% end %}
+TYPE endpoint

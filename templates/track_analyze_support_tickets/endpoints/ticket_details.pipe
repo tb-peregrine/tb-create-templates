@@ -1,0 +1,49 @@
+
+DESCRIPTION >
+    API to retrieve detailed information about specific tickets
+
+NODE ticket_details_node
+SQL >
+    %
+    SELECT
+        ticket_id,
+        customer_id,
+        agent_id,
+        category,
+        priority,
+        status,
+        created_at,
+        first_response_at,
+        resolved_at,
+        if(first_response_at > toDateTime('1970-01-01 00:00:00'), dateDiff('minute', created_at, first_response_at), NULL) as response_time_minutes,
+        if(resolved_at > toDateTime('1970-01-01 00:00:00'), dateDiff('minute', created_at, resolved_at), NULL) as resolution_time_minutes,
+        satisfaction_score,
+        tags
+    FROM support_tickets
+    WHERE 1=1
+    {% if defined(ticket_id) %}
+    AND ticket_id = {{String(ticket_id)}}
+    {% end %}
+    {% if defined(customer_id) %}
+    AND customer_id = {{String(customer_id)}}
+    {% end %}
+    {% if defined(status) %}
+    AND status = {{String(status)}}
+    {% end %}
+    {% if defined(category) %}
+    AND category = {{String(category)}}
+    {% end %}
+    {% if defined(priority) %}
+    AND priority = {{String(priority)}}
+    {% end %}
+    {% if defined(created_after) %}
+    AND created_at >= {{DateTime(created_after)}}
+    {% end %}
+    {% if defined(created_before) %}
+    AND created_at <= {{DateTime(created_before)}}
+    {% end %}
+    ORDER BY created_at DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Get detailed onboarding progress for individual users
+
+NODE user_onboarding_progress_node
+SQL >
+    %
+    SELECT
+        user_id,
+        countIf(status = 'completed') AS completed_steps,
+        count(DISTINCT step_id) AS total_steps,
+        round(countIf(status = 'completed') / count(DISTINCT step_id) * 100, 2) AS completion_percentage,
+        max(timestamp) AS last_activity
+    FROM onboarding_events
+    WHERE 1=1
+    {% if defined(user_id) %}
+    AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(start_date) and defined(end_date) %}
+    AND timestamp BETWEEN {{DateTime(start_date)}} AND {{DateTime(end_date)}}
+    {% end %}
+    GROUP BY user_id
+    ORDER BY completion_percentage DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Raw user feedback data including ratings, comments, and metadata
+
+SCHEMA >
+    `feedback_id` String `json:$.feedback_id`,
+    `user_id` String `json:$.user_id`,
+    `product_id` String `json:$.product_id`,
+    `rating` UInt8 `json:$.rating`,
+    `comment` String `json:$.comment`,
+    `sentiment_score` Float32 `json:$.sentiment_score`,
+    `category` String `json:$.category`,
+    `platform` String `json:$.platform`,
+    `created_at` DateTime `json:$.created_at`,
+    `tags` Array(String) `json:$.tags`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(created_at)"
+ENGINE_SORTING_KEY "created_at, product_id, user_id"
+        

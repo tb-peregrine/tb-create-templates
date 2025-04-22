@@ -1,0 +1,72 @@
+
+DESCRIPTION >
+    Calculate average response time for customer support tickets with filtering capabilities
+
+NODE average_response_time_node
+SQL >
+    %
+    SELECT 
+        {% if defined(time_range) %}
+            {{String(time_range, 'day')}} as time_range,
+        {% else %}
+            'day' as time_range,
+        {% end %}
+        {% if defined(group_by) and String(group_by) == 'agent' %}
+            agent_id as group_dimension,
+        {% elif defined(group_by) and String(group_by) == 'category' %}
+            category as group_dimension,
+        {% elif defined(group_by) and String(group_by) == 'priority' %}
+            priority as group_dimension,
+        {% else %}
+            'all' as group_dimension,
+        {% end %}
+        count() as ticket_count,
+        avg(response_time_seconds) as avg_response_time_seconds,
+        min(response_time_seconds) as min_response_time_seconds,
+        max(response_time_seconds) as max_response_time_seconds
+    FROM support_tickets
+    WHERE 
+        {% if defined(start_date) %}
+            created_at >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% else %}
+            created_at >= '2023-01-01 00:00:00'
+        {% end %}
+        {% if defined(end_date) %}
+            AND created_at <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+            AND created_at <= '2023-12-31 23:59:59'
+        {% end %}
+        {% if defined(priority) %}
+            AND priority = {{String(priority, 'medium')}}
+        {% end %}
+        {% if defined(category) %}
+            AND category = {{String(category, 'technical')}}
+        {% end %}
+        {% if defined(agent_id) %}
+            AND agent_id = {{String(agent_id, 'all')}}
+        {% end %}
+    GROUP BY 
+        {% if defined(time_range) and String(time_range) == 'day' %}
+            toDate(created_at),
+        {% elif defined(time_range) and String(time_range) == 'week' %}
+            toStartOfWeek(created_at),
+        {% elif defined(time_range) and String(time_range) == 'month' %}
+            toStartOfMonth(created_at),
+        {% else %}
+            toDate(created_at),
+        {% end %}
+        group_dimension
+    ORDER BY 
+        {% if defined(time_range) and String(time_range) == 'day' %}
+            toDate(created_at),
+        {% elif defined(time_range) and String(time_range) == 'week' %}
+            toStartOfWeek(created_at),
+        {% elif defined(time_range) and String(time_range) == 'month' %}
+            toStartOfMonth(created_at),
+        {% else %}
+            toDate(created_at),
+        {% end %}
+        group_dimension
+
+TYPE endpoint
+        

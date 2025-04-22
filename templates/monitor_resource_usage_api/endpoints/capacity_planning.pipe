@@ -1,0 +1,91 @@
+
+DESCRIPTION >
+    API for capacity planning that predicts future resource usage based on historical trends
+
+NODE capacity_planning_node
+SQL >
+    %
+    WITH historical_usage AS (
+        SELECT
+            host_id,
+            host_name,
+            toStartOfDay(timestamp) AS day,
+            avg(cpu_usage_percent) AS avg_cpu,
+            avg(memory_usage_percent) AS avg_memory,
+            avg(disk_usage_percent) AS avg_disk,
+            min(disk_free_gb) AS min_disk_free
+        FROM system_metrics
+        WHERE timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(host_id) %}
+            AND host_id = {{String(host_id, '')}}
+        {% end %}
+        {% if defined(host_name) %}
+            AND host_name = {{String(host_name, '')}}
+        {% end %}
+        GROUP BY
+            host_id,
+            host_name,
+            day
+    ),
+    
+    growth_rates AS (
+        SELECT
+            host_id,
+            host_name,
+            (last_value(avg_cpu) OVER w - first_value(avg_cpu) OVER w) / 
+                nullIf(first_value(avg_cpu) OVER w, 0) AS cpu_growth_rate,
+            (last_value(avg_memory) OVER w - first_value(avg_memory) OVER w) / 
+                nullIf(first_value(avg_memory) OVER w, 0) AS memory_growth_rate,
+            (last_value(avg_disk) OVER w - first_value(avg_disk) OVER w) / 
+                nullIf(first_value(avg_disk) OVER w, 0) AS disk_growth_rate,
+            (first_value(min_disk_free) OVER w - last_value(min_disk_free) OVER w) / 
+                nullIf(first_value(min_disk_free) OVER w, 0) AS disk_free_decline_rate,
+            max(avg_cpu) OVER w AS peak_cpu,
+            max(avg_memory) OVER w AS peak_memory,
+            max(avg_disk) OVER w AS peak_disk
+        FROM historical_usage
+        WINDOW w AS (PARTITION BY host_id ORDER BY day)
+    )
+    
+    SELECT
+        host_id,
+        host_name,
+        peak_cpu,
+        peak_memory,
+        peak_disk,
+        cpu_growth_rate,
+        memory_growth_rate,
+        disk_growth_rate,
+        disk_free_decline_rate,
+        
+        /* Projected values */
+        peak_cpu * (1 + cpu_growth_rate * {{Float32(forecast_months, 3)}}/12) AS projected_cpu_usage,
+        peak_memory * (1 + memory_growth_rate * {{Float32(forecast_months, 3)}}/12) AS projected_memory_usage,
+        peak_disk * (1 + disk_growth_rate * {{Float32(forecast_months, 3)}}/12) AS projected_disk_usage,
+        
+        /* Time to capacity thresholds */
+        CASE 
+            WHEN cpu_growth_rate <= 0 THEN 999
+            ELSE ({{Float32(cpu_threshold, 80)}} - peak_cpu) / (cpu_growth_rate * peak_cpu) * 12
+        END AS months_to_cpu_threshold,
+        
+        CASE 
+            WHEN memory_growth_rate <= 0 THEN 999
+            ELSE ({{Float32(memory_threshold, 80)}} - peak_memory) / (memory_growth_rate * peak_memory) * 12
+        END AS months_to_memory_threshold,
+        
+        CASE 
+            WHEN disk_growth_rate <= 0 THEN 999
+            ELSE ({{Float32(disk_threshold, 90)}} - peak_disk) / (disk_growth_rate * peak_disk) * 12
+        END AS months_to_disk_threshold
+    FROM growth_rates
+    ORDER BY 
+        least(
+            months_to_cpu_threshold, 
+            months_to_memory_threshold, 
+            months_to_disk_threshold
+        ) ASC
+
+TYPE endpoint
+        

@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    API endpoint for user engagement metrics by geographic location
+
+NODE geographic_distribution_node
+SQL >
+    %
+    SELECT 
+        country,
+        region,
+        count() as event_count,
+        count(DISTINCT user_id) as unique_users,
+        avg(duration) as avg_duration
+    FROM user_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(event_type) %}
+        AND event_type = {{String(event_type, 'page_view')}}
+        {% end %}
+        {% if defined(platform) %}
+        AND platform = {{String(platform, 'web')}}
+        {% end %}
+    GROUP BY 
+        country,
+        region
+    ORDER BY 
+        unique_users DESC
+
+TYPE endpoint
+        

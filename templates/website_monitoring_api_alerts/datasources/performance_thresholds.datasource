@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Stores alert thresholds for different websites and metrics
+
+SCHEMA >
+    `website_id` String `json:$.website_id`,
+    `page_load_threshold_ms` UInt32 `json:$.page_load_threshold_ms`,
+    `response_time_threshold_ms` UInt32 `json:$.response_time_threshold_ms`,
+    `error_threshold_count` UInt16 `json:$.error_threshold_count`,
+    `created_at` DateTime `json:$.created_at`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(created_at)"
+ENGINE_SORTING_KEY "website_id, created_at"
+        

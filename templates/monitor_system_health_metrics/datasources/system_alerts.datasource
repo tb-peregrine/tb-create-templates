@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Stores system alerts triggered when metrics exceed thresholds or anomalies are detected
+
+SCHEMA >
+    `alert_id` String `json:$.alert_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `host_id` String `json:$.host_id`,
+    `host_name` String `json:$.host_name`,
+    `alert_type` String `json:$.alert_type`,
+    `metric_name` String `json:$.metric_name`,
+    `metric_value` Float32 `json:$.metric_value`,
+    `threshold` Float32 `json:$.threshold`,
+    `severity` String `json:$.severity`,
+    `message` String `json:$.message`,
+    `status` String `json:$.status`,
+    `resolved_at` DateTime `json:$.resolved_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "host_id, alert_type, timestamp"
+        

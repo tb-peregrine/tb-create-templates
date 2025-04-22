@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Track onboarding completion rates over time for trend analysis
+
+NODE onboarding_daily_trend_node
+SQL >
+    %
+    SELECT
+        toDate(timestamp) AS date,
+        countIf(status = 'completed') AS completed_count,
+        count(DISTINCT user_id) AS total_users,
+        round(countIf(status = 'completed') / count(DISTINCT user_id) * 100, 2) AS daily_completion_rate
+    FROM onboarding_events
+    WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(platform) %}
+    AND platform = {{String(platform, 'all')}}
+    {% end %}
+    GROUP BY date
+    ORDER BY date
+
+TYPE endpoint
+        

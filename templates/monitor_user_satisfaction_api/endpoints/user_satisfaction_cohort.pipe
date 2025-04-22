@@ -1,0 +1,34 @@
+
+DESCRIPTION >
+    Analyze user satisfaction trends across different user cohorts
+
+NODE user_satisfaction_cohort_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        count() as feedback_count,
+        min(created_at) as first_feedback,
+        max(created_at) as last_feedback,
+        avg(rating) as avg_rating,
+        avg(sentiment_score) as avg_sentiment,
+        arraySort(groupArray(rating)) as rating_history,
+        arraySort(groupArray(sentiment_score)) as sentiment_history
+    FROM user_feedback
+    WHERE 1=1
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id)}}
+    {% end %}
+    {% if defined(min_date) %}
+        AND created_at >= {{DateTime(min_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(max_date) %}
+        AND created_at <= {{DateTime(max_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY user_id
+    HAVING feedback_count >= {{UInt8(min_feedback_count, 2)}}
+    ORDER BY feedback_count DESC
+    LIMIT {{UInt16(limit, 100)}}
+
+TYPE endpoint
+        

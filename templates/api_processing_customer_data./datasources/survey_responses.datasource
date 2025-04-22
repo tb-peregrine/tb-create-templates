@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Raw customer satisfaction survey responses, including NPS scores and feedback
+
+SCHEMA >
+    `response_id` String `json:$.response_id`,
+    `customer_id` String `json:$.customer_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `nps_score` Int8 `json:$.nps_score`,
+    `feedback` String `json:$.feedback`,
+    `channel` String `json:$.channel`,
+    `product_type` String `json:$.product_type`,
+    `customer_tenure_days` Int32 `json:$.customer_tenure_days`,
+    `customer_segment` String `json:$.customer_segment`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, customer_id, product_type"
+        

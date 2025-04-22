@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Get session timeline for a specific user
+
+NODE user_session_timeline_node
+SQL >
+    %
+    SELECT
+        user_id,
+        session_id,
+        min(timestamp) AS session_start,
+        max(timestamp) AS session_end,
+        sum(duration) AS total_duration,
+        sum(clicks) AS total_clicks,
+        count(*) AS event_count,
+        any(device_type) AS device_type
+    FROM user_events
+    WHERE user_id = {{String(user_id, "")}}
+    {% if defined(from_date) %}
+        AND timestamp >= {{DateTime(from_date, "2023-01-01 00:00:00")}}
+    {% end %}
+    {% if defined(to_date) %}
+        AND timestamp <= {{DateTime(to_date, "2023-12-31 23:59:59")}}
+    {% end %}
+    GROUP BY user_id, session_id
+    ORDER BY session_start DESC
+    LIMIT {{UInt16(limit, 20)}}
+
+TYPE endpoint
+        

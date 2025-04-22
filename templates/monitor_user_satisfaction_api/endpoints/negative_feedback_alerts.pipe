@@ -1,0 +1,36 @@
+
+DESCRIPTION >
+    Identify negative feedback that might require immediate attention
+
+NODE negative_feedback_alerts_node
+SQL >
+    %
+    SELECT 
+        feedback_id,
+        user_id,
+        product_id,
+        rating,
+        comment,
+        sentiment_score,
+        category,
+        platform,
+        created_at
+    FROM user_feedback
+    WHERE 1=1
+        AND (rating <= {{UInt8(low_rating_threshold, 2)}} OR sentiment_score <= {{Float32(low_sentiment_threshold, -0.5)}})
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id)}}
+    {% end %}
+    {% if defined(category) %}
+        AND category = {{String(category)}}
+    {% end %}
+    {% if defined(time_period_hours) %}
+        AND created_at >= now() - interval {{UInt16(time_period_hours, 24)}} hour
+    {% else %}
+        AND created_at >= now() - interval 24 hour
+    {% end %}
+    ORDER BY created_at DESC
+    LIMIT {{UInt16(limit, 100)}}
+
+TYPE endpoint
+        

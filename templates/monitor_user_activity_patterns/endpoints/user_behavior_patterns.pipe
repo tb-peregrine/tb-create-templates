@@ -1,0 +1,56 @@
+
+DESCRIPTION >
+    Identify user behavior patterns by analyzing event sequences
+
+NODE user_behavior_patterns_node
+SQL >
+    %
+    WITH user_events AS (
+        SELECT
+            user_id,
+            session_id,
+            event_name,
+            timestamp,
+            device_type,
+            country
+        FROM user_activity_events
+        WHERE 1=1
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(country) %}
+            AND country = {{String(country, '')}}
+        {% end %}
+        ORDER BY user_id, session_id, timestamp
+    )
+    SELECT
+        user_id,
+        count(distinct session_id) as total_sessions,
+        avg(events_per_session) as avg_events_per_session,
+        avg(session_duration) as avg_session_duration_seconds,
+        mostFrequent(entry_event) as most_common_entry_event,
+        mostFrequent(exit_event) as most_common_exit_event,
+        mostFrequent(device_type) as primary_device,
+        mostFrequent(country) as primary_country
+    FROM (
+        SELECT
+            user_id,
+            session_id,
+            count() as events_per_session,
+            toUInt32(dateDiff('second', min(timestamp), max(timestamp))) as session_duration,
+            argMin(event_name, timestamp) as entry_event,
+            argMax(event_name, timestamp) as exit_event,
+            any(device_type) as device_type,
+            any(country) as country
+        FROM user_events
+        GROUP BY user_id, session_id
+    )
+    GROUP BY user_id
+    ORDER BY total_sessions DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

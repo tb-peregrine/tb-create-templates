@@ -1,0 +1,10 @@
+{"device_id": "device_62", "sensor_type": "humidity", "value": 1716827312, "unit": "%", "timestamp": "2025-04-22 02:39:38", "location": "living_room"}
+{"device_id": "device_23", "sensor_type": "pressure", "value": 3365230664, "unit": "hPa", "timestamp": "2025-04-22 08:50:17", "location": "bedroom"}
+{"device_id": "device_43", "sensor_type": "pressure", "value": 3287957384, "unit": "hPa", "timestamp": "2025-04-22 17:38:17", "location": "bedroom"}
+{"device_id": "device_24", "sensor_type": "light", "value": 2248617196, "unit": "lux", "timestamp": "2025-04-22 03:15:16", "location": "bathroom"}
+{"device_id": "device_84", "sensor_type": "light", "value": 3866223906, "unit": "lux", "timestamp": "2025-04-21 20:02:36", "location": "bathroom"}
+{"device_id": "device_62", "sensor_type": "humidity", "value": 653410712, "unit": "%", "timestamp": "2025-04-22 04:09:38", "location": "living_room"}
+{"device_id": "device_79", "sensor_type": "light", "value": 4154170006, "unit": "lux", "timestamp": "2025-04-22 03:01:01", "location": "bathroom"}
+{"device_id": "device_5", "sensor_type": "co2", "value": 1414002488, "unit": "ppm", "timestamp": "2025-04-22 00:40:35", "location": "garage"}
+{"device_id": "device_70", "sensor_type": "co2", "value": 3064400358, "unit": "ppm", "timestamp": "2025-04-22 04:49:30", "location": "garage"}
+{"device_id": "device_85", "sensor_type": "co2", "value": 3390312118, "unit": "ppm", "timestamp": "2025-04-22 01:45:55", "location": "garage"}

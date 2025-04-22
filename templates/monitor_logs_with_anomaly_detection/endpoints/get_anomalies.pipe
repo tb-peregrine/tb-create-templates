@@ -1,0 +1,39 @@
+DESCRIPTION >
+    Retrieve detected anomalies with filtering capabilities
+
+NODE get_anomalies_node
+SQL >
+    %
+    SELECT
+        detected_at,
+        server_id,
+        service,
+        metric,
+        value,
+        threshold,
+        message,
+        status
+    FROM detected_anomalies
+    WHERE 1=1
+    {% if defined(server_id) %}
+        AND server_id = {{String(server_id, '')}}
+    {% end %}
+    {% if defined(service) %}
+        AND service = {{String(service, '')}}
+    {% end %}
+    {% if defined(metric) %}
+        AND metric = {{String(metric, '')}}
+    {% end %}
+    {% if defined(status) %}
+        AND status = {{String(status, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND detected_at >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND detected_at <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY detected_at DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint

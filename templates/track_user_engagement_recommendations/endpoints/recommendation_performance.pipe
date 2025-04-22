@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    API endpoint to evaluate overall recommendation performance
+
+NODE recommendation_performance_node
+SQL >
+    %
+    SELECT 
+        recommendation_id,
+        count(distinct user_id) as unique_users,
+        count(distinct content_id) as unique_contents,
+        count() as total_events,
+        countIf(event_type = 'view') as views,
+        countIf(event_type = 'click') as clicks,
+        countIf(event_type = 'share') as shares,
+        countIf(event_type = 'like') as likes,
+        round(clicks / nullIf(views, 0), 2) as ctr,
+        round((likes + shares) / nullIf(views, 0), 2) as engagement_rate
+    FROM user_events
+    WHERE recommendation_id IS NOT NULL
+    {% if defined(recommendation_id) %}
+        AND recommendation_id = {{String(recommendation_id, '')}}
+    {% end %}
+    {% if defined(platform) %}
+        AND platform = {{String(platform, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY recommendation_id
+    ORDER BY total_events DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

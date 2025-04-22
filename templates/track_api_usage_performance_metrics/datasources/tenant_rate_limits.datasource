@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Stores rate limit configurations for each tenant
+
+SCHEMA >
+    `tenant_id` String `json:$.tenant_id`,
+    `endpoint` String `json:$.endpoint`,
+    `requests_per_minute` UInt32 `json:$.requests_per_minute`,
+    `requests_per_hour` UInt32 `json:$.requests_per_hour`,
+    `requests_per_day` UInt32 `json:$.requests_per_day`,
+    `created_at` DateTime `json:$.created_at`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "tenant_id"
+ENGINE_SORTING_KEY "tenant_id, endpoint"
+        

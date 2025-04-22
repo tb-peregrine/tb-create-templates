@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Identifies top referrers based on number of successful referrals and conversion rate
+
+NODE top_referrers_node
+SQL >
+    %
+    SELECT
+        u.user_id,
+        u.email,
+        u.country,
+        COUNT(r.referral_id) AS total_referrals_sent,
+        SUM(r.converted) AS successful_referrals,
+        round(SUM(r.converted) / COUNT(r.referral_id) * 100, 2) AS conversion_rate,
+        SUM(r.reward_amount) AS total_rewards_earned
+    FROM users u
+    LEFT JOIN referrals r ON u.user_id = r.referrer_id
+    WHERE 
+        r.referral_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(country) %}
+        AND u.country = {{String(country, 'US')}}
+        {% end %}
+    GROUP BY u.user_id, u.email, u.country
+    HAVING total_referrals_sent >= {{Int(min_referrals, 1)}}
+    ORDER BY successful_referrals DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

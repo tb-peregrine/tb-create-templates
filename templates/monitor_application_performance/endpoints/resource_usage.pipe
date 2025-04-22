@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Monitors CPU and memory usage over time, helping to identify resource-intensive operations
+
+NODE resource_usage_node
+SQL >
+    %
+    SELECT 
+        app_id,
+        service_name,
+        toStartOfInterval(timestamp, INTERVAL {{String(interval, '15 minute')}}) as time_bucket,
+        avg(cpu_usage_percent) as avg_cpu_usage,
+        max(cpu_usage_percent) as max_cpu_usage,
+        avg(memory_usage_mb) as avg_memory_usage,
+        max(memory_usage_mb) as max_memory_usage
+    FROM app_performance_events
+    WHERE 1=1
+    {% if defined(app_id) %}
+        AND app_id = {{String(app_id, '')}}
+    {% end %}
+    {% if defined(service_name) %}
+        AND service_name = {{String(service_name, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 1 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY app_id, service_name, time_bucket
+    ORDER BY time_bucket ASC
+
+TYPE endpoint
+        

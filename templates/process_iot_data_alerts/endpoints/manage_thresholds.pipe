@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    API endpoint to retrieve threshold settings for sensors
+
+NODE manage_thresholds_node
+SQL >
+    %
+    SELECT 
+        sensor_type,
+        min_threshold,
+        max_threshold,
+        created_at,
+        updated_at
+    FROM sensor_thresholds
+    WHERE 1=1
+    {% if defined(sensor_type) %}
+        AND sensor_type = {{String(sensor_type, '')}}
+    {% end %}
+    ORDER BY sensor_type
+
+TYPE endpoint
+        

@@ -1,0 +1,10 @@
+{"tenant_id": "tenant_67", "endpoint": "/api/v1/orders", "requests_per_minute": 367, "requests_per_hour": 1267, "requests_per_day": 55267, "created_at": "2025-03-26 19:03:12", "updated_at": "2025-04-22 16:03:12"}
+{"tenant_id": "tenant_7", "endpoint": "/api/v1/orders", "requests_per_minute": 207, "requests_per_hour": 2007, "requests_per_day": 92007, "created_at": "2025-04-05 19:03:12", "updated_at": "2025-04-21 20:03:12"}
+{"tenant_id": "tenant_89", "endpoint": "/api/v1/auth", "requests_per_minute": 689, "requests_per_hour": 6989, "requests_per_day": 15989, "created_at": "2025-04-03 19:03:12", "updated_at": "2025-04-22 06:03:12"}
+{"tenant_id": "tenant_74", "endpoint": "/api/v1/auth", "requests_per_minute": 674, "requests_per_hour": 3374, "requests_per_day": 21374, "created_at": "2025-04-18 19:03:12", "updated_at": "2025-04-21 21:03:12"}
+{"tenant_id": "tenant_66", "endpoint": "/api/v1/products", "requests_per_minute": 866, "requests_per_hour": 8966, "requests_per_day": 26966, "created_at": "2025-04-06 19:03:12", "updated_at": "2025-04-21 21:03:12"}
+{"tenant_id": "tenant_29", "endpoint": "/api/v1/auth", "requests_per_minute": 529, "requests_per_hour": 5029, "requests_per_day": 50029, "created_at": "2025-04-13 19:03:12", "updated_at": "2025-04-21 22:03:12"}
+{"tenant_id": "tenant_80", "endpoint": "/api/v1/users", "requests_per_minute": 280, "requests_per_hour": 6580, "requests_per_day": 15580, "created_at": "2025-04-22 19:03:12", "updated_at": "2025-04-22 07:03:12"}
+{"tenant_id": "tenant_61", "endpoint": "/api/v1/products", "requests_per_minute": 261, "requests_per_hour": 2061, "requests_per_day": 92061, "created_at": "2025-04-11 19:03:12", "updated_at": "2025-04-22 14:03:12"}
+{"tenant_id": "tenant_8", "endpoint": "/api/v1/analytics", "requests_per_minute": 308, "requests_per_hour": 5708, "requests_per_day": 59708, "created_at": "2025-03-25 19:03:12", "updated_at": "2025-04-22 15:03:12"}
+{"tenant_id": "tenant_80", "endpoint": "/api/v1/users", "requests_per_minute": 580, "requests_per_hour": 5980, "requests_per_day": 95980, "created_at": "2025-04-22 19:03:12", "updated_at": "2025-04-22 07:03:12"}

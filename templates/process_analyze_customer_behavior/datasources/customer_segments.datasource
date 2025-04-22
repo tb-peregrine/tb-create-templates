@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Customer segmentation data including behavioral and value-based segments
+
+SCHEMA >
+    `segment_id` String `json:$.segment_id`,
+    `segment_name` String `json:$.segment_name`,
+    `segment_description` String `json:$.segment_description`,
+    `creation_date` Date `json:$.creation_date`,
+    `update_date` Date `json:$.update_date`,
+    `segment_rules` String `json:$.segment_rules`,
+    `segment_type` String `json:$.segment_type`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "segment_id"
+        

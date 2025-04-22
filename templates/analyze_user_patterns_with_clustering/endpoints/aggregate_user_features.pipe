@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Extract and aggregate user features for clustering
+
+NODE aggregate_user_features_node
+SQL >
+    SELECT
+        user_id,
+        avg(duration) AS avg_session_duration,
+        count(DISTINCT session_id) AS total_sessions,
+        sum(clicks) / count(DISTINCT session_id) AS avg_clicks_per_session,
+        argMax(page, count(*) OVER (PARTITION BY user_id, page)) AS most_visited_page,
+        argMax(device_type, count(*) OVER (PARTITION BY user_id, device_type)) AS most_used_device,
+        any(country) AS country,
+        now() AS last_updated,
+        0 AS cluster_id
+    FROM user_events
+    GROUP BY user_id
+
+TYPE endpoint
+        

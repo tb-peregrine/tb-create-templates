@@ -1,0 +1,85 @@
+
+DESCRIPTION >
+    Segment customers based on RFM (Recency, Frequency, Monetary) analysis
+
+NODE customer_segmentation_node
+SQL >
+    %
+    WITH customer_rfm AS (
+        SELECT 
+            c.customer_id,
+            c.name,
+            c.email,
+            c.signup_date,
+            c.country,
+            c.acquisition_source,
+            DATEDIFF('day', MAX(p.purchase_date), now()) AS recency_days,
+            COUNT(p.purchase_id) AS frequency,
+            SUM(p.purchase_amount) AS monetary,
+            -- Recency score (lower days = higher score)
+            CASE 
+                WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 30 THEN 5
+                WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 90 THEN 4
+                WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 180 THEN 3
+                WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 365 THEN 2
+                ELSE 1
+            END AS r_score,
+            -- Frequency score
+            CASE 
+                WHEN COUNT(p.purchase_id) >= 15 THEN 5
+                WHEN COUNT(p.purchase_id) >= 10 THEN 4
+                WHEN COUNT(p.purchase_id) >= 5 THEN 3
+                WHEN COUNT(p.purchase_id) >= 2 THEN 2
+                ELSE 1
+            END AS f_score,
+            -- Monetary score
+            CASE 
+                WHEN SUM(p.purchase_amount) >= 1000 THEN 5
+                WHEN SUM(p.purchase_amount) >= 500 THEN 4
+                WHEN SUM(p.purchase_amount) >= 250 THEN 3
+                WHEN SUM(p.purchase_amount) >= 100 THEN 2
+                ELSE 1
+            END AS m_score
+        FROM customers c
+        JOIN purchases p ON c.customer_id = p.customer_id
+        WHERE 1=1
+        {% if defined(country) %}
+            AND c.country = {{String(country, '')}}
+        {% end %}
+        {% if defined(acquisition_source) %}
+            AND c.acquisition_source = {{String(acquisition_source, '')}}
+        {% end %}
+        GROUP BY c.customer_id, c.name, c.email, c.signup_date, c.country, c.acquisition_source
+    )
+    SELECT 
+        customer_id,
+        name,
+        email,
+        signup_date,
+        country,
+        acquisition_source,
+        recency_days,
+        frequency,
+        monetary,
+        r_score,
+        f_score,
+        m_score,
+        (r_score + f_score + m_score) AS rfm_score,
+        CASE 
+            WHEN (r_score + f_score + m_score) >= 13 THEN 'Champions'
+            WHEN (r_score + f_score + m_score) >= 10 THEN 'Loyal Customers'
+            WHEN (r_score + f_score + m_score) >= 8 THEN 'Potential Loyalists'
+            WHEN (r_score + f_score + m_score) >= 6 THEN 'At Risk'
+            WHEN (r_score + f_score + m_score) >= 5 THEN 'Cannot Lose'
+            WHEN (r_score + f_score + m_score) >= 4 THEN 'Hibernating'
+            ELSE 'Lost'
+        END AS customer_segment
+    FROM customer_rfm
+    ORDER BY rfm_score DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% else %}
+        LIMIT 100
+    {% end %}
+TYPE endpoint
+        

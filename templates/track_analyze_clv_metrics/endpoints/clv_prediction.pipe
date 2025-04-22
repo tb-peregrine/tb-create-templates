@@ -1,0 +1,63 @@
+
+DESCRIPTION >
+    Predict future customer lifetime value based on historical data
+
+NODE clv_prediction_node
+SQL >
+    %
+    WITH customer_metrics AS (
+        SELECT 
+            c.customer_id,
+            c.signup_date,
+            c.customer_segment,
+            c.acquisition_source,
+            MIN(p.purchase_date) AS first_purchase_date,
+            MAX(p.purchase_date) AS last_purchase_date,
+            COUNT(p.purchase_id) AS purchase_count,
+            SUM(p.purchase_amount) AS total_spend,
+            DATEDIFF('day', c.signup_date, now()) AS days_as_customer,
+            DATEDIFF('day', MAX(p.purchase_date), now()) AS days_since_last_purchase,
+            CASE WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 90 THEN 1 ELSE 0 END AS is_active
+        FROM customers c
+        JOIN purchases p ON c.customer_id = p.customer_id
+        WHERE 1=1
+        {% if defined(customer_segment) %}
+            AND c.customer_segment = {{String(customer_segment, '')}}
+        {% end %}
+        {% if defined(country) %}
+            AND c.country = {{String(country, '')}}
+        {% end %}
+        GROUP BY c.customer_id, c.signup_date, c.customer_segment, c.acquisition_source
+    )
+    SELECT 
+        customer_id,
+        customer_segment,
+        acquisition_source,
+        purchase_count,
+        total_spend,
+        days_as_customer,
+        days_since_last_purchase,
+        is_active,
+        total_spend / purchase_count AS avg_order_value,
+        purchase_count / (days_as_customer / 30.0) AS monthly_purchase_frequency,
+        total_spend / (days_as_customer / 30.0) AS monthly_spend,
+        (total_spend / (days_as_customer / 30.0)) * 12 AS annual_spend,
+        CASE 
+            WHEN is_active = 1 THEN 
+                CASE 
+                    WHEN purchase_count >= 10 THEN (total_spend / (days_as_customer / 30.0)) * 24 
+                    WHEN purchase_count >= 5 THEN (total_spend / (days_as_customer / 30.0)) * 18
+                    ELSE (total_spend / (days_as_customer / 30.0)) * 12
+                END
+            ELSE total_spend
+        END AS predicted_2yr_value
+    FROM customer_metrics
+    WHERE days_as_customer >= 30 AND purchase_count >= 2
+    ORDER BY predicted_2yr_value DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% else %}
+        LIMIT 100
+    {% end %}
+TYPE endpoint
+        

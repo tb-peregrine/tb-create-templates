@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    Analyze session data including duration, engagement, and interaction counts
+
+NODE session_analysis_node
+SQL >
+    %
+    SELECT 
+        session_id,
+        user_id,
+        min(timestamp) as session_start,
+        max(timestamp) as session_end,
+        count(*) as events_in_session,
+        avg(engagement_score) as avg_session_engagement,
+        sum(duration_seconds) as session_duration,
+        any(device_type) as device_type,
+        any(browser) as browser,
+        any(country) as country
+    FROM user_interactions
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(session_id) %}
+        AND session_id = {{String(session_id, '')}}
+    {% end %}
+    GROUP BY session_id, user_id
+    ORDER BY session_start DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

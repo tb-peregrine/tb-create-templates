@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Retrieve purchase history for a specific customer with detailed information
+
+NODE customer_purchase_history_node
+SQL >
+    %
+    SELECT 
+        event_timestamp as purchase_date,
+        product_id,
+        category_id,
+        price,
+        quantity,
+        price * quantity as total_amount,
+        session_id
+    FROM customer_events
+    WHERE customer_id = {{String(customer_id, '')}}
+    AND event_type = 'purchase'
+    {% if defined(start_date) %}
+        AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(category_id) %}
+        AND category_id = {{String(category_id, '')}}
+    {% end %}
+    ORDER BY event_timestamp DESC
+    LIMIT {{Int32(limit, 50)}}
+
+TYPE endpoint
+        

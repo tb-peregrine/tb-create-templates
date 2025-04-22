@@ -1,0 +1,10 @@
+{"funnel_id": "funnel_3", "funnel_name": "Onboarding Flow", "step_number": 1, "step_name": "Visit Landing Page", "event_name": "page_view", "is_required": 1}
+{"funnel_id": "funnel_1", "funnel_name": "Signup Flow", "step_number": 2, "step_name": "View Details", "event_name": "product_view", "is_required": 0}
+{"funnel_id": "funnel_2", "funnel_name": "Purchase Flow", "step_number": 3, "step_name": "Add to Cart", "event_name": "add_to_cart", "is_required": 1}
+{"funnel_id": "funnel_4", "funnel_name": "Content Creation Flow", "step_number": 4, "step_name": "Checkout", "event_name": "checkout_start", "is_required": 1}
+{"funnel_id": "funnel_1", "funnel_name": "Signup Flow", "step_number": 5, "step_name": "Complete Purchase", "event_name": "purchase_complete", "is_required": 0}
+{"funnel_id": "funnel_1", "funnel_name": "Signup Flow", "step_number": 1, "step_name": "Visit Landing Page", "event_name": "page_view", "is_required": 1}
+{"funnel_id": "funnel_3", "funnel_name": "Onboarding Flow", "step_number": 2, "step_name": "View Details", "event_name": "product_view", "is_required": 1}
+{"funnel_id": "funnel_1", "funnel_name": "Signup Flow", "step_number": 3, "step_name": "Add to Cart", "event_name": "add_to_cart", "is_required": 1}
+{"funnel_id": "funnel_2", "funnel_name": "Purchase Flow", "step_number": 4, "step_name": "Checkout", "event_name": "checkout_start", "is_required": 1}
+{"funnel_id": "funnel_5", "funnel_name": "Subscription Flow", "step_number": 5, "step_name": "Complete Purchase", "event_name": "purchase_complete", "is_required": 1}

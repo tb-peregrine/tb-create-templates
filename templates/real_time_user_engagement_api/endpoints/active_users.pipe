@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    API endpoint for active users metrics with time series support
+
+NODE active_users_node
+SQL >
+    %
+    SELECT 
+        {{String(time_bucket, 'hour')}} as time_bucket,
+        toStartOf{{String(time_bucket, 'hour')}}(timestamp) as period,
+        count(DISTINCT user_id) as active_users,
+        platform
+    FROM user_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(event_type) %}
+        AND event_type = {{String(event_type, 'page_view')}}
+        {% end %}
+        {% if defined(platform) %}
+        AND platform = {{String(platform, 'web')}}
+        {% end %}
+        {% if defined(country) %}
+        AND country = {{String(country, 'US')}}
+        {% end %}
+    GROUP BY 
+        period,
+        platform
+    ORDER BY 
+        period ASC
+
+TYPE endpoint
+        

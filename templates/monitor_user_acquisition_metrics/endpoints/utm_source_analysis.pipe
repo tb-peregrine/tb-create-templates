@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Detailed analysis of user acquisition by UTM source
+
+NODE utm_source_analysis_node
+SQL >
+    %
+    SELECT 
+        utm_source,
+        utm_medium,
+        utm_campaign,
+        count() AS total_users,
+        countIf(conversion = 1) AS converted_users,
+        round(countIf(conversion = 1) / count() * 100, 2) AS conversion_rate
+    FROM user_acquisitions
+    WHERE utm_source != ''
+    {% if defined(start_date) %}
+        AND signup_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND signup_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(source) %}
+        AND utm_source = {{String(source, 'all')}}
+    {% end %}
+    GROUP BY utm_source, utm_medium, utm_campaign
+    ORDER BY total_users DESC
+
+TYPE endpoint
+        

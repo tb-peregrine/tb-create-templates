@@ -1,0 +1,46 @@
+
+DESCRIPTION >
+    Calculates user retention by cohort and period
+
+NODE cohort_retention_node
+SQL >
+    %
+    WITH cohorts AS (
+        SELECT 
+            user_id,
+            toStartOfMonth(min(timestamp)) AS cohort_date
+        FROM user_events
+        GROUP BY user_id
+    ),
+    user_activity AS (
+        SELECT 
+            user_id,
+            toStartOfMonth(timestamp) AS activity_month
+        FROM user_events
+        GROUP BY user_id, activity_month
+    )
+    
+    SELECT 
+        cohort_date,
+        activity_month,
+        dateDiff('month', cohort_date, activity_month) AS months_since_acquisition,
+        count(DISTINCT ua.user_id) AS active_users,
+        count(DISTINCT c.user_id) AS cohort_size,
+        round(count(DISTINCT ua.user_id) / count(DISTINCT c.user_id) * 100, 2) AS retention_rate
+    FROM cohorts c
+    LEFT JOIN user_activity ua ON c.user_id = ua.user_id
+    WHERE 
+        cohort_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        AND cohort_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(platform) %}
+        AND c.user_id IN (
+            SELECT user_id FROM user_events 
+            WHERE platform = {{String(platform, 'all')}}
+            GROUP BY user_id
+        )
+        {% end %}
+    GROUP BY cohort_date, activity_month
+    ORDER BY cohort_date, activity_month
+
+TYPE endpoint
+        

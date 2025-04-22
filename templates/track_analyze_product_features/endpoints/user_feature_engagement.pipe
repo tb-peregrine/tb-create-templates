@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Analyzes individual user engagement with specific features
+
+NODE user_feature_engagement_node
+SQL >
+    %
+    SELECT 
+        u.user_id,
+        u.user_type,
+        u.plan,
+        u.country,
+        u.industry,
+        u.team_size,
+        f.feature_id,
+        f.feature_name,
+        count() AS usage_count,
+        min(f.timestamp) AS first_used,
+        max(f.timestamp) AS last_used,
+        avg(f.duration_seconds) AS avg_duration
+    FROM users u
+    JOIN feature_events f ON u.user_id = f.user_id
+    WHERE f.timestamp BETWEEN {{DateTime(start_date, 'now() - interval 90 day')}} AND {{DateTime(end_date, 'now()')}}
+    {% if defined(feature_id) %}AND f.feature_id = {{String(feature_id, '')}}{% end %}
+    {% if defined(user_id) %}AND u.user_id = {{String(user_id, '')}}{% end %}
+    GROUP BY u.user_id, u.user_type, u.plan, u.country, u.industry, u.team_size, f.feature_id, f.feature_name
+    ORDER BY usage_count DESC
+
+TYPE endpoint
+        

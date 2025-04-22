@@ -1,0 +1,10 @@
+{"feedback_id": "fb_9967", "user_id": "user_967", "feedback_text": "Good value for money", "sentiment_score": 0.67, "sentiment_label": "negative", "timestamp": "2025-02-24 04:21:40", "product_id": "prod_67"}
+{"feedback_id": "fb_8788", "user_id": "user_688", "feedback_text": "Would recommend to others", "sentiment_score": 0.88, "sentiment_label": "neutral", "timestamp": "2025-03-05 07:21:40", "product_id": "prod_58"}
+{"feedback_id": "fb_9532", "user_id": "user_532", "feedback_text": "This exceeded my expectations", "sentiment_score": 0.32, "sentiment_label": "positive", "timestamp": "2025-02-09 07:21:40", "product_id": "prod_82"}
+{"feedback_id": "fb_1820", "user_id": "user_920", "feedback_text": "Great product, loved it!", "sentiment_score": 0.2, "sentiment_label": "positive", "timestamp": "2025-04-12 15:21:40", "product_id": "prod_20"}
+{"feedback_id": "fb_5889", "user_id": "user_489", "feedback_text": "Shipping took too long", "sentiment_score": 0.89, "sentiment_label": "neutral", "timestamp": "2025-03-24 02:21:40", "product_id": "prod_39"}
+{"feedback_id": "fb_5178", "user_id": "user_678", "feedback_text": "Would recommend to others", "sentiment_score": 0.78, "sentiment_label": "neutral", "timestamp": "2025-03-15 17:21:40", "product_id": "prod_48"}
+{"feedback_id": "fb_9731", "user_id": "user_731", "feedback_text": "Not satisfied with the quality", "sentiment_score": 0.31, "sentiment_label": "positive", "timestamp": "2025-04-21 00:21:40", "product_id": "prod_11"}
+{"feedback_id": "fb_5184", "user_id": "user_684", "feedback_text": "Average experience, could be better", "sentiment_score": 0.84, "sentiment_label": "neutral", "timestamp": "2025-03-09 11:21:40", "product_id": "prod_54"}
+{"feedback_id": "fb_7160", "user_id": "user_860", "feedback_text": "Great product, loved it!", "sentiment_score": 0.6, "sentiment_label": "negative", "timestamp": "2025-03-13 03:21:40", "product_id": "prod_50"}
+{"feedback_id": "fb_7986", "user_id": "user_786", "feedback_text": "Very disappointed with my purchase", "sentiment_score": 0.86, "sentiment_label": "neutral", "timestamp": "2025-02-25 17:21:40", "product_id": "prod_66"}

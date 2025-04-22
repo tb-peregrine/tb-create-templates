@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Marketing campaign metadata with details about each campaign
+
+SCHEMA >
+    `campaign_id` String `json:$.campaign_id`,
+    `campaign_name` String `json:$.campaign_name`,
+    `start_date` DateTime `json:$.start_date`,
+    `end_date` DateTime `json:$.end_date`,
+    `budget` Float64 `json:$.budget`,
+    `target_audience` String `json:$.target_audience`,
+    `channel` String `json:$.channel`,
+    `goal` String `json:$.goal`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(start_date)"
+ENGINE_SORTING_KEY "campaign_id, channel"
+        

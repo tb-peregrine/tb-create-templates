@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Data source that stores user events for funnel analysis
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `event_name` String `json:$.event_name`,
+    `event_timestamp` DateTime `json:$.event_timestamp`,
+    `session_id` String `json:$.session_id`,
+    `device` String `json:$.device`,
+    `browser` String `json:$.browser`,
+    `country` String `json:$.country`,
+    `referrer` String `json:$.referrer`,
+    `properties` String `json:$.properties`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(event_timestamp)"
+ENGINE_SORTING_KEY "event_timestamp, user_id, event_name"
+        

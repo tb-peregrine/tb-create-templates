@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Analyzes user conversion funnel with customizable event steps, time window, and filters
+
+NODE funnel_analysis_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        min(if(event_name = {{String(step1, 'page_view')}}, event_timestamp, NULL)) as step1_time,
+        min(if(event_name = {{String(step2, 'add_to_cart')}}, event_timestamp, NULL)) as step2_time,
+        min(if(event_name = {{String(step3, 'checkout')}}, event_timestamp, NULL)) as step3_time,
+        min(if(event_name = {{String(step4, 'purchase')}}, event_timestamp, NULL)) as step4_time
+    FROM user_events
+    WHERE 
+        event_timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(country) %} AND country = {{String(country)}} {% end %}
+        {% if defined(device) %} AND device = {{String(device)}} {% end %}
+        {% if defined(browser) %} AND browser = {{String(browser)}} {% end %}
+    GROUP BY user_id
+    HAVING 
+        step1_time IS NOT NULL
+
+TYPE endpoint
+        

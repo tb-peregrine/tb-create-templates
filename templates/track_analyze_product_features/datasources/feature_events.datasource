@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Tracks individual feature usage events
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `user_id` String `json:$.user_id`,
+    `feature_id` String `json:$.feature_id`,
+    `feature_name` String `json:$.feature_name`,
+    `session_id` String `json:$.session_id`,
+    `action` String `json:$.action`,
+    `duration_seconds` Float32 `json:$.duration_seconds`,
+    `status` String `json:$.status`,
+    `details` String `json:$.details`,
+    `platform` String `json:$.platform`,
+    `version` String `json:$.version`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, feature_id"
+        

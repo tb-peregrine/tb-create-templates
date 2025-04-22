@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Product performance metrics dataset that contains key performance indicators for products
+
+SCHEMA >
+    `product_id` String `json:$.product_id`,
+    `product_name` String `json:$.product_name`,
+    `category` String `json:$.category`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `sales_amount` Float64 `json:$.sales_amount`,
+    `units_sold` Int32 `json:$.units_sold`,
+    `customer_satisfaction` Float32 `json:$.customer_satisfaction`,
+    `page_views` Int32 `json:$.page_views`,
+    `conversion_rate` Float32 `json:$.conversion_rate`,
+    `return_rate` Float32 `json:$.return_rate`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "product_id, timestamp"
+        

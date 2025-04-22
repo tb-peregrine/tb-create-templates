@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Tracks performance trends over time, showing how response times and error rates have evolved
+
+NODE performance_trends_node
+SQL >
+    %
+    SELECT 
+        app_id,
+        service_name,
+        toStartOfInterval(timestamp, INTERVAL {{String(interval, '1 hour')}}) as time_bucket,
+        avg(response_time_ms) as avg_response_time,
+        count() as request_count,
+        countIf(status_code >= 400) as error_count,
+        countIf(status_code >= 400) / count() * 100 as error_rate_percent
+    FROM app_performance_events
+    WHERE 1=1
+    {% if defined(app_id) %}
+        AND app_id = {{String(app_id, '')}}
+    {% end %}
+    {% if defined(service_name) %}
+        AND service_name = {{String(service_name, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 7 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY app_id, service_name, time_bucket
+    ORDER BY time_bucket ASC
+
+TYPE endpoint
+        

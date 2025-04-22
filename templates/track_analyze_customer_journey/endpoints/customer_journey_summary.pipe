@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Provides a summary of customer journeys with touchpoint counts, conversion status, and total time spent
+
+NODE customer_journey_summary_node
+SQL >
+    %
+    SELECT 
+        customer_id,
+        min(timestamp) as first_touchpoint,
+        max(timestamp) as last_touchpoint,
+        count() as total_touchpoints,
+        countIf(conversion = 1) as conversions,
+        sum(transaction_amount) as total_spent,
+        sum(time_spent) as total_time_spent,
+        groupArray(touchpoint_type) as journey_path
+    FROM customer_touchpoints
+    WHERE 1=1
+    {% if defined(customer_id) %}
+        AND customer_id = {{String(customer_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY customer_id
+    ORDER BY total_spent DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

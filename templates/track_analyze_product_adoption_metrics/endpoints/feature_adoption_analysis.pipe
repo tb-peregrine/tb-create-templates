@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    API endpoint to analyze which features are most adopted by users
+
+NODE feature_adoption_analysis_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        feature_used,
+        count() as usage_count,
+        count(DISTINCT user_id) as unique_users,
+        round(avg(session_duration)) as avg_session_duration,
+        min(timestamp) as first_usage,
+        max(timestamp) as last_usage
+    FROM product_adoptions
+    WHERE feature_used != ''
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% else %}
+        AND timestamp >= toDateTime('2023-01-01 00:00:00')
+        {% end %}
+        
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+        AND timestamp <= now()
+        {% end %}
+        
+        {% if defined(product_id) %}
+        AND product_id = {{String(product_id, 'all')}}
+        {% end %}
+    GROUP BY 
+        product_id,
+        feature_used
+    ORDER BY 
+        product_id,
+        usage_count DESC
+TYPE endpoint
+        

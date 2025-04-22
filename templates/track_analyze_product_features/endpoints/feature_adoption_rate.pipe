@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    Calculates feature adoption rate as percentage of active users
+
+NODE feature_adoption_rate_node
+SQL >
+    %
+    WITH 
+        (
+            SELECT count(DISTINCT user_id) 
+            FROM users
+            WHERE last_seen_at >= {{DateTime(active_since, 'now() - interval 30 day')}}
+        ) AS total_active_users
+    SELECT 
+        feature_id,
+        feature_name,
+        count(DISTINCT user_id) AS adopters,
+        total_active_users AS total_users,
+        round(count(DISTINCT user_id) / total_active_users * 100, 2) AS adoption_rate
+    FROM feature_events
+    WHERE timestamp >= {{DateTime(active_since, 'now() - interval 30 day')}}
+    {% if defined(feature_id) %}AND feature_id = {{String(feature_id, '')}}{% end %}
+    GROUP BY feature_id, feature_name
+    ORDER BY adoption_rate DESC
+
+TYPE endpoint
+        

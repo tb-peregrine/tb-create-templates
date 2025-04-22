@@ -1,0 +1,10 @@
+{"metric": "cpu_usage", "service": "api-gateway", "threshold_value": 233160849000, "threshold_type": "absolute", "updated_at": "2025-04-19 01:05:18"}
+{"metric": "disk_space", "service": "cache", "threshold_value": 44715597400, "threshold_type": "rolling_window", "updated_at": "2025-03-24 21:05:18"}
+{"metric": "connection_count", "service": "notification", "threshold_value": 87171800600, "threshold_type": "percentage", "updated_at": "2025-04-09 05:05:18"}
+{"metric": "availability", "service": "storage", "threshold_value": 405363912900, "threshold_type": "rolling_window", "updated_at": "2025-04-12 10:05:18"}
+{"metric": "connection_count", "service": "notification", "threshold_value": 94469293600, "threshold_type": "percentage", "updated_at": "2025-04-07 03:05:18"}
+{"metric": "availability", "service": "storage", "threshold_value": 238163294900, "threshold_type": "rolling_window", "updated_at": "2025-04-06 14:05:18"}
+{"metric": "error_rate", "service": "web-server", "threshold_value": 384358729300, "threshold_type": "moving_average", "updated_at": "2025-04-02 06:05:18"}
+{"metric": "error_rate", "service": "web-server", "threshold_value": 202639930300, "threshold_type": "moving_average", "updated_at": "2025-04-08 12:05:18"}
+{"metric": "queue_size", "service": "analytics", "threshold_value": 256790506700, "threshold_type": "standard_deviation", "updated_at": "2025-03-29 08:05:18"}
+{"metric": "queue_size", "service": "analytics", "threshold_value": 52054008700, "threshold_type": "standard_deviation", "updated_at": "2025-04-12 12:05:18"}

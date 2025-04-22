@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    Stores results of sentiment analysis on user feedback
+
+SCHEMA >
+    `feedback_id` String `json:$.feedback_id`,
+    `sentiment_score` Float32 `json:$.sentiment_score`,
+    `sentiment_label` String `json:$.sentiment_label`,
+    `processed_at` DateTime `json:$.processed_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(processed_at)"
+ENGINE_SORTING_KEY "processed_at, feedback_id"
+        

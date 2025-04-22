@@ -1,0 +1,14 @@
+DESCRIPTION >
+    Stores the classified intent for each search query
+
+SCHEMA >
+    `query_id` String `json:$.query_id`,
+    `query_text` String `json:$.query_text`,
+    `intent_category` String `json:$.intent_category`,
+    `intent_confidence` Float32 `json:$.intent_confidence`,
+    `intent_keywords` Array(String) `json:$.intent_keywords`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "intent_category, timestamp, query_id"

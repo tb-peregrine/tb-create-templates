@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Retrieve user segments with filtering options
+
+NODE get_user_segments_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        segment_id,
+        segment_name,
+        first_seen,
+        last_seen,
+        recency_days,
+        frequency,
+        avg_session_duration,
+        preferred_device,
+        top_country,
+        engagement_score,
+        last_updated
+    FROM user_segments
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(segment_id) %}
+        AND segment_id = {{String(segment_id, '')}}
+    {% end %}
+    {% if defined(segment_name) %}
+        AND segment_name = {{String(segment_name, '')}}
+    {% end %}
+    {% if defined(min_engagement) %}
+        AND engagement_score >= {{Float32(min_engagement, 0.0)}}
+    {% end %}
+    ORDER BY engagement_score DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

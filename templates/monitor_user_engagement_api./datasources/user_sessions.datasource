@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Stores user session data for engagement analysis
+
+SCHEMA >
+    `session_id` String `json:$.session_id`,
+    `user_id` String `json:$.user_id`,
+    `start_time` DateTime `json:$.start_time`,
+    `end_time` DateTime `json:$.end_time`,
+    `duration_seconds` Int32 `json:$.duration_seconds`,
+    `platform` String `json:$.platform`,
+    `device_type` String `json:$.device_type`,
+    `version` String `json:$.version`,
+    `session_events_count` Int32 `json:$.session_events_count`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(start_time)"
+ENGINE_SORTING_KEY "user_id, start_time"
+        

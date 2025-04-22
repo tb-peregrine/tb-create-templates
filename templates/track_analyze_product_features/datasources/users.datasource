@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Contains user information for feature usage analysis
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `first_seen_at` DateTime `json:$.first_seen_at`,
+    `last_seen_at` DateTime `json:$.last_seen_at`,
+    `account_id` String `json:$.account_id`,
+    `user_type` String `json:$.user_type`,
+    `plan` String `json:$.plan`,
+    `country` String `json:$.country`,
+    `industry` String `json:$.industry`,
+    `team_size` UInt16 `json:$.team_size`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(first_seen_at)"
+ENGINE_SORTING_KEY "user_id, account_id"
+        

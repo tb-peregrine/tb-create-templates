@@ -1,0 +1,47 @@
+DESCRIPTION >
+    API endpoint that provides detailed information about individual search queries
+
+NODE search_queries_details_node
+SQL >
+    %
+    SELECT 
+        sq.query_id,
+        sq.query_text,
+        sq.timestamp,
+        sq.user_id,
+        sq.device_type,
+        sq.results_count,
+        sq.clicked_results,
+        sq.search_category,
+        sq.search_filters,
+        sq.search_duration_ms,
+        sq.user_location,
+        sqi.intent_category,
+        sqi.intent_confidence,
+        sqi.intent_keywords
+    FROM search_queries AS sq
+    LEFT JOIN search_query_intents AS sqi ON sq.query_id = sqi.query_id
+    WHERE 1=1
+    {% if defined(query_id) %}
+        AND sq.query_id = {{String(query_id, '')}}
+    {% end %}
+    {% if defined(user_id) %}
+        AND sq.user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(intent_category) %}
+        AND sqi.intent_category = {{String(intent_category, '')}}
+    {% end %}
+    {% if defined(search_term) %}
+        AND sq.query_text LIKE concat('%', {{String(search_term, '')}}, '%')
+    {% end %}
+    {% if defined(start_date) %}
+        AND sq.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND sq.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY sq.timestamp DESC
+    LIMIT {{Int32(limit, 100)}}
+    OFFSET {{Int32(offset, 0)}}
+
+TYPE endpoint

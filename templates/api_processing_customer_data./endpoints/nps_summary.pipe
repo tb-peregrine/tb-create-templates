@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Provides an overall NPS summary with key metrics for the selected time period
+
+NODE nps_summary_node
+SQL >
+    %
+    SELECT
+        count() AS total_responses,
+        countIf(nps_score >= 9 AND nps_score <= 10) AS promoters,
+        countIf(nps_score >= 7 AND nps_score <= 8) AS passives, 
+        countIf(nps_score >= 0 AND nps_score <= 6) AS detractors,
+        round(avg(nps_score), 2) AS avg_nps_score,
+        round(100.0 * (countIf(nps_score >= 9 AND nps_score <= 10) - countIf(nps_score >= 0 AND nps_score <= 6)) / count(), 2) AS nps_value,
+        min(timestamp) AS period_start,
+        max(timestamp) AS period_end,
+        count(DISTINCT customer_id) AS unique_customers
+    FROM survey_responses
+    WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(product_type) %}
+        AND product_type = {{String(product_type, 'all')}}
+    {% end %}
+    {% if defined(channel) %}
+        AND channel = {{String(channel, 'all')}}
+    {% end %}
+
+TYPE endpoint
+        

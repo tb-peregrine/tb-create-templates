@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Collects website performance metrics such as page load time, response time, and error rates
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `website_id` String `json:$.website_id`,
+    `page_url` String `json:$.page_url`,
+    `page_load_time_ms` UInt32 `json:$.page_load_time_ms`,
+    `server_response_time_ms` UInt32 `json:$.server_response_time_ms`,
+    `dom_interactive_time_ms` UInt32 `json:$.dom_interactive_time_ms`,
+    `request_count` UInt16 `json:$.request_count`,
+    `error_count` UInt16 `json:$.error_count`,
+    `user_id` String `json:$.user_id`,
+    `device_type` String `json:$.device_type`,
+    `browser` String `json:$.browser`,
+    `country` String `json:$.country`,
+    `status_code` UInt16 `json:$.status_code`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, website_id, page_url"
+        

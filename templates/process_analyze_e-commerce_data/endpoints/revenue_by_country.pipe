@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Geographic revenue analysis showing transaction metrics by country
+
+NODE revenue_by_country_node
+SQL >
+    %
+    SELECT 
+        country,
+        count() AS transaction_count,
+        sum(total_amount) AS total_revenue,
+        avg(total_amount) AS average_order_value,
+        sum(quantity) AS total_items_sold
+    FROM ecommerce_transactions
+    WHERE is_completed = 1
+    {% if defined(start_date) %}
+        AND order_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND order_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY country
+    ORDER BY total_revenue DESC
+
+TYPE endpoint
+        

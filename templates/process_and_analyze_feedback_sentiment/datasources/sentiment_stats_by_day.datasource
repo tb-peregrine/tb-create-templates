@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Aggregated daily sentiment statistics for efficient trend analysis
+
+SCHEMA >
+    `date` Date `json:$.date`,
+    `product_id` String `json:$.product_id`,
+    `feedback_count` UInt32 `json:$.feedback_count`,
+    `positive_count` UInt32 `json:$.positive_count`,
+    `neutral_count` UInt32 `json:$.neutral_count`,
+    `negative_count` UInt32 `json:$.negative_count`,
+    `avg_sentiment_score` Float32 `json:$.avg_sentiment_score`
+
+ENGINE "AggregatingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(date)"
+ENGINE_SORTING_KEY "date, product_id"
+        

@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Materialized pipe to keep customer_clv datasource updated with latest metrics
+
+NODE clv_calculation
+SQL >
+    SELECT 
+        customer_id,
+        sumState(purchase_amount) AS total_spend,
+        countState(purchase_id) AS purchase_count,
+        MIN(purchase_date) AS first_purchase_date,
+        MAX(purchase_date) AS last_purchase_date,
+        any(c.customer_segment) AS customer_segment,
+        any(c.country) AS country,
+        any(c.acquisition_source) AS acquisition_source,
+        now() AS updated_at
+    FROM purchases p
+    JOIN customers c ON p.customer_id = c.customer_id
+    GROUP BY customer_id
+
+TYPE MATERIALIZED
+DATASOURCE customer_clv
+        

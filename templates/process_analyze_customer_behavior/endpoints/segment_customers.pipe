@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Get all customers belonging to a specific segment with profile details
+
+NODE segment_customers_node
+SQL >
+    %
+    SELECT 
+        cp.customer_id,
+        cp.email,
+        cp.first_name,
+        cp.last_name,
+        cp.age,
+        cp.gender,
+        cp.city,
+        cp.country,
+        cp.signup_date,
+        cp.last_login,
+        cp.lifetime_value
+    FROM customer_profiles cp
+    WHERE cp.customer_segment = {{String(segment_name, '')}}
+    {% if defined(country) %}
+        AND cp.country = {{String(country, '')}}
+    {% end %}
+    {% if defined(min_age) %}
+        AND cp.age >= {{Int32(min_age, 0)}}
+    {% end %}
+    {% if defined(max_age) %}
+        AND cp.age <= {{Int32(max_age, 100)}}
+    {% end %}
+    {% if defined(min_lifetime_value) %}
+        AND cp.lifetime_value >= {{Float64(min_lifetime_value, 0.0)}}
+    {% end %}
+    ORDER BY cp.lifetime_value DESC
+    LIMIT {{Int32(limit, 1000)}}
+
+TYPE endpoint
+        

@@ -1,0 +1,52 @@
+
+DESCRIPTION >
+    API endpoint to analyze user affinity to different types of content
+
+NODE user_content_affinity_node
+SQL >
+    %
+    WITH content_interactions AS (
+        SELECT 
+            user_id,
+            content_id,
+            sum(duration) as time_spent,
+            countIf(event_type = 'view') as views,
+            countIf(event_type = 'click') as clicks,
+            countIf(event_type = 'share') as shares,
+            countIf(event_type = 'like') as likes,
+            count() as total_interactions
+        FROM user_events
+        WHERE 1=1
+        {% if defined(user_id) %}
+            AND user_id = {{String(user_id, '')}}
+        {% end %}
+        {% if defined(content_id) %}
+            AND content_id = {{String(content_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY user_id, content_id
+    )
+    
+    SELECT 
+        user_id,
+        content_id,
+        time_spent,
+        views,
+        clicks,
+        shares,
+        likes,
+        total_interactions,
+        (likes * 5 + shares * 3 + clicks * 2 + views) / nullIf(total_interactions, 0) as affinity_score
+    FROM content_interactions
+    ORDER BY user_id, affinity_score DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

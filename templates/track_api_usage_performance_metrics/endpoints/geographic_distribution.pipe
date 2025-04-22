@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Analyzes API usage based on geographic regions
+
+NODE geographic_distribution_node
+SQL >
+    %
+    SELECT
+        region,
+        count() as total_requests,
+        countIf(status_code >= 400) as error_requests,
+        round(avg(response_time_ms), 2) as avg_response_time_ms,
+        count(distinct tenant_id) as unique_tenants,
+        count(distinct user_id) as unique_users
+    FROM api_logs
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(tenant_id) %}
+        AND tenant_id = {{String(tenant_id, '')}}
+    {% end %}
+    {% if defined(region) %}
+        AND region = {{String(region, '')}}
+    {% end %}
+    GROUP BY region
+    ORDER BY total_requests DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,52 @@
+
+DESCRIPTION >
+    Get distribution of errors by various dimensions such as severity, app_id, service_name, etc.
+
+NODE error_distribution_node
+SQL >
+    %
+    SELECT
+        {% if defined(dimension) and dimension == 'severity' %}
+            severity as category,
+        {% elif defined(dimension) and dimension == 'app_id' %}
+            app_id as category,
+        {% elif defined(dimension) and dimension == 'service_name' %}
+            service_name as category,
+        {% elif defined(dimension) and dimension == 'environment' %}
+            environment as category,
+        {% elif defined(dimension) and dimension == 'error_type' %}
+            error_type as category,
+        {% else %}
+            severity as category,
+        {% end %}
+        count() as error_count
+    FROM app_errors
+    WHERE 1=1
+    {% if defined(severity) %}
+        AND severity = {{String(severity, '')}}
+    {% end %}
+    {% if defined(app_id) %}
+        AND app_id = {{String(app_id, '')}}
+    {% end %}
+    {% if defined(service_name) %}
+        AND service_name = {{String(service_name, '')}}
+    {% end %}
+    {% if defined(environment) %}
+        AND environment = {{String(environment, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 7 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY category
+    ORDER BY error_count DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint
+        

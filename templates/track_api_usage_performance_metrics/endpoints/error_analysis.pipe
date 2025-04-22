@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Provides detailed analysis of API errors by type and message
+
+NODE error_analysis_node
+SQL >
+    %
+    SELECT
+        error_type,
+        error_message,
+        count() as error_count,
+        tenant_id,
+        endpoint,
+        toStartOfHour(timestamp) as hour,
+        round(avg(response_time_ms), 2) as avg_response_time_ms
+    FROM api_logs
+    WHERE status_code >= 400
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(tenant_id) %}
+        AND tenant_id = {{String(tenant_id, '')}}
+    {% end %}
+    {% if defined(error_type) %}
+        AND error_type = {{String(error_type, '')}}
+    {% end %}
+    GROUP BY error_type, error_message, tenant_id, endpoint, hour
+    ORDER BY error_count DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    Evaluate customer support agent performance metrics
+
+NODE agent_performance_node
+SQL >
+    %
+    SELECT 
+        agent_id,
+        count() as total_tickets,
+        countIf(status = 'resolved') as resolved_tickets,
+        countIf(status = 'resolved') / count() as resolution_rate,
+        avg(response_time_seconds) as avg_response_time_seconds,
+        avg(resolution_time_seconds) as avg_resolution_time_seconds,
+        countIf(response_time_seconds < {{Int(sla_response_time, 3600)}}) / count() as sla_response_compliance,
+        countIf(resolution_time_seconds < {{Int(sla_resolution_time, 86400)}}) / count() as sla_resolution_compliance
+    FROM support_tickets
+    WHERE 
+        {% if defined(start_date) %}
+            created_at >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% else %}
+            created_at >= '2023-01-01 00:00:00'
+        {% end %}
+        {% if defined(end_date) %}
+            AND created_at <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+            AND created_at <= '2023-12-31 23:59:59'
+        {% end %}
+    GROUP BY agent_id
+    ORDER BY 
+        {% if defined(sort_by) and String(sort_by) == 'response_time' %}
+            avg_response_time_seconds ASC
+        {% elif defined(sort_by) and String(sort_by) == 'resolution_time' %}
+            avg_resolution_time_seconds ASC
+        {% elif defined(sort_by) and String(sort_by) == 'ticket_volume' %}
+            total_tickets DESC
+        {% elif defined(sort_by) and String(sort_by) == 'resolution_rate' %}
+            resolution_rate DESC
+        {% else %}
+            total_tickets DESC
+        {% end %}
+
+TYPE endpoint
+        

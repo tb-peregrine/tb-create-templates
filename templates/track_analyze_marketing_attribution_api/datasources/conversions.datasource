@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Conversion events data capturing successful conversions (purchases, sign-ups, etc.)
+
+SCHEMA >
+    `conversion_id` String `json:$.conversion_id`,
+    `user_id` String `json:$.user_id`,
+    `conversion_type` String `json:$.conversion_type`,
+    `conversion_value` Float64 `json:$.conversion_value`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `campaign_id` String `json:$.campaign_id`,
+    `channel` String `json:$.channel`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, conversion_type"
+        

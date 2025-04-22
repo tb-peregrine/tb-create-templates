@@ -1,0 +1,20 @@
+DESCRIPTION >
+    Stores search query data with metadata for analysis
+
+SCHEMA >
+    `query_id` String `json:$.query_id`,
+    `user_id` String `json:$.user_id`,
+    `query_text` String `json:$.query_text`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `device_type` String `json:$.device_type`,
+    `session_id` String `json:$.session_id`,
+    `results_count` Int32 `json:$.results_count`,
+    `clicked_results` Array(String) `json:$.clicked_results`,
+    `search_category` String `json:$.search_category`,
+    `search_filters` String `json:$.search_filters`,
+    `search_duration_ms` Int32 `json:$.search_duration_ms`,
+    `user_location` String `json:$.user_location`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, query_id"

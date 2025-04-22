@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    API endpoint to retrieve summary statistics for a specific A/B test
+
+NODE test_summary_node
+SQL >
+    %
+    SELECT 
+        test_id,
+        variant,
+        count(DISTINCT user_id) as users,
+        count(DISTINCT session_id) as sessions,
+        countIf(event_type = 'conversion' AND event_name = {{String(metric, 'purchase')}}) as conversions,
+        countIf(event_type = 'conversion' AND event_name = {{String(metric, 'purchase')}}) / count(DISTINCT user_id) as conversion_rate,
+        sum(CASE WHEN event_type = 'revenue' THEN value ELSE 0 END) as total_revenue,
+        sum(CASE WHEN event_type = 'revenue' THEN value ELSE 0 END) / count(DISTINCT user_id) as revenue_per_user
+    FROM ab_test_events
+    WHERE test_id = {{String(test_id, '')}}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY test_id, variant
+    ORDER BY variant ASC
+
+TYPE endpoint
+        

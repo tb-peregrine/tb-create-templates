@@ -1,0 +1,23 @@
+DESCRIPTION >
+    API to get current anomaly detection thresholds
+
+NODE manage_anomaly_thresholds_node
+SQL >
+    %
+    SELECT
+        metric,
+        service,
+        threshold_value,
+        threshold_type,
+        updated_at
+    FROM anomaly_thresholds
+    WHERE 1=1
+    {% if defined(metric) %}
+        AND metric = {{String(metric, '')}}
+    {% end %}
+    {% if defined(service) %}
+        AND service = {{String(service, '')}}
+    {% end %}
+    ORDER BY metric, service
+
+TYPE endpoint

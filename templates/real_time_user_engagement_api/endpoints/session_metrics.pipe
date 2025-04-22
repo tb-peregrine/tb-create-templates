@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    API endpoint for session-based metrics like session duration and bounce rate
+
+NODE session_metrics_node
+SQL >
+    %
+    SELECT 
+        {{String(time_bucket, 'day')}} as time_bucket,
+        toStartOf{{String(time_bucket, 'day')}}(timestamp) as period,
+        count(DISTINCT session_id) as session_count,
+        avg(duration) as avg_session_duration,
+        countIf(duration < 10) / count(DISTINCT session_id) as bounce_rate
+    FROM user_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(platform) %}
+        AND platform = {{String(platform, 'web')}}
+        {% end %}
+        {% if defined(device) %}
+        AND device = {{String(device, 'desktop')}}
+        {% end %}
+        {% if defined(country) %}
+        AND country = {{String(country, 'US')}}
+        {% end %}
+    GROUP BY 
+        period
+    ORDER BY 
+        period ASC
+
+TYPE endpoint
+        

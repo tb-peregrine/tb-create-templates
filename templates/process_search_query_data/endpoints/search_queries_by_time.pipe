@@ -1,0 +1,32 @@
+DESCRIPTION >
+    API endpoint that returns search queries grouped by time interval
+
+NODE search_queries_by_time_node
+SQL >
+    %
+    SELECT 
+        toStartOfInterval(timestamp, INTERVAL {{String(time_interval, '1 hour')}}) AS time_bucket,
+        count() AS query_count,
+        uniq(user_id) AS unique_users,
+        avg(search_duration_ms) AS avg_duration_ms,
+        avg(results_count) AS avg_results,
+        count(if(arrayLength(clicked_results) > 0, 1, null)) AS queries_with_clicks,
+        count(if(arrayLength(clicked_results) = 0, 1, null)) AS queries_without_clicks
+    FROM search_queries
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(search_category) %}
+        AND search_category = {{String(search_category, 'all')}}
+    {% end %}
+    {% if defined(device_type) %}
+        AND device_type = {{String(device_type, 'all')}}
+    {% end %}
+    GROUP BY time_bucket
+    ORDER BY time_bucket DESC
+
+TYPE endpoint

@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Analyze marketing channel attribution and effectiveness
+
+NODE channel_attribution_node
+SQL >
+    %
+    SELECT 
+        me.channel,
+        count(DISTINCT me.user_id) AS unique_users,
+        count(DISTINCT conv.conversion_id) AS conversions,
+        sum(conv.conversion_value) AS total_revenue,
+        round(sum(conv.conversion_value) / count(DISTINCT conv.conversion_id), 2) AS avg_revenue_per_conversion,
+        round(count(DISTINCT conv.conversion_id) / count(DISTINCT me.user_id) * 100, 2) AS conversion_rate
+    FROM marketing_events me
+    LEFT JOIN conversions conv ON me.user_id = conv.user_id
+    WHERE 1=1
+        {% if defined(start_date) %}
+            AND me.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND me.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(channel) %}
+            AND me.channel = {{String(channel, 'all')}}
+        {% end %}
+    GROUP BY me.channel
+    ORDER BY total_revenue DESC
+
+TYPE endpoint
+        

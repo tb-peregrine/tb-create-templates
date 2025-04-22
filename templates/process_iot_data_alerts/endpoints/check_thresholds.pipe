@@ -1,0 +1,48 @@
+
+DESCRIPTION >
+    Checks if sensor values cross defined thresholds and returns potential alerts
+
+NODE check_thresholds_node
+SQL >
+    %
+    SELECT 
+        isd.device_id,
+        isd.sensor_type,
+        isd.value,
+        isd.timestamp,
+        st.min_threshold,
+        st.max_threshold,
+        CASE
+            WHEN isd.value < st.min_threshold THEN 'below_threshold'
+            WHEN isd.value > st.max_threshold THEN 'above_threshold'
+            ELSE 'normal'
+        END AS alert_status
+    FROM iot_sensor_data isd
+    JOIN sensor_thresholds st ON isd.sensor_type = st.sensor_type
+    WHERE 1=1
+    {% if defined(device_id) %}
+        AND isd.device_id = {{String(device_id, '')}}
+    {% end %}
+    {% if defined(sensor_type) %}
+        AND isd.sensor_type = {{String(sensor_type, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND isd.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND isd.timestamp >= now() - interval 1 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND isd.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND isd.timestamp <= now()
+    {% end %}
+    HAVING alert_status != 'normal'
+    ORDER BY isd.timestamp DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% else %}
+        LIMIT 100
+    {% end %}
+
+TYPE endpoint
+        

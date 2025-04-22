@@ -1,0 +1,48 @@
+
+DESCRIPTION >
+    API endpoint to analyze user sessions and engagement patterns
+
+NODE session_analysis_node
+SQL >
+    %
+    SELECT 
+        session_id,
+        user_id,
+        min(timestamp) as session_start,
+        max(timestamp) as session_end,
+        count() as total_events,
+        countIf(event_type = 'view') as views,
+        countIf(event_type = 'click') as clicks,
+        countIf(event_type = 'share') as shares,
+        countIf(event_type = 'like') as likes,
+        sum(duration) as total_duration,
+        count(distinct content_id) as unique_contents,
+        count(distinct recommendation_id) as recommendations_interacted
+    FROM user_events
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(session_id) %}
+        AND session_id = {{String(session_id, '')}}
+    {% end %}
+    {% if defined(platform) %}
+        AND platform = {{String(platform, '')}}
+    {% end %}
+    {% if defined(device) %}
+        AND device = {{String(device, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY session_id, user_id
+    ORDER BY session_start DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

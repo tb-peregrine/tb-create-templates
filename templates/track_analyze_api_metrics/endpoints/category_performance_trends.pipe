@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Analyze performance trends by product category over time
+
+NODE category_performance_trends_node
+SQL >
+    %
+    SELECT
+        toStartOfMonth(timestamp) AS month,
+        category,
+        COUNT(DISTINCT product_id) AS unique_products,
+        SUM(sales_amount) AS total_sales,
+        SUM(units_sold) AS total_units,
+        AVG(customer_satisfaction) AS avg_satisfaction,
+        AVG(conversion_rate) AS avg_conversion_rate,
+        AVG(return_rate) AS avg_return_rate
+    FROM product_metrics
+    WHERE 1=1
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY month, category
+    ORDER BY category, month
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 1000)}}
+    {% else %}
+        LIMIT 1000
+    {% end %}
+
+TYPE endpoint
+        

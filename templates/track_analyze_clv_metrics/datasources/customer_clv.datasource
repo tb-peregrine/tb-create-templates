@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Aggregated customer lifetime value metrics
+
+SCHEMA >
+    `customer_id` String `json:$.customer_id`,
+    `total_spend` AggregateFunction(sum, Float64) `json:$.total_spend`,
+    `purchase_count` AggregateFunction(count, UInt64) `json:$.purchase_count`,
+    `first_purchase_date` DateTime `json:$.first_purchase_date`,
+    `last_purchase_date` DateTime `json:$.last_purchase_date`,
+    `customer_segment` String `json:$.customer_segment`,
+    `country` String `json:$.country`,
+    `acquisition_source` String `json:$.acquisition_source`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "AggregatingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(updated_at)"
+ENGINE_SORTING_KEY "customer_id, updated_at"
+        

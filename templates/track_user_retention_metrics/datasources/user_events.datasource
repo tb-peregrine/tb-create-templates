@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    User events data containing session information, user_id, and timestamps
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `event_type` String `json:$.event_type`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `session_id` String `json:$.session_id`,
+    `platform` String `json:$.platform`,
+    `country` String `json:$.country`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, event_type"
+        

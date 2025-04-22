@@ -1,0 +1,62 @@
+
+DESCRIPTION >
+    API endpoint to calculate statistical significance between variants in an A/B test
+
+NODE test_significance_node
+SQL >
+    %
+    WITH variant_data AS (
+        SELECT 
+            test_id,
+            variant,
+            count(DISTINCT user_id) as users,
+            countIf(event_type = 'conversion' AND event_name = {{String(metric, 'purchase')}}) as conversions
+        FROM ab_test_events
+        WHERE test_id = {{String(test_id, '')}}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY test_id, variant
+    ),
+    
+    control_data AS (
+        SELECT 
+            users as control_users,
+            conversions as control_conversions,
+            conversions / users as control_conversion_rate
+        FROM variant_data
+        WHERE variant = 'control'
+    ),
+    
+    experiment_data AS (
+        SELECT 
+            variant,
+            users as experiment_users,
+            conversions as experiment_conversions,
+            conversions / users as experiment_conversion_rate
+        FROM variant_data
+        WHERE variant != 'control'
+    )
+    
+    SELECT 
+        e.variant,
+        c.control_users,
+        c.control_conversions,
+        c.control_conversion_rate,
+        e.experiment_users,
+        e.experiment_conversions,
+        e.experiment_conversion_rate,
+        (e.experiment_conversion_rate - c.control_conversion_rate) as absolute_difference,
+        (e.experiment_conversion_rate / c.control_conversion_rate - 1) as relative_difference,
+        -- Z-score calculation for binomial proportion
+        (e.experiment_conversion_rate - c.control_conversion_rate) / 
+        sqrt((e.experiment_conversion_rate * (1 - e.experiment_conversion_rate) / e.experiment_users) + 
+             (c.control_conversion_rate * (1 - c.control_conversion_rate) / c.control_users)) as z_score
+    FROM experiment_data e
+    CROSS JOIN control_data c
+
+TYPE endpoint
+        

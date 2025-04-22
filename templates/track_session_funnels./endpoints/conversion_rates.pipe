@@ -1,0 +1,59 @@
+
+DESCRIPTION >
+    Calculates conversion rates between specified start and end events
+
+NODE conversion_rates_node
+SQL >
+    %
+    WITH 
+    start_events AS (
+        SELECT
+            user_id,
+            session_id,
+            min(timestamp) as start_time
+        FROM events
+        WHERE event_name = {{String(start_event, 'page_view')}}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY user_id, session_id
+    ),
+    end_events AS (
+        SELECT
+            user_id,
+            session_id,
+            min(timestamp) as end_time
+        FROM events
+        WHERE event_name = {{String(end_event, 'purchase')}}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY user_id, session_id
+    ),
+    conversions AS (
+        SELECT
+            s.user_id,
+            s.session_id,
+            s.start_time,
+            e.end_time,
+            CASE WHEN e.end_time IS NOT NULL THEN 1 ELSE 0 END as converted,
+            CASE WHEN e.end_time IS NOT NULL THEN dateDiff('second', s.start_time, e.end_time) ELSE NULL END as conversion_time_seconds
+        FROM start_events s
+        LEFT JOIN end_events e ON s.user_id = e.user_id AND s.session_id = e.session_id AND e.end_time >= s.start_time
+    )
+    SELECT
+        count(*) as total_starts,
+        sum(converted) as total_conversions,
+        round(sum(converted) * 100.0 / count(*), 2) as conversion_rate,
+        avg(conversion_time_seconds) as avg_conversion_time_seconds,
+        quantile(0.5)(conversion_time_seconds) as median_conversion_time_seconds
+    FROM conversions
+
+TYPE endpoint
+        

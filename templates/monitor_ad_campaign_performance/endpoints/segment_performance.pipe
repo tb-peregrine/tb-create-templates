@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    Analyzes campaign performance across different segments (country, device, platform)
+
+NODE segment_performance_node
+SQL >
+    %
+    SELECT
+        {% if defined(segment_by) %}
+            i.{{String(segment_by, 'country')}} AS segment,
+        {% else %}
+            i.country AS segment,
+        {% end %}
+        count(DISTINCT i.impression_id) AS impressions,
+        count(DISTINCT cl.click_id) AS clicks,
+        count(DISTINCT cv.conversion_id) AS conversions,
+        sum(i.cost) AS total_cost,
+        sum(cv.revenue) AS total_revenue,
+        if(impressions > 0, clicks / impressions, 0) AS ctr,
+        if(clicks > 0, conversions / clicks, 0) AS conversion_rate,
+        if(total_cost > 0, total_revenue / total_cost, 0) AS roas
+    FROM ad_impressions AS i
+    LEFT JOIN ad_clicks AS cl ON i.impression_id = cl.impression_id
+    LEFT JOIN conversions AS cv ON cl.click_id = cv.click_id
+    WHERE 1=1
+    {% if defined(campaign_id) %}
+        AND i.campaign_id = {{String(campaign_id, '')}}
+    {% end %}
+    {% if defined(platform) %}
+        AND i.platform = {{String(platform, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND i.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND i.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY
+        segment
+    ORDER BY
+        impressions DESC
+
+TYPE endpoint
+        

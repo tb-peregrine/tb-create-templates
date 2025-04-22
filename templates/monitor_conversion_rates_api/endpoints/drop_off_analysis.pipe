@@ -1,0 +1,110 @@
+
+DESCRIPTION >
+    Analyzes where users drop off from the funnel by segment
+
+NODE drop_off_analysis_node
+SQL >
+    %
+    WITH funnel AS (
+        SELECT 
+            user_id,
+            min(if(event_name = {{String(step1, 'page_view')}}, event_timestamp, NULL)) as step1_time,
+            min(if(event_name = {{String(step2, 'add_to_cart')}}, event_timestamp, NULL)) as step2_time,
+            min(if(event_name = {{String(step3, 'checkout')}}, event_timestamp, NULL)) as step3_time,
+            min(if(event_name = {{String(step4, 'purchase')}}, event_timestamp, NULL)) as step4_time,
+            max(device) as device,
+            max(browser) as browser,
+            max(country) as country
+        FROM user_events
+        WHERE 
+            event_timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% if defined(country) %} AND country = {{String(country)}} {% end %}
+            {% if defined(device) %} AND device = {{String(device)}} {% end %}
+            {% if defined(browser) %} AND browser = {{String(browser)}} {% end %}
+        GROUP BY user_id
+        HAVING 
+            step1_time IS NOT NULL
+    ),
+    steps AS (
+        SELECT
+            user_id,
+            device,
+            browser,
+            country,
+            CASE
+                WHEN step4_time IS NOT NULL THEN 'Completed'
+                WHEN step3_time IS NOT NULL THEN 'Dropped at Step 4'
+                WHEN step2_time IS NOT NULL THEN 'Dropped at Step 3'
+                ELSE 'Dropped at Step 2'
+            END as funnel_status
+        FROM funnel
+    )
+    
+    SELECT
+        {% if not defined(segment_by) %}
+            'All Users' as segment,
+        {% else %}
+            {% if segment_by == 'device' %}
+                device as segment,
+            {% elif segment_by == 'browser' %}
+                browser as segment,
+            {% elif segment_by == 'country' %}
+                country as segment,
+            {% else %}
+                'All Users' as segment,
+            {% end %}
+        {% end %}
+        funnel_status,
+        count(user_id) as users,
+        round(100.0 * count(user_id) / sum(count(user_id)) OVER (
+            {% if defined(segment_by) %}
+                {% if segment_by == 'device' %}
+                    PARTITION BY device
+                {% elif segment_by == 'browser' %}
+                    PARTITION BY browser
+                {% elif segment_by == 'country' %}
+                    PARTITION BY country
+                {% else %}
+                    
+                {% end %}
+            {% end %}
+        ), 2) as percentage
+    FROM steps
+    GROUP BY
+        {% if not defined(segment_by) %}
+            'All Users',
+        {% else %}
+            {% if segment_by == 'device' %}
+                device,
+            {% elif segment_by == 'browser' %}
+                browser,
+            {% elif segment_by == 'country' %}
+                country,
+            {% else %}
+                'All Users',
+            {% end %}
+        {% end %}
+        funnel_status
+    ORDER BY
+        {% if not defined(segment_by) %}
+            'All Users',
+        {% else %}
+            {% if segment_by == 'device' %}
+                device,
+            {% elif segment_by == 'browser' %}
+                browser,
+            {% elif segment_by == 'country' %}
+                country,
+            {% else %}
+                'All Users',
+            {% end %}
+        {% end %}
+        CASE 
+            WHEN funnel_status = 'Completed' THEN 4
+            WHEN funnel_status = 'Dropped at Step 4' THEN 3
+            WHEN funnel_status = 'Dropped at Step 3' THEN 2
+            ELSE 1
+        END DESC
+
+TYPE endpoint
+        

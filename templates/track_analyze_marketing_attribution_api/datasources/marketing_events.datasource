@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Raw marketing events data including user interactions with campaigns
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `campaign_id` String `json:$.campaign_id`,
+    `channel` String `json:$.channel`,
+    `action` String `json:$.action`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `utm_source` String `json:$.utm_source`,
+    `utm_medium` String `json:$.utm_medium`,
+    `utm_campaign` String `json:$.utm_campaign`,
+    `device_type` String `json:$.device_type`,
+    `country` String `json:$.country`,
+    `referrer` String `json:$.referrer`,
+    `conversion_value` Float64 `json:$.conversion_value`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, campaign_id, user_id"
+        

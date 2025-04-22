@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    Identify steps where users commonly drop out of the onboarding process
+
+NODE dropout_analysis_node
+SQL >
+    %
+    WITH step_counts AS (
+        SELECT
+            step_name,
+            step_id,
+            count(DISTINCT user_id) AS user_count
+        FROM onboarding_events
+        WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(platform) %}
+        AND platform = {{String(platform, 'all')}}
+        {% end %}
+        GROUP BY step_name, step_id
+    ),
+    
+    total_users AS (
+        SELECT count(DISTINCT user_id) AS total_user_count
+        FROM onboarding_events
+        WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(platform) %}
+        AND platform = {{String(platform, 'all')}}
+        {% end %}
+    )
+    
+    SELECT
+        step_name,
+        user_count,
+        (SELECT total_user_count FROM total_users) AS started_users,
+        round(user_count / (SELECT total_user_count FROM total_users) * 100, 2) AS retention_rate,
+        100 - round(user_count / (SELECT total_user_count FROM total_users) * 100, 2) AS dropout_rate
+    FROM step_counts
+    ORDER BY user_count DESC
+
+TYPE endpoint
+        

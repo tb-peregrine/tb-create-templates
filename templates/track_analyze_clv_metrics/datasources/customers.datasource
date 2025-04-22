@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Stores customer information including ID, name, signup date, and other attributes
+
+SCHEMA >
+    `customer_id` String `json:$.customer_id`,
+    `name` String `json:$.name`,
+    `email` String `json:$.email`,
+    `signup_date` DateTime `json:$.signup_date`,
+    `country` String `json:$.country`,
+    `customer_segment` String `json:$.customer_segment`,
+    `acquisition_source` String `json:$.acquisition_source`,
+    `active` UInt8 `json:$.active`,
+    `created_at` DateTime `json:$.created_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(signup_date)"
+ENGINE_SORTING_KEY "customer_id, signup_date"
+        

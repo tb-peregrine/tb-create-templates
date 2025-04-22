@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Classify user engagement based on predefined thresholds
+
+NODE engagement_classification_node
+SQL >
+    %
+    SELECT 
+        ui.user_id,
+        avg(ui.engagement_score) as avg_engagement,
+        any(et.threshold_name) as engagement_category,
+        any(et.color_code) as category_color,
+        any(et.description) as category_description,
+        count(DISTINCT ui.session_id) as total_sessions,
+        count(*) as total_events
+    FROM user_interactions ui
+    LEFT JOIN engagement_thresholds et ON ui.engagement_score BETWEEN et.min_score AND et.max_score
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND ui.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND ui.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(user_id) %}
+        AND ui.user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(category) %}
+        AND et.threshold_name = {{String(category, '')}}
+    {% end %}
+    GROUP BY ui.user_id
+    ORDER BY avg_engagement DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

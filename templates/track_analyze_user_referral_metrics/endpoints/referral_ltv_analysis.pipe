@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    Compares Lifetime Value (LTV) between referred and non-referred users
+
+NODE referral_ltv_analysis_node
+SQL >
+    %
+    SELECT
+        if(referred_by != '', 'Referred', 'Non-Referred') AS user_type,
+        COUNT(DISTINCT user_id) AS user_count,
+        AVG(lifetime_value) AS avg_ltv,
+        AVG(if(active = 1, 1, 0)) * 100 AS activity_rate,
+        AVG(referrals_sent) AS avg_referrals_sent
+    FROM users
+    WHERE 
+        signup_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(country) %}
+        AND country = {{String(country, 'US')}}
+        {% end %}
+    GROUP BY user_type
+    ORDER BY user_type
+
+TYPE endpoint
+        

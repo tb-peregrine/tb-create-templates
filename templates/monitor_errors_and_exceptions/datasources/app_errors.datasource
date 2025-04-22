@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Datasource for storing application errors and exceptions with timestamp, severity level, error message, stack trace, and metadata
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `app_id` String `json:$.app_id`,
+    `service_name` String `json:$.service_name`,
+    `environment` String `json:$.environment`,
+    `severity` String `json:$.severity`,
+    `error_type` String `json:$.error_type`,
+    `error_message` String `json:$.error_message`,
+    `stack_trace` String `json:$.stack_trace`,
+    `user_id` String `json:$.user_id`,
+    `request_id` String `json:$.request_id`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, app_id, service_name, environment, severity"
+        

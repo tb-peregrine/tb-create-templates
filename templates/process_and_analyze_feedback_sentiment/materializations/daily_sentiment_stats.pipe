@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Materializes daily sentiment statistics from feedback_sentiment to sentiment_stats_by_day
+
+NODE daily_sentiment_stats_node
+SQL >
+    SELECT
+        toDate(timestamp) AS date,
+        product_id,
+        count() AS feedback_count,
+        countIf(sentiment_label = 'positive') AS positive_count,
+        countIf(sentiment_label = 'neutral') AS neutral_count,
+        countIf(sentiment_label = 'negative') AS negative_count,
+        avg(sentiment_score) AS avg_sentiment_score
+    FROM feedback_sentiment
+    GROUP BY date, product_id
+
+TYPE MATERIALIZED
+DATASOURCE sentiment_stats_by_day
+        

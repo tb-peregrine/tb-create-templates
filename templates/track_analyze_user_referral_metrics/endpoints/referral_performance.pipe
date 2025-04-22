@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Analyzes referral performance by channel, time period, and conversion rates
+
+NODE referral_performance_node
+SQL >
+    %
+    SELECT
+        referral_channel,
+        COUNT(*) AS total_referrals,
+        SUM(converted) AS converted_referrals,
+        round(SUM(converted) / COUNT(*) * 100, 2) AS conversion_rate,
+        AVG(if(converted = 1, dateDiff('day', referral_date, conversion_date), NULL)) AS avg_days_to_convert,
+        SUM(reward_amount) AS total_reward_amount
+    FROM referrals
+    WHERE 
+        referral_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(channel) %}
+        AND referral_channel = {{String(channel, 'email')}}
+        {% end %}
+    GROUP BY referral_channel
+    ORDER BY total_referrals DESC
+
+TYPE endpoint
+        

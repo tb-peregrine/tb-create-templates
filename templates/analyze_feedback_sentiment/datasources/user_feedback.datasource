@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Raw user feedback data ingestion datasource
+
+SCHEMA >
+    `feedback_id` String `json:$.feedback_id`,
+    `user_id` String `json:$.user_id`,
+    `feedback_text` String `json:$.feedback_text`,
+    `rating` Int32 `json:$.rating`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `product_id` String `json:$.product_id`,
+    `channel` String `json:$.channel`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, product_id"
+        

@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    API to get sentiment summary statistics with filtering options
+
+NODE sentiment_summary_node
+SQL >
+    %
+    SELECT 
+        {% if defined(group_by) and group_by == 'product' %}
+            f.product_id as dimension,
+        {% elif defined(group_by) and group_by == 'channel' %}
+            f.channel as dimension,
+        {% else %}
+            'all' as dimension,
+        {% end %}
+        count() as total_feedback,
+        avg(s.sentiment_score) as avg_sentiment_score,
+        countIf(s.sentiment_label = 'positive') as positive_count,
+        countIf(s.sentiment_label = 'neutral') as neutral_count,
+        countIf(s.sentiment_label = 'negative') as negative_count,
+        round(countIf(s.sentiment_label = 'positive') / count() * 100, 2) as positive_percentage,
+        round(countIf(s.sentiment_label = 'neutral') / count() * 100, 2) as neutral_percentage,
+        round(countIf(s.sentiment_label = 'negative') / count() * 100, 2) as negative_percentage,
+        avg(f.rating) as avg_rating
+    FROM user_feedback f
+    LEFT JOIN feedback_sentiment_analysis s ON f.feedback_id = s.feedback_id
+    WHERE 1=1
+    {% if defined(product_id) %}
+        AND f.product_id = {{String(product_id, '')}}
+    {% end %}
+    {% if defined(channel) %}
+        AND f.channel = {{String(channel, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND f.timestamp >= {{DateTime(start_date, '2020-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND f.timestamp <= {{DateTime(end_date, '2025-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY dimension
+    ORDER BY total_feedback DESC
+
+TYPE endpoint
+        

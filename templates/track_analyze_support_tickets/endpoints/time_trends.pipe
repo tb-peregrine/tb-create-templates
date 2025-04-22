@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    API to analyze time-based trends for support tickets 
+
+NODE time_trends_node
+SQL >
+    %
+    SELECT
+        formatDateTime(created_at, {{String(time_interval, 'yyyy-MM-dd')}}) as time_period,
+        count() as ticket_count,
+        countIf(status = 'resolved') as resolved_tickets,
+        round(avg(if(resolved_at > toDateTime('1970-01-01 00:00:00'), dateDiff('minute', created_at, resolved_at), NULL)), 2) as avg_resolution_time_minutes,
+        round(avg(if(first_response_at > toDateTime('1970-01-01 00:00:00'), dateDiff('minute', created_at, first_response_at), NULL)), 2) as avg_response_time_minutes,
+        round(avg(satisfaction_score), 2) as avg_satisfaction_score
+    FROM support_tickets
+    WHERE created_at BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(category) %}
+    AND category = {{String(category)}}
+    {% end %}
+    {% if defined(priority) %}
+    AND priority = {{String(priority)}}
+    {% end %}
+    GROUP BY time_period
+    ORDER BY time_period
+
+TYPE endpoint
+        

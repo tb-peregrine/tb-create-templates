@@ -1,0 +1,43 @@
+
+DESCRIPTION >
+    Retrieves details about individual user sessions
+
+NODE session_details_node
+SQL >
+    %
+    SELECT
+        session_id,
+        user_id,
+        min(timestamp) as session_start,
+        max(timestamp) as session_end,
+        toUInt32(dateDiff('second', min(timestamp), max(timestamp))) as session_duration_seconds,
+        count() as event_count,
+        any(device) as device,
+        any(browser) as browser,
+        any(os) as os,
+        any(country) as country,
+        any(city) as city,
+        min(page_url) as landing_page,
+        arrayStringConcat(groupArray(distinct event_name), ', ') as events
+    FROM events
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(session_id) %}
+        AND session_id = {{String(session_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY session_id, user_id
+    ORDER BY session_start DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

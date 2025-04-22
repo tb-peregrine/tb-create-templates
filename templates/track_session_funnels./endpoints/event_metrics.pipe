@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Provides metrics about event frequency and distribution over time
+
+NODE event_metrics_node
+SQL >
+    %
+    SELECT
+        event_name,
+        count(*) as event_count,
+        count(distinct user_id) as unique_users,
+        count(distinct session_id) as unique_sessions,
+        round(count(*) / count(distinct user_id), 2) as events_per_user,
+        round(count(*) / count(distinct session_id), 2) as events_per_session
+    FROM events
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(event_name) %}
+        AND event_name = {{String(event_name, '')}}
+    {% end %}
+    GROUP BY event_name
+    ORDER BY event_count DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

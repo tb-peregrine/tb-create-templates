@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    User information including referral status and acquisition data
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `email` String `json:$.email`,
+    `signup_date` DateTime `json:$.signup_date`,
+    `acquisition_source` String `json:$.acquisition_source`,
+    `referral_code` String `json:$.referral_code`,
+    `referred_by` String `json:$.referred_by`,
+    `lifetime_value` Float32 `json:$.lifetime_value`,
+    `active` UInt8 `json:$.active`,
+    `country` String `json:$.country`,
+    `referrals_sent` UInt32 `json:$.referrals_sent`,
+    `referrals_converted` UInt32 `json:$.referrals_converted`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(signup_date)"
+ENGINE_SORTING_KEY "signup_date, user_id, country"
+        

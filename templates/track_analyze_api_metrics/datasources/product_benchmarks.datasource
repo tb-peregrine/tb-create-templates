@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    Product benchmark metrics by category for comparing product performance
+
+SCHEMA >
+    `category` String `json:$.category`,
+    `metric_name` String `json:$.metric_name`,
+    `benchmark_value` Float64 `json:$.benchmark_value`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(updated_at)"
+ENGINE_SORTING_KEY "category, metric_name"
+        

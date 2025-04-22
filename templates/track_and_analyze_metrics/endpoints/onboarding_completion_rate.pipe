@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Calculate onboarding funnel completion rates overall and by step
+
+NODE onboarding_completion_rate_node
+SQL >
+    %
+    SELECT
+        step_name,
+        countIf(status = 'completed') AS completed_count,
+        count() AS total_count,
+        round(countIf(status = 'completed') / count() * 100, 2) AS completion_rate
+    FROM onboarding_events
+    WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(platform) %}
+    AND platform = {{String(platform, 'all')}}
+    {% end %}
+    GROUP BY step_name
+    ORDER BY step_name
+
+TYPE endpoint
+        

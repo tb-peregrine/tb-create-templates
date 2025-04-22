@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    Materialize daily feedback metrics for dashboard performance
+
+NODE materialize_daily_metrics_node
+SQL >
+    SELECT 
+        toDate(created_at) as date,
+        product_id,
+        category,
+        platform,
+        count() as feedback_count,
+        avg(rating) as avg_rating,
+        avg(sentiment_score) as avg_sentiment,
+        countIf(rating >= 4) / count() as satisfaction_rate,
+        countIf(sentiment_score > 0.3) as positive_count,
+        countIf(sentiment_score BETWEEN -0.3 AND 0.3) as neutral_count,
+        countIf(sentiment_score < -0.3) as negative_count
+    FROM user_feedback
+    GROUP BY date, product_id, category, platform
+
+TYPE MATERIALIZED
+DATASOURCE feedback_metrics_daily
+        

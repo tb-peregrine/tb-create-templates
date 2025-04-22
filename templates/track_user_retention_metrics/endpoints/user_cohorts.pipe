@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Builds user cohorts based on their first appearance date (acquisition date)
+
+NODE user_cohorts_node
+SQL >
+    SELECT 
+        user_id,
+        toStartOfMonth(min(timestamp)) AS cohort_date,
+        min(timestamp) AS first_seen,
+        max(timestamp) AS last_seen
+    FROM user_events
+    GROUP BY user_id
+
+TYPE endpoint
+        

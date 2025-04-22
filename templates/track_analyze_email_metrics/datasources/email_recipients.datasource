@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Stores information about email recipients
+
+SCHEMA >
+    `recipient_id` String `json:$.recipient_id`,
+    `email` String `json:$.email`,
+    `first_name` String `json:$.first_name`,
+    `last_name` String `json:$.last_name`,
+    `created_at` DateTime `json:$.created_at`,
+    `updated_at` DateTime `json:$.updated_at`,
+    `status` String `json:$.status`,
+    `segment_id` String `json:$.segment_id`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(created_at)"
+ENGINE_SORTING_KEY "recipient_id, email, created_at"
+        

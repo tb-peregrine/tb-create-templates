@@ -1,0 +1,45 @@
+
+DESCRIPTION >
+    API endpoint to analyze A/B test results by user segments based on metadata
+
+NODE segment_analysis_node
+SQL >
+    %
+    WITH user_segments AS (
+        SELECT 
+            user_id,
+            test_id,
+            variant,
+            JSONExtractString(metadata, {{String(segment_key, 'country')}}) as segment_value
+        FROM ab_test_events
+        WHERE test_id = {{String(test_id, '')}}
+        AND JSONHas(metadata, {{String(segment_key, 'country')}})
+        GROUP BY user_id, test_id, variant, segment_value
+    )
+    
+    SELECT 
+        test_id,
+        variant,
+        segment_value,
+        count(DISTINCT u.user_id) as users,
+        countIf(e.event_type = 'conversion' AND e.event_name = {{String(metric, 'purchase')}}) as conversions,
+        countIf(e.event_type = 'conversion' AND e.event_name = {{String(metric, 'purchase')}}) / count(DISTINCT u.user_id) as conversion_rate,
+        sum(CASE WHEN e.event_type = 'revenue' THEN e.value ELSE 0 END) as total_revenue,
+        sum(CASE WHEN e.event_type = 'revenue' THEN e.value ELSE 0 END) / count(DISTINCT u.user_id) as revenue_per_user
+    FROM user_segments u
+    JOIN ab_test_events e ON u.user_id = e.user_id AND u.test_id = e.test_id AND u.variant = e.variant
+    WHERE u.test_id = {{String(test_id, '')}}
+    {% if defined(segment_value) %}
+        AND u.segment_value = {{String(segment_value)}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND e.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND e.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY test_id, variant, segment_value
+    ORDER BY segment_value, variant
+
+TYPE endpoint
+        

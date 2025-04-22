@@ -1,0 +1,36 @@
+
+DESCRIPTION >
+    Provides geographical information for IPs in the network traffic, useful for identifying traffic from unusual locations
+
+NODE ip_geolocation_node
+SQL >
+    %
+    SELECT 
+        {% if defined(ip_type) and ip_type == 'source' %}
+            source_ip as ip,
+            'source' as type,
+        {% else %}
+            destination_ip as ip,
+            'destination' as type,
+        {% end %}
+        min(timestamp) as first_seen,
+        max(timestamp) as last_seen,
+        count() as connection_count,
+        sum(bytes_sent + bytes_received) as total_bytes
+    FROM network_traffic
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(ip_filter) %}
+        AND (source_ip LIKE {{String(ip_filter, '')}} OR destination_ip LIKE {{String(ip_filter, '')}})
+    {% end %}
+    GROUP BY ip, type
+    ORDER BY connection_count DESC
+    LIMIT {{UInt16(limit, 100)}}
+
+TYPE endpoint
+        

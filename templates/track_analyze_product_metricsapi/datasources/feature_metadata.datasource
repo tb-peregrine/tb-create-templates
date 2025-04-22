@@ -1,0 +1,15 @@
+
+DESCRIPTION >
+    Stores metadata about product features
+
+SCHEMA >
+    `feature_id` String `json:$.feature_id`,
+    `feature_name` String `json:$.feature_name`,
+    `category` String `json:$.category`,
+    `release_date` Date `json:$.release_date`,
+    `description` String `json:$.description`,
+    `is_beta` UInt8 `json:$.is_beta`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "feature_id, category"
+        

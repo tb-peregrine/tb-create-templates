@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Tracks user interactions with content and recommendations
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `event_type` String `json:$.event_type`,
+    `content_id` String `json:$.content_id`,
+    `recommendation_id` String `json:$.recommendation_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `session_id` String `json:$.session_id`,
+    `device` String `json:$.device`,
+    `platform` String `json:$.platform`,
+    `duration` Int32 `json:$.duration`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "user_id, timestamp, event_type"
+        

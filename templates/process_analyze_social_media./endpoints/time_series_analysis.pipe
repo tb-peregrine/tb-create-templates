@@ -1,0 +1,42 @@
+
+DESCRIPTION >
+    Analyzes engagement trends over time
+
+NODE time_series_node
+SQL >
+    %
+    SELECT 
+        {% if defined(time_granularity) and String(time_granularity, 'day') = 'hour' %}
+            toStartOfHour(event_timestamp) AS time_period,
+        {% elif defined(time_granularity) and String(time_granularity, 'day') = 'month' %}
+            toStartOfMonth(event_timestamp) AS time_period,
+        {% else %}
+            toStartOfDay(event_timestamp) AS time_period,
+        {% end %}
+        platform,
+        count() AS event_count,
+        sum(engagement_value) AS total_engagement,
+        countIf(event_type = 'like') AS likes,
+        countIf(event_type = 'share') AS shares,
+        countIf(event_type = 'comment') AS comments,
+        countIf(event_type = 'view') AS views
+    FROM social_media_events
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND event_timestamp >= '2023-01-01 00:00:00'
+    {% end %}
+    {% if defined(end_date) %}
+        AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND event_timestamp <= '2023-12-31 23:59:59'
+    {% end %}
+    {% if defined(platform) %}
+        AND platform = {{String(platform, 'all')}}
+    {% end %}
+    GROUP BY time_period, platform
+    ORDER BY time_period, platform
+
+TYPE endpoint
+        

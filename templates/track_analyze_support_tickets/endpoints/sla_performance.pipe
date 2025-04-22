@@ -1,0 +1,60 @@
+
+DESCRIPTION >
+    API to analyze SLA performance for response and resolution times
+
+NODE sla_performance_node
+SQL >
+    %
+    SELECT
+        priority,
+        count() as total_tickets,
+        countIf(first_response_at IS NOT NULL AND dateDiff('minute', created_at, first_response_at) <= 
+            CASE priority
+                WHEN 'high' THEN {{Int(high_priority_response_sla, 30)}}
+                WHEN 'medium' THEN {{Int(medium_priority_response_sla, 60)}}
+                WHEN 'low' THEN {{Int(low_priority_response_sla, 120)}}
+                ELSE {{Int(default_response_sla, 60)}}
+            END) as met_response_sla,
+        
+        countIf(resolved_at IS NOT NULL AND dateDiff('minute', created_at, resolved_at) <= 
+            CASE priority
+                WHEN 'high' THEN {{Int(high_priority_resolution_sla, 240)}}
+                WHEN 'medium' THEN {{Int(medium_priority_resolution_sla, 480)}}
+                WHEN 'low' THEN {{Int(low_priority_resolution_sla, 1440)}}
+                ELSE {{Int(default_resolution_sla, 480)}}
+            END) as met_resolution_sla,
+            
+        round(countIf(first_response_at IS NOT NULL AND dateDiff('minute', created_at, first_response_at) <= 
+            CASE priority
+                WHEN 'high' THEN {{Int(high_priority_response_sla, 30)}}
+                WHEN 'medium' THEN {{Int(medium_priority_response_sla, 60)}}
+                WHEN 'low' THEN {{Int(low_priority_response_sla, 120)}}
+                ELSE {{Int(default_response_sla, 60)}}
+            END) / count() * 100, 2) as response_sla_percentage,
+            
+        round(countIf(resolved_at IS NOT NULL AND dateDiff('minute', created_at, resolved_at) <= 
+            CASE priority
+                WHEN 'high' THEN {{Int(high_priority_resolution_sla, 240)}}
+                WHEN 'medium' THEN {{Int(medium_priority_resolution_sla, 480)}}
+                WHEN 'low' THEN {{Int(low_priority_resolution_sla, 1440)}}
+                ELSE {{Int(default_resolution_sla, 480)}}
+            END) / count() * 100, 2) as resolution_sla_percentage
+    FROM support_tickets
+    WHERE created_at BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(category) %}
+    AND category = {{String(category)}}
+    {% end %}
+    {% if defined(agent_id) %}
+    AND agent_id = {{String(agent_id)}}
+    {% end %}
+    GROUP BY priority
+    ORDER BY 
+    CASE priority
+        WHEN 'high' THEN 1
+        WHEN 'medium' THEN 2
+        WHEN 'low' THEN 3
+        ELSE 4
+    END
+
+TYPE endpoint
+        

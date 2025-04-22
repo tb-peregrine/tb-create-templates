@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Endpoint to analyze sentiment trends over time with aggregated metrics
+
+NODE sentiment_trends_node
+SQL >
+    %
+    SELECT
+        toStartOfDay(timestamp) AS date,
+        product_id,
+        sentiment_label,
+        count() AS feedback_count,
+        avg(sentiment_score) AS avg_sentiment_score
+    FROM feedback_sentiment
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id, '')}}
+    {% end %}
+    GROUP BY date, product_id, sentiment_label
+    ORDER BY date DESC, product_id, sentiment_label
+
+TYPE endpoint
+        

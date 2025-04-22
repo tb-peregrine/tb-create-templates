@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Analyzes customer interactions across different devices and channels
+
+NODE device_channel_analysis_node
+SQL >
+    %
+    SELECT 
+        device,
+        channel,
+        count() as touchpoints,
+        count(DISTINCT customer_id) as unique_customers,
+        countIf(conversion = 1) as conversions,
+        round(countIf(conversion = 1) / count() * 100, 2) as conversion_rate,
+        sum(transaction_amount) as total_revenue,
+        avg(time_spent) as avg_time_spent
+    FROM customer_touchpoints
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY device, channel
+    ORDER BY touchpoints DESC
+
+TYPE endpoint
+        

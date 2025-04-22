@@ -1,0 +1,52 @@
+
+DESCRIPTION >
+    Shows API response time trends over time with percentiles
+
+NODE api_response_time_by_time_node
+SQL >
+    %
+    SELECT
+        toStartOfInterval(timestamp, {{String(interval, '15 minute')}}) AS time_bucket,
+        api_id,
+        {% if defined(group_by_endpoint) and group_by_endpoint %}endpoint,{% end %}
+        {% if defined(group_by_method) and group_by_method %}method,{% end %}
+        count() AS total_requests,
+        avg(response_time_ms) AS avg_response_time_ms,
+        quantile(0.50)(response_time_ms) AS p50_response_time_ms,
+        quantile(0.95)(response_time_ms) AS p95_response_time_ms,
+        quantile(0.99)(response_time_ms) AS p99_response_time_ms,
+        countIf(success = 1) / count() AS success_rate
+    FROM api_logs
+    WHERE 1=1
+    {% if defined(api_id) %}
+        AND api_id = {{String(api_id, '')}}
+    {% end %}
+    {% if defined(endpoint) %}
+        AND endpoint = {{String(endpoint, '')}}
+    {% end %}
+    {% if defined(method) %}
+        AND method = {{String(method, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 24 hour
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY
+        time_bucket,
+        api_id
+        {% if defined(group_by_endpoint) and group_by_endpoint %}, endpoint{% end %}
+        {% if defined(group_by_method) and group_by_method %}, method{% end %}
+    ORDER BY
+        time_bucket,
+        api_id
+        {% if defined(group_by_endpoint) and group_by_endpoint %}, endpoint{% end %}
+        {% if defined(group_by_method) and group_by_method %}, method{% end %}
+
+TYPE endpoint
+        

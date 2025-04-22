@@ -1,0 +1,59 @@
+DESCRIPTION >
+    Analyze transaction data and join with fraud signals to detect suspicious activity
+
+NODE fraud_analysis_node
+SQL >
+    %
+    SELECT 
+        t.transaction_id,
+        t.user_id,
+        t.merchant_id,
+        t.amount,
+        t.payment_method,
+        t.transaction_timestamp,
+        t.ip_address,
+        t.device_id,
+        t.location,
+        t.status,
+        t.is_flagged,
+        f.signal_type,
+        f.risk_score,
+        CASE 
+            WHEN f.risk_score IS NULL THEN 0
+            ELSE f.risk_score 
+        END as fraud_risk_score,
+        CASE 
+            WHEN f.risk_score > 0.7 OR (t.is_flagged = 1) THEN 'High'
+            WHEN f.risk_score > 0.4 THEN 'Medium'
+            ELSE 'Low'
+        END as risk_level
+    FROM payment_transactions t
+    LEFT JOIN fraud_signals f ON 
+        (t.ip_address = f.ip_address OR 
+         t.device_id = f.device_id OR 
+         t.merchant_id = f.merchant_id)
+        AND f.is_active = 1
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND t.user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(merchant_id) %}
+        AND t.merchant_id = {{String(merchant_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND t.transaction_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND t.transaction_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(min_risk_score) %}
+        AND (f.risk_score >= {{Float64(min_risk_score, 0)}} OR f.risk_score IS NULL)
+    {% end %}
+    {% if defined(risk_level) %}
+        HAVING risk_level = {{String(risk_level, 'High')}}
+    {% end %}
+    ORDER BY fraud_risk_score DESC, t.transaction_timestamp DESC
+    {% if defined(limit) %}
+        LIMIT {{UInt16(limit, 100)}}
+    {% end %}
+TYPE endpoint

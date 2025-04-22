@@ -1,0 +1,10 @@
+{"user_id": "user_322", "event_date": "2025-03-31 09:53:35", "first_seen_date": "2025-01-30 09:53:35", "event_type": "purchase", "platform": "web", "country": "CA", "session_id": "session_322"}
+{"user_id": "user_974", "event_date": "2025-04-08 05:53:35", "first_seen_date": "2025-04-08 05:53:35", "event_type": "logout", "platform": "web", "country": "DE", "session_id": "session_2974"}
+{"user_id": "user_415", "event_date": "2025-04-07 04:53:35", "first_seen_date": "2025-04-07 04:53:35", "event_type": "signup", "platform": "desktop", "country": "JP", "session_id": "session_1415"}
+{"user_id": "user_370", "event_date": "2025-04-12 09:53:35", "first_seen_date": "2025-04-12 09:53:35", "event_type": "signup", "platform": "web", "country": "US", "session_id": "session_1370"}
+{"user_id": "user_271", "event_date": "2025-04-10 20:53:35", "first_seen_date": "2025-02-09 20:53:35", "event_type": "login", "platform": "desktop", "country": "UK", "session_id": "session_4271"}
+{"user_id": "user_375", "event_date": "2025-04-07 04:53:35", "first_seen_date": "2025-03-08 04:53:35", "event_type": "signup", "platform": "desktop", "country": "JP", "session_id": "session_2375"}
+{"user_id": "user_371", "event_date": "2025-04-21 00:53:35", "first_seen_date": "2025-02-20 00:53:35", "event_type": "login", "platform": "desktop", "country": "UK", "session_id": "session_371"}
+{"user_id": "user_195", "event_date": "2025-03-28 00:53:35", "first_seen_date": "2025-02-26 00:53:35", "event_type": "signup", "platform": "desktop", "country": "JP", "session_id": "session_4195"}
+{"user_id": "user_604", "event_date": "2025-04-18 15:53:35", "first_seen_date": "2025-04-18 15:53:35", "event_type": "logout", "platform": "ios", "country": "DE", "session_id": "session_4604"}
+{"user_id": "user_856", "event_date": "2025-04-06 03:53:35", "first_seen_date": "2025-02-05 03:53:35", "event_type": "login", "platform": "ios", "country": "BR", "session_id": "session_4856"}

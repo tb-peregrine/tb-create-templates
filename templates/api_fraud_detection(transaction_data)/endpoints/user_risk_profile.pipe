@@ -1,0 +1,97 @@
+DESCRIPTION >
+    Generate risk profiles for users based on their transaction history and fraud signals
+
+NODE user_risk_profile_node
+SQL >
+    %
+    WITH user_transactions AS (
+        SELECT
+            user_id,
+            count() as total_transactions,
+            sum(is_flagged) as flagged_transactions,
+            count(DISTINCT merchant_id) as unique_merchants,
+            count(DISTINCT payment_method) as payment_methods_used,
+            count(DISTINCT ip_address) as unique_ip_addresses,
+            count(DISTINCT device_id) as unique_devices,
+            count(DISTINCT location) as unique_locations,
+            min(transaction_timestamp) as first_transaction,
+            max(transaction_timestamp) as last_transaction
+        FROM payment_transactions
+        WHERE 1=1
+        {% if defined(start_date) %}
+            AND transaction_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND transaction_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY user_id
+    ),
+    
+    fraud_matches AS (
+        SELECT
+            t.user_id,
+            count() as fraud_signal_matches,
+            avg(f.risk_score) as avg_risk_score
+        FROM payment_transactions t
+        JOIN fraud_signals f ON
+            (t.ip_address = f.ip_address OR 
+             t.device_id = f.device_id OR 
+             t.merchant_id = f.merchant_id)
+            AND f.is_active = 1
+        WHERE 1=1
+        {% if defined(start_date) %}
+            AND t.transaction_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND t.transaction_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY t.user_id
+    )
+    
+    SELECT
+        ut.user_id,
+        ut.total_transactions,
+        ut.flagged_transactions,
+        ut.unique_merchants,
+        ut.payment_methods_used,
+        ut.unique_ip_addresses,
+        ut.unique_devices,
+        ut.unique_locations,
+        ut.first_transaction,
+        ut.last_transaction,
+        dateDiff('day', ut.first_transaction, ut.last_transaction) as account_age_days,
+        fm.fraud_signal_matches,
+        fm.avg_risk_score,
+        CASE
+            WHEN fm.avg_risk_score IS NULL THEN 0
+            ELSE fm.avg_risk_score
+        END as risk_score,
+        CASE
+            WHEN ut.flagged_transactions > 0 OR (fm.avg_risk_score IS NOT NULL AND fm.avg_risk_score > 0.7) THEN 'High'
+            WHEN (fm.avg_risk_score IS NOT NULL AND fm.avg_risk_score > 0.4) OR (ut.unique_devices > 5 AND ut.unique_locations > 5) THEN 'Medium'
+            ELSE 'Low'
+        END as risk_level
+    FROM user_transactions ut
+    LEFT JOIN fraud_matches fm ON ut.user_id = fm.user_id
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND ut.user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(min_transactions) %}
+        AND ut.total_transactions >= {{Int32(min_transactions, 1)}}
+    {% end %}
+    {% if defined(risk_level_filter) %}
+        HAVING risk_level = {{String(risk_level_filter, 'High')}}
+    {% end %}
+    ORDER BY 
+        {% if defined(sort_by) and sort_by == 'risk' %}
+            risk_score DESC
+        {% elif defined(sort_by) and sort_by == 'transactions' %}
+            total_transactions DESC
+        {% else %}
+            risk_score DESC
+        {% end %}
+    {% if defined(limit) %}
+        LIMIT {{UInt16(limit, 100)}}
+    {% end %}
+TYPE endpoint

@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Raw events data for A/B tests including user interactions and conversions
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `session_id` String `json:$.session_id`,
+    `test_id` String `json:$.test_id`,
+    `variant` String `json:$.variant`,
+    `event_type` String `json:$.event_type`,
+    `event_name` String `json:$.event_name`,
+    `value` Float64 `json:$.value`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "test_id, variant, timestamp"
+        

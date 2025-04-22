@@ -1,0 +1,85 @@
+
+DESCRIPTION >
+    Get top performing products based on selected metrics compared to category benchmarks
+
+NODE top_performing_products_node
+SQL >
+    %
+    WITH product_metrics_agg AS (
+        SELECT
+            product_id,
+            product_name,
+            category,
+            AVG(sales_amount) AS avg_sales_amount,
+            AVG(units_sold) AS avg_units_sold,
+            AVG(customer_satisfaction) AS avg_customer_satisfaction,
+            AVG(page_views) AS avg_page_views,
+            AVG(conversion_rate) AS avg_conversion_rate,
+            AVG(return_rate) AS avg_return_rate
+        FROM product_metrics
+        WHERE 1=1
+        {% if defined(category) %}
+            AND category = {{String(category, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY product_id, product_name, category
+    )
+    
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.category,
+        p.avg_sales_amount,
+        p.avg_units_sold,
+        p.avg_customer_satisfaction,
+        p.avg_conversion_rate,
+        p.avg_return_rate,
+        {% if defined(metric) and metric == 'units_sold' %}
+            (p.avg_units_sold / NULLIF(b.benchmark_value, 0)) * 100 AS performance_score
+        {% elif defined(metric) and metric == 'customer_satisfaction' %}
+            (p.avg_customer_satisfaction / NULLIF(b.benchmark_value, 0)) * 100 AS performance_score
+        {% elif defined(metric) and metric == 'conversion_rate' %}
+            (p.avg_conversion_rate / NULLIF(b.benchmark_value, 0)) * 100 AS performance_score
+        {% elif defined(metric) and metric == 'return_rate' %}
+            (p.avg_return_rate / NULLIF(b.benchmark_value, 0)) * 100 AS performance_score
+        {% else %}
+            (p.avg_sales_amount / NULLIF(b.benchmark_value, 0)) * 100 AS performance_score
+        {% end %}
+    FROM product_metrics_agg p
+    LEFT JOIN product_benchmarks b ON p.category = b.category AND 
+        {% if defined(metric) and metric == 'units_sold' %}
+            b.metric_name = 'units_sold'
+        {% elif defined(metric) and metric == 'customer_satisfaction' %}
+            b.metric_name = 'customer_satisfaction'
+        {% elif defined(metric) and metric == 'conversion_rate' %}
+            b.metric_name = 'conversion_rate'
+        {% elif defined(metric) and metric == 'return_rate' %}
+            b.metric_name = 'return_rate'
+        {% else %}
+            b.metric_name = 'sales_amount'
+        {% end %}
+    WHERE 
+        {% if defined(metric) and metric == 'return_rate' %}
+            p.avg_return_rate <= b.benchmark_value
+        {% else %}
+            p.avg_sales_amount >= b.benchmark_value
+        {% end %}
+    ORDER BY 
+        {% if defined(metric) and metric == 'return_rate' %}
+            performance_score ASC
+        {% else %}
+            performance_score DESC
+        {% end %}
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 10)}}
+    {% else %}
+        LIMIT 10
+    {% end %}
+
+TYPE endpoint
+        

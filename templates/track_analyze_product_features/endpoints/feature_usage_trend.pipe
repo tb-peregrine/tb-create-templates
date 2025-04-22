@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Tracks usage trend of features over time by day or week
+
+NODE feature_usage_trend_node
+SQL >
+    %
+    SELECT 
+        {% if String(interval, 'day') == 'day' %}
+            toDate(timestamp) AS period,
+        {% else %}
+            toStartOfWeek(timestamp) AS period,
+        {% end %}
+        feature_id,
+        feature_name,
+        count() AS events,
+        count(DISTINCT user_id) AS unique_users
+    FROM feature_events
+    WHERE timestamp BETWEEN {{DateTime(start_date, 'now() - interval 30 day')}} AND {{DateTime(end_date, 'now()')}}
+    {% if defined(feature_id) %}AND feature_id = {{String(feature_id, '')}}{% end %}
+    GROUP BY period, feature_id, feature_name
+    ORDER BY period, feature_id
+
+TYPE endpoint
+        

@@ -1,0 +1,50 @@
+
+DESCRIPTION >
+    Tracks funnel conversion rates over time for trend analysis
+
+NODE daily_conversion_trends_node
+SQL >
+    %
+    WITH daily_funnel AS (
+        SELECT 
+            toDate(event_timestamp) as day,
+            user_id,
+            min(if(event_name = {{String(step1, 'page_view')}}, 1, 0)) as reached_step1,
+            min(if(event_name = {{String(step2, 'add_to_cart')}}, 1, 0)) as reached_step2,
+            min(if(event_name = {{String(step3, 'checkout')}}, 1, 0)) as reached_step3,
+            min(if(event_name = {{String(step4, 'purchase')}}, 1, 0)) as reached_step4
+        FROM user_events
+        WHERE 
+            event_timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% if defined(country) %} AND country = {{String(country)}} {% end %}
+            {% if defined(device) %} AND device = {{String(device)}} {% end %}
+            {% if defined(browser) %} AND browser = {{String(browser)}} {% end %}
+        GROUP BY day, user_id
+    ),
+    daily_counts AS (
+        SELECT
+            day,
+            count(user_id) as total_users,
+            countIf(reached_step2 = 1) as step2_users,
+            countIf(reached_step3 = 1) as step3_users,
+            countIf(reached_step4 = 1) as step4_users
+        FROM daily_funnel
+        WHERE reached_step1 = 1
+        GROUP BY day
+    )
+    
+    SELECT
+        day,
+        total_users as step1_users,
+        step2_users,
+        step3_users,
+        step4_users,
+        round(100.0 * step2_users / total_users, 2) as step1_to_step2_rate,
+        round(100.0 * step3_users / step2_users, 2) as step2_to_step3_rate,
+        round(100.0 * step4_users / step3_users, 2) as step3_to_step4_rate,
+        round(100.0 * step4_users / total_users, 2) as overall_conversion_rate
+    FROM daily_counts
+    ORDER BY day
+
+TYPE endpoint
+        

@@ -1,0 +1,79 @@
+
+DESCRIPTION >
+    Compare product performance metrics against category benchmarks
+
+NODE product_performance_vs_benchmark_node
+SQL >
+    %
+    WITH product_metrics_agg AS (
+        SELECT
+            product_id,
+            product_name,
+            category,
+            AVG(sales_amount) AS avg_sales_amount,
+            AVG(units_sold) AS avg_units_sold,
+            AVG(customer_satisfaction) AS avg_customer_satisfaction,
+            AVG(page_views) AS avg_page_views,
+            AVG(conversion_rate) AS avg_conversion_rate,
+            AVG(return_rate) AS avg_return_rate
+        FROM product_metrics
+        WHERE 1=1
+        {% if defined(product_id) %}
+            AND product_id = {{String(product_id, '')}}
+        {% end %}
+        {% if defined(category) %}
+            AND category = {{String(category, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY product_id, product_name, category
+    )
+    
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.category,
+        p.avg_sales_amount,
+        b1.benchmark_value AS benchmark_sales_amount,
+        (p.avg_sales_amount / NULLIF(b1.benchmark_value, 0)) * 100 AS sales_pct_of_benchmark,
+        p.avg_units_sold,
+        b2.benchmark_value AS benchmark_units_sold,
+        (p.avg_units_sold / NULLIF(b2.benchmark_value, 0)) * 100 AS units_pct_of_benchmark,
+        p.avg_customer_satisfaction,
+        b3.benchmark_value AS benchmark_customer_satisfaction,
+        (p.avg_customer_satisfaction / NULLIF(b3.benchmark_value, 0)) * 100 AS satisfaction_pct_of_benchmark,
+        p.avg_conversion_rate,
+        b4.benchmark_value AS benchmark_conversion_rate,
+        (p.avg_conversion_rate / NULLIF(b4.benchmark_value, 0)) * 100 AS conversion_pct_of_benchmark,
+        p.avg_return_rate,
+        b5.benchmark_value AS benchmark_return_rate,
+        (p.avg_return_rate / NULLIF(b5.benchmark_value, 0)) * 100 AS return_pct_of_benchmark
+    FROM product_metrics_agg p
+    LEFT JOIN product_benchmarks b1 ON p.category = b1.category AND b1.metric_name = 'sales_amount'
+    LEFT JOIN product_benchmarks b2 ON p.category = b2.category AND b2.metric_name = 'units_sold'
+    LEFT JOIN product_benchmarks b3 ON p.category = b3.category AND b3.metric_name = 'customer_satisfaction'
+    LEFT JOIN product_benchmarks b4 ON p.category = b4.category AND b4.metric_name = 'conversion_rate'
+    LEFT JOIN product_benchmarks b5 ON p.category = b5.category AND b5.metric_name = 'return_rate'
+    ORDER BY 
+    {% if defined(sort_by) %}
+        {{String(sort_by, 'sales_pct_of_benchmark')}} 
+    {% else %}
+        sales_pct_of_benchmark 
+    {% end %}
+    {% if defined(sort_order) and sort_order == 'asc' %}
+        ASC
+    {% else %}
+        DESC
+    {% end %}
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% else %}
+        LIMIT 100
+    {% end %}
+
+TYPE endpoint
+        

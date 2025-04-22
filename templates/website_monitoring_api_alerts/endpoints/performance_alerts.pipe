@@ -1,0 +1,36 @@
+
+DESCRIPTION >
+    Endpoint to detect performance issues and generate alerts based on thresholds
+
+NODE performance_alerts_node
+SQL >
+    %
+    SELECT 
+        timestamp,
+        website_id,
+        page_url,
+        page_load_time_ms,
+        server_response_time_ms,
+        error_count,
+        CASE 
+            WHEN page_load_time_ms > {{Int32(page_load_threshold, 3000)}} THEN 'High page load time'
+            WHEN server_response_time_ms > {{Int32(response_threshold, 1000)}} THEN 'High server response time'
+            WHEN error_count > {{Int32(error_threshold, 5)}} THEN 'High error count'
+            ELSE 'Normal'
+        END AS alert_type,
+        CASE 
+            WHEN page_load_time_ms > {{Int32(page_load_threshold, 3000)}} OR 
+                 server_response_time_ms > {{Int32(response_threshold, 1000)}} OR 
+                 error_count > {{Int32(error_threshold, 5)}} THEN 'alert'
+            ELSE 'normal'
+        END AS status
+    FROM website_performance
+    WHERE timestamp >= now() - interval {{Int32(time_window, 15)}} minute
+    {% if defined(website_id) %}
+        AND website_id = {{String(website_id, '')}}
+    {% end %}
+    HAVING status = 'alert'
+    ORDER BY timestamp DESC
+
+TYPE endpoint
+        

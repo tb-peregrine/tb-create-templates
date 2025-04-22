@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Analyze page performance based on engagement scores and user interaction metrics
+
+NODE page_performance_node
+SQL >
+    %
+    SELECT 
+        page,
+        count(*) as view_count,
+        count(DISTINCT user_id) as unique_visitors,
+        avg(engagement_score) as avg_engagement,
+        avg(duration_seconds) as avg_time_on_page,
+        sum(duration_seconds) as total_time_on_page
+    FROM user_interactions
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(page) %}
+        AND page = {{String(page, '')}}
+    {% end %}
+    GROUP BY page
+    ORDER BY avg_engagement DESC
+
+TYPE endpoint
+        

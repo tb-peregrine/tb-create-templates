@@ -1,0 +1,93 @@
+
+DESCRIPTION >
+    Apply different attribution models (first touch, last touch, linear) to evaluate campaign effectiveness
+
+NODE attribution_models_node
+SQL >
+    %
+    WITH 
+    user_touchpoints AS (
+        SELECT 
+            user_id,
+            campaign_id,
+            channel,
+            timestamp,
+            action,
+            row_number() OVER (PARTITION BY user_id ORDER BY timestamp ASC) AS touch_order_asc,
+            row_number() OVER (PARTITION BY user_id ORDER BY timestamp DESC) AS touch_order_desc
+        FROM marketing_events
+        WHERE 1=1
+            {% if defined(start_date) %}
+                AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+            {% end %}
+            {% if defined(end_date) %}
+                AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% end %}
+    ),
+    conversion_data AS (
+        SELECT 
+            user_id,
+            sum(conversion_value) AS total_conversion_value
+        FROM conversions
+        WHERE 1=1
+            {% if defined(start_date) %}
+                AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+            {% end %}
+            {% if defined(end_date) %}
+                AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% end %}
+        GROUP BY user_id
+    ),
+    first_touch AS (
+        SELECT 
+            ut.campaign_id,
+            ut.channel,
+            sum(cd.total_conversion_value) AS first_touch_revenue
+        FROM user_touchpoints ut
+        JOIN conversion_data cd ON ut.user_id = cd.user_id
+        WHERE ut.touch_order_asc = 1
+        GROUP BY ut.campaign_id, ut.channel
+    ),
+    last_touch AS (
+        SELECT 
+            ut.campaign_id,
+            ut.channel,
+            sum(cd.total_conversion_value) AS last_touch_revenue
+        FROM user_touchpoints ut
+        JOIN conversion_data cd ON ut.user_id = cd.user_id
+        WHERE ut.touch_order_desc = 1
+        GROUP BY ut.campaign_id, ut.channel
+    ),
+    touch_count AS (
+        SELECT 
+            user_id,
+            count(*) AS total_touches
+        FROM user_touchpoints
+        GROUP BY user_id
+    ),
+    linear_touch AS (
+        SELECT 
+            ut.campaign_id,
+            ut.channel,
+            sum(cd.total_conversion_value / tc.total_touches) AS linear_touch_revenue
+        FROM user_touchpoints ut
+        JOIN conversion_data cd ON ut.user_id = cd.user_id
+        JOIN touch_count tc ON ut.user_id = tc.user_id
+        GROUP BY ut.campaign_id, ut.channel
+    )
+    SELECT 
+        coalesce(ft.campaign_id, lt.campaign_id, lin.campaign_id) AS campaign_id,
+        c.campaign_name,
+        coalesce(ft.channel, lt.channel, lin.channel) AS channel,
+        round(coalesce(ft.first_touch_revenue, 0), 2) AS first_touch_revenue,
+        round(coalesce(lt.last_touch_revenue, 0), 2) AS last_touch_revenue,
+        round(coalesce(lin.linear_touch_revenue, 0), 2) AS linear_attribution_revenue
+    FROM first_touch ft
+    FULL OUTER JOIN last_touch lt ON ft.campaign_id = lt.campaign_id AND ft.channel = lt.channel
+    FULL OUTER JOIN linear_touch lin ON coalesce(ft.campaign_id, lt.campaign_id) = lin.campaign_id AND coalesce(ft.channel, lt.channel) = lin.channel
+    LEFT JOIN campaigns c ON coalesce(ft.campaign_id, lt.campaign_id, lin.campaign_id) = c.campaign_id
+    ORDER BY (coalesce(ft.first_touch_revenue, 0) + coalesce(lt.last_touch_revenue, 0) + coalesce(lin.linear_touch_revenue, 0)) DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

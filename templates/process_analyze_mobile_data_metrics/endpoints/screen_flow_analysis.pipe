@@ -1,0 +1,54 @@
+
+DESCRIPTION >
+    Analyzes user navigation patterns through app screens to identify common paths and drop-off points
+
+NODE screen_flow_analysis_node
+SQL >
+    %
+    WITH screen_views AS (
+        SELECT
+            session_id,
+            user_id,
+            timestamp,
+            screen_name,
+            device_type,
+            country,
+            row_number() OVER (PARTITION BY session_id ORDER BY timestamp) as screen_order
+        FROM app_events
+        WHERE event_type = 'screen_view'
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(country) %}
+            AND country = {{String(country, 'US')}}
+        {% end %}
+        {% if defined(device_type) %}
+            AND device_type = {{String(device_type, 'mobile')}}
+        {% end %}
+    ),
+    
+    screen_transitions AS (
+        SELECT
+            current.screen_name as from_screen,
+            next.screen_name as to_screen,
+            count(*) as transition_count
+        FROM screen_views current
+        JOIN screen_views next 
+            ON current.session_id = next.session_id 
+            AND current.screen_order = next.screen_order - 1
+        GROUP BY from_screen, to_screen
+    )
+    
+    SELECT
+        from_screen,
+        to_screen,
+        transition_count,
+        round(transition_count / sum(transition_count) OVER (PARTITION BY from_screen) * 100, 2) as transition_percentage
+    FROM screen_transitions
+    ORDER BY from_screen, transition_count DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Conversion events tracking when users complete a desired action after ad interaction
+
+SCHEMA >
+    `conversion_id` String `json:$.conversion_id`,
+    `click_id` String `json:$.click_id`,
+    `campaign_id` String `json:$.campaign_id`,
+    `user_id` String `json:$.user_id`,
+    `conversion_type` String `json:$.conversion_type`,
+    `revenue` Float64 `json:$.revenue`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `platform` String `json:$.platform`,
+    `device` String `json:$.device`,
+    `country` String `json:$.country`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "campaign_id, timestamp"
+        

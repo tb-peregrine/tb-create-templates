@@ -1,0 +1,43 @@
+
+DESCRIPTION >
+    Endpoint to analyze product satisfaction metrics over time with flexible filtering
+
+NODE product_satisfaction_by_time_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        {{String(time_granularity, 'day')}} as time_granularity,
+        CASE
+            WHEN {{String(time_granularity, 'day')}} = 'hour' THEN toStartOfHour(created_at)
+            WHEN {{String(time_granularity, 'day')}} = 'day' THEN toStartOfDay(created_at)
+            WHEN {{String(time_granularity, 'day')}} = 'week' THEN toStartOfWeek(created_at)
+            WHEN {{String(time_granularity, 'day')}} = 'month' THEN toStartOfMonth(created_at)
+            ELSE toStartOfDay(created_at)
+        END as time_period,
+        count() as feedback_count,
+        avg(rating) as avg_rating,
+        avg(sentiment_score) as avg_sentiment,
+        countIf(rating >= 4) / count() as satisfaction_rate
+    FROM user_feedback
+    WHERE 1=1
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id)}}
+    {% end %}
+    {% if defined(category) %}
+        AND category = {{String(category)}}
+    {% end %}
+    {% if defined(platform) %}
+        AND platform = {{String(platform)}}
+    {% end %}
+    {% if defined(min_date) %}
+        AND created_at >= {{DateTime(min_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(max_date) %}
+        AND created_at <= {{DateTime(max_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY product_id, time_granularity, time_period
+    ORDER BY product_id, time_period
+
+TYPE endpoint
+        

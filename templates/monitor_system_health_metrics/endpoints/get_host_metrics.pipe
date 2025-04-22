@@ -1,0 +1,42 @@
+
+DESCRIPTION >
+    Retrieves system metrics for specific hosts with optional time range and filtering
+
+NODE get_host_metrics_node
+SQL >
+    %
+    SELECT
+        timestamp,
+        host_id,
+        host_name,
+        cpu_usage_percent,
+        memory_usage_percent,
+        disk_usage_percent,
+        network_in_bytes,
+        network_out_bytes,
+        system_load_1m,
+        system_load_5m,
+        system_load_15m,
+        is_healthy
+    FROM system_metrics
+    WHERE 1=1
+    {% if defined(host_id) %}
+        AND host_id = {{String(host_id, '')}}
+    {% end %}
+    {% if defined(host_name) %}
+        AND host_name = {{String(host_name, '')}}
+    {% end %}
+    {% if defined(start_time) %}
+        AND timestamp >= {{DateTime(start_time, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_time) %}
+        AND timestamp <= {{DateTime(end_time, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(min_cpu_usage) %}
+        AND cpu_usage_percent >= {{Float32(min_cpu_usage, 0)}}
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 1000)}}
+
+TYPE endpoint
+        

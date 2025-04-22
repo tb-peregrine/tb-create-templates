@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    API to analyze product usage across different devices and platforms
+
+NODE device_platform_distribution_node
+SQL >
+    %
+    SELECT 
+        device_type,
+        os,
+        browser,
+        COUNT(*) AS events,
+        COUNT(DISTINCT user_id) AS users,
+        COUNT(DISTINCT feature_id) AS features_used
+    FROM user_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, "2023-01-01 00:00:00")}} AND {{DateTime(end_date, "2023-12-31 23:59:59")}}
+    GROUP BY device_type, os, browser
+    ORDER BY users DESC
+
+TYPE endpoint
+        

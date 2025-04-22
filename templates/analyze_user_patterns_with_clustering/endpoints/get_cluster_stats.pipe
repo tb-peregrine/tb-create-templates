@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    Get statistics for each cluster of users
+
+NODE get_cluster_stats_node
+SQL >
+    %
+    SELECT
+        cluster_id,
+        count(*) AS user_count,
+        avg(avg_session_duration) AS avg_cluster_session_duration,
+        avg(total_sessions) AS avg_cluster_sessions,
+        avg(avg_clicks_per_session) AS avg_cluster_clicks,
+        any(country) AS representative_country
+    FROM user_features
+    WHERE 1=1
+    {% if defined(cluster_id) %}
+        AND cluster_id = {{UInt8(cluster_id, 0)}}
+    {% end %}
+    {% if defined(min_users) %}
+        HAVING user_count >= {{UInt32(min_users, 5)}}
+    {% end %}
+    GROUP BY cluster_id
+    ORDER BY user_count DESC
+
+TYPE endpoint
+        

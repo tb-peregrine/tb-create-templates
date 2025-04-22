@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Stores individual purchase transactions with associated customer and product information
+
+SCHEMA >
+    `purchase_id` String `json:$.purchase_id`,
+    `customer_id` String `json:$.customer_id`,
+    `product_id` String `json:$.product_id`,
+    `product_name` String `json:$.product_name`,
+    `product_category` String `json:$.product_category`,
+    `purchase_amount` Float64 `json:$.purchase_amount`,
+    `purchase_date` DateTime `json:$.purchase_date`,
+    `payment_method` String `json:$.payment_method`,
+    `currency` String `json:$.currency`,
+    `created_at` DateTime `json:$.created_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(purchase_date)"
+ENGINE_SORTING_KEY "customer_id, purchase_date"
+        

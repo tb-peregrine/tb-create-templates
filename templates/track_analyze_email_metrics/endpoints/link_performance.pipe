@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Analyzes click performance of different links in email campaigns
+
+NODE link_performance_node
+SQL >
+    %
+    SELECT 
+        campaign_id,
+        link_url,
+        count() AS click_count,
+        count(DISTINCT recipient_id) AS unique_clickers,
+        min(event_timestamp) AS first_click,
+        max(event_timestamp) AS last_click
+    FROM email_events
+    WHERE event_type = 'click'
+        {% if defined(campaign_id) %}
+        AND campaign_id = {{String(campaign_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    GROUP BY campaign_id, link_url
+    ORDER BY click_count DESC
+TYPE endpoint
+        

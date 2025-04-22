@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Compare retention rates between different platforms
+
+NODE platform_retention_comparison_node
+SQL >
+    %
+    WITH cohort_sizes AS (
+        SELECT 
+            platform,
+            COUNT(DISTINCT user_id) AS cohort_size
+        FROM user_retention_events
+        WHERE first_seen_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(country) %}
+        AND country = {{String(country, 'US')}}
+        {% end %}
+        GROUP BY platform
+    )
+    SELECT 
+        a.platform,
+        dateDiff('day', a.first_seen_date, a.event_date) AS day,
+        COUNT(DISTINCT a.user_id) AS active_users,
+        cs.cohort_size,
+        round(COUNT(DISTINCT a.user_id) * 100.0 / cs.cohort_size, 2) AS retention_rate
+    FROM user_retention_events a
+    JOIN cohort_sizes cs ON a.platform = cs.platform
+    WHERE 
+        a.first_seen_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        AND a.event_date >= a.first_seen_date
+        {% if defined(country) %}
+        AND a.country = {{String(country, 'US')}}
+        {% end %}
+        AND dateDiff('day', a.first_seen_date, a.event_date) <= {{Int(retention_days, 30)}}
+    GROUP BY a.platform, day
+    ORDER BY a.platform, day
+
+TYPE endpoint
+        

@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Customer support tickets with timestamps for tracking response times
+
+SCHEMA >
+    `ticket_id` String `json:$.ticket_id`,
+    `customer_id` String `json:$.customer_id`,
+    `agent_id` String `json:$.agent_id`,
+    `priority` String `json:$.priority`,
+    `category` String `json:$.category`,
+    `status` String `json:$.status`,
+    `created_at` DateTime `json:$.created_at`,
+    `first_response_at` DateTime `json:$.first_response_at`,
+    `resolved_at` DateTime `json:$.resolved_at`,
+    `response_time_seconds` Int32 `json:$.response_time_seconds`,
+    `resolution_time_seconds` Int32 `json:$.resolution_time_seconds`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(created_at)"
+ENGINE_SORTING_KEY "created_at, priority, category, agent_id"
+        

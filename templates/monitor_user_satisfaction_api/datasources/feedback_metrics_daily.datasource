@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Daily aggregated feedback metrics for faster querying
+
+SCHEMA >
+    `date` Date `json:$.date`,
+    `product_id` String `json:$.product_id`,
+    `category` String `json:$.category`,
+    `platform` String `json:$.platform`,
+    `feedback_count` UInt32 `json:$.feedback_count`,
+    `avg_rating` Float32 `json:$.avg_rating`,
+    `avg_sentiment` Float32 `json:$.avg_sentiment`,
+    `satisfaction_rate` Float32 `json:$.satisfaction_rate`,
+    `positive_count` UInt32 `json:$.positive_count`,
+    `neutral_count` UInt32 `json:$.neutral_count`,
+    `negative_count` UInt32 `json:$.negative_count`
+
+ENGINE "AggregatingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(date)"
+ENGINE_SORTING_KEY "date, product_id, category, platform"
+        

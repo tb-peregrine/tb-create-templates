@@ -1,0 +1,15 @@
+
+DESCRIPTION >
+    Stores topic modeling results for user feedback
+
+SCHEMA >
+    `feedback_id` String `json:$.feedback_id`,
+    `topic_id` Int32 `json:$.topic_id`,
+    `topic_name` String `json:$.topic_name`,
+    `topic_probability` Float32 `json:$.topic_probability`,
+    `processed_at` DateTime `json:$.processed_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(processed_at)"
+ENGINE_SORTING_KEY "processed_at, feedback_id, topic_id"
+        

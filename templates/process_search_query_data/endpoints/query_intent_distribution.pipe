@@ -1,0 +1,29 @@
+DESCRIPTION >
+    API endpoint that provides the distribution of search query intents
+
+NODE query_intent_node
+SQL >
+    %
+    SELECT 
+        intent_category,
+        count() AS query_count,
+        avg(intent_confidence) AS avg_confidence,
+        uniq(query_text) AS unique_queries
+    FROM search_query_intents
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(min_confidence) %}
+        AND intent_confidence >= {{Float32(min_confidence, 0.5)}}
+    {% end %}
+    {% if defined(intent_category) %}
+        AND intent_category = {{String(intent_category, 'all')}}
+    {% end %}
+    GROUP BY intent_category
+    ORDER BY query_count DESC
+
+TYPE endpoint
