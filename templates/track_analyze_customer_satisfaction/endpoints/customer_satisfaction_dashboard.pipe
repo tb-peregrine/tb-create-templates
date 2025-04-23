@@ -1,0 +1,46 @@
+DESCRIPTION >
+    Main dashboard metrics for customer satisfaction including latest trends and comparisons
+
+NODE customer_satisfaction_dashboard_node
+SQL >
+    %
+    WITH current_period AS (
+        SELECT
+            category,
+            AVG(rating) as current_avg,
+            COUNT() as current_count
+        FROM customer_satisfaction
+        WHERE timestamp >= {{DateTime(current_start, 'now() - interval 30 day')}}
+          AND timestamp <= {{DateTime(current_end, 'now()')}}
+          {% if defined(category) %}
+          AND category = {{String(category, '')}}
+          {% end %}
+        GROUP BY category
+    ),
+    previous_period AS (
+        SELECT
+            category,
+            AVG(rating) as previous_avg,
+            COUNT() as previous_count
+        FROM customer_satisfaction
+        WHERE timestamp >= {{DateTime(previous_start, 'now() - interval 60 day')}}
+          AND timestamp <= {{DateTime(previous_end, 'now() - interval 31 day')}}
+          {% if defined(category) %}
+          AND category = {{String(category, '')}}
+          {% end %}
+        GROUP BY category
+    )
+    
+    SELECT
+        c.category,
+        ROUND(c.current_avg, 2) as current_period_avg,
+        c.current_count,
+        ROUND(p.previous_avg, 2) as previous_period_avg,
+        p.previous_count,
+        ROUND((c.current_avg - p.previous_avg), 2) as change,
+        ROUND((c.current_avg - p.previous_avg) / p.previous_avg * 100, 2) as change_percent
+    FROM current_period c
+    LEFT JOIN previous_period p ON c.category = p.category
+    ORDER BY c.category
+
+TYPE endpoint

@@ -1,0 +1,30 @@
+DESCRIPTION >
+    Analyzes feedback sentiment by extracting keywords from customer comments
+
+NODE feedback_sentiment_analysis_node
+SQL >
+    %
+    SELECT 
+        category,
+        rating,
+        COUNT() as feedback_count,
+        feedback
+    FROM customer_satisfaction
+    WHERE 1=1
+    {% if defined(rating_min) %}
+        AND rating >= {{Int(rating_min, 1)}}
+    {% end %}
+    {% if defined(rating_max) %}
+        AND rating <= {{Int(rating_max, 5)}}
+    {% end %}
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    {% if defined(search_term) %}
+        AND positionCaseInsensitive(feedback, {{String(search_term, '')}}) > 0
+    {% end %}
+    GROUP BY category, rating, feedback
+    ORDER BY rating ASC, feedback_count DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint

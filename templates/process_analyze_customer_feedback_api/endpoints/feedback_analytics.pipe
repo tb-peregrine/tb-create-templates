@@ -1,0 +1,30 @@
+DESCRIPTION >
+    API endpoint to get analytics and insights from customer feedback
+
+NODE feedback_analytics_node
+SQL >
+    %
+    SELECT 
+        category,
+        COUNT(*) as total_feedback,
+        AVG(rating) as avg_rating,
+        AVG(sentiment_score) as avg_sentiment,
+        countIf(rating >= 4) as positive_ratings,
+        countIf(rating <= 2) as negative_ratings,
+        countIf(sentiment_score > 0.5) as positive_sentiment_count,
+        countIf(sentiment_score < 0) as negative_sentiment_count
+    FROM customer_feedback
+    WHERE 1=1
+    {% if defined(date_from) %}
+        AND created_at >= {{DateTime(date_from, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(date_to) %}
+        AND created_at <= {{DateTime(date_to, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(source) %}
+        AND source = {{String(source, '')}}
+    {% end %}
+    GROUP BY category
+    ORDER BY {{String(order_by, 'total_feedback')}} {{String(order, 'DESC')}}
+
+TYPE endpoint

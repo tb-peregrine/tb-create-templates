@@ -1,0 +1,15 @@
+DESCRIPTION >
+    Aggregated metrics for user behavior stored for fast retrieval
+
+SCHEMA >
+    `segment_id` String `json:$.segment_id`,
+    `segment_name` String `json:$.segment_name`,
+    `metric_name` String `json:$.metric_name`,
+    `metric_value` Float64 `json:$.metric_value`,
+    `time_period` DateTime `json:$.time_period`,
+    `granularity` String `json:$.granularity`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMMDD(time_period)"
+ENGINE_SORTING_KEY "segment_id, metric_name, time_period, granularity"

@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Retrieve user activity data with filtering capabilities
+
+NODE get_user_activity_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        product_id,
+        event_type,
+        event_timestamp,
+        feature_used,
+        device_type,
+        platform,
+        duration_seconds
+    FROM product_usage_events
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id, '')}}
+    {% end %}
+    {% if defined(event_type) %}
+        AND event_type = {{String(event_type, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY event_timestamp DESC
+    LIMIT {{Int32(limit, 1000)}}
+
+TYPE endpoint
+        

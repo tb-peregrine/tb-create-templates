@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Datasource containing retention predictions for users
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `prediction_date` Date `json:$.prediction_date`,
+    `predicted_retention_7d` Float64 `json:$.predicted_retention_7d`,
+    `predicted_retention_30d` Float64 `json:$.predicted_retention_30d`,
+    `predicted_retention_90d` Float64 `json:$.predicted_retention_90d`,
+    `prediction_model_version` String `json:$.prediction_model_version`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(prediction_date)"
+ENGINE_SORTING_KEY "user_id, prediction_date"
+        

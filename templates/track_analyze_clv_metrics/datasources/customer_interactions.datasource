@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Stores customer interaction events such as logins, support contacts, and feature usage
+
+SCHEMA >
+    `interaction_id` String `json:$.interaction_id`,
+    `customer_id` String `json:$.customer_id`,
+    `interaction_date` DateTime `json:$.interaction_date`,
+    `interaction_type` String `json:$.interaction_type`,
+    `channel` String `json:$.channel`,
+    `duration_seconds` UInt32 `json:$.duration_seconds`,
+    `satisfaction_score` UInt8 `json:$.satisfaction_score`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(interaction_date)"
+ENGINE_SORTING_KEY "customer_id, interaction_date"
+        

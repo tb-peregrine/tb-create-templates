@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Compares campaign performance across different channels with ROI metrics
+
+NODE campaign_comparison_node
+SQL >
+    %
+    SELECT
+        a.channel,
+        a.campaign,
+        count(DISTINCT a.user_id) AS users_acquired,
+        sum(a.cost) AS total_cost,
+        sum(c.revenue) AS total_revenue,
+        sum(c.revenue) / nullIf(sum(a.cost), 0) AS roi,
+        sum(c.revenue) / nullIf(count(DISTINCT c.user_id), 0) AS revenue_per_conversion,
+        count(DISTINCT c.user_id) / nullIf(count(DISTINCT a.user_id), 0) AS conversion_rate
+    FROM user_acquisitions a
+    LEFT JOIN user_conversions c ON a.user_id = c.user_id
+    WHERE 
+        a.acquisition_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(channels) %}
+        AND a.channel IN ({{String(channels, 'facebook,google,twitter')}})
+        {% end %}
+    GROUP BY a.channel, a.campaign
+    HAVING users_acquired >= {{Int(min_users, 10)}}
+    ORDER BY roi DESC
+
+TYPE endpoint
+        

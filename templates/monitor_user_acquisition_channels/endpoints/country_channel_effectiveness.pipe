@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Analyzes channel effectiveness by country with ROI and conversion metrics
+
+NODE country_channel_effectiveness_node
+SQL >
+    %
+    SELECT
+        a.country,
+        a.channel,
+        count(DISTINCT a.user_id) AS users_acquired,
+        sum(a.cost) AS total_cost,
+        count(DISTINCT c.user_id) AS users_converted,
+        sum(c.revenue) AS total_revenue,
+        sum(c.revenue) / nullIf(sum(a.cost), 0) AS roi,
+        count(DISTINCT c.user_id) / nullIf(count(DISTINCT a.user_id), 0) AS conversion_rate
+    FROM user_acquisitions a
+    LEFT JOIN user_conversions c ON a.user_id = c.user_id
+    WHERE 
+        a.acquisition_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(channel) %}
+        AND a.channel = {{String(channel, 'facebook')}}
+        {% end %}
+        {% if defined(countries) %}
+        AND a.country IN ({{String(countries, 'US,UK,CA')}})
+        {% end %}
+    GROUP BY a.country, a.channel
+    ORDER BY roi DESC
+
+TYPE endpoint
+        

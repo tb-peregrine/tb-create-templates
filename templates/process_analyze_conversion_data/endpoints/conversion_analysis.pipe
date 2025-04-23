@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Analyze conversion data with filtering by date range, channel, and campaign
+
+NODE conversion_analysis_node
+SQL >
+    %
+    SELECT 
+        channel,
+        campaign,
+        conversion_type,
+        count() AS conversion_count,
+        sum(revenue) AS total_revenue,
+        avg(revenue) AS avg_revenue,
+        min(timestamp) AS first_conversion,
+        max(timestamp) AS last_conversion
+    FROM user_conversion_events
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(channel) %}
+        AND channel = {{String(channel, 'all')}}
+    {% end %}
+    {% if defined(campaign) %}
+        AND campaign = {{String(campaign, 'all')}}
+    {% end %}
+    GROUP BY 
+        channel,
+        campaign,
+        conversion_type
+    ORDER BY 
+        total_revenue DESC
+
+TYPE endpoint
+        

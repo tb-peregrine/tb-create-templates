@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Get breakdown of events by type in real-time
+
+NODE event_breakdown_node
+SQL >
+    %
+    SELECT 
+        event_type,
+        COUNT(*) AS event_count
+    FROM user_events
+    WHERE timestamp >= now() - interval {{String(time_range, '1 hour')}}
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id)}}
+    {% end %}
+    {% if defined(country) %}
+        AND country = {{String(country)}}
+    {% end %}
+    GROUP BY event_type
+    ORDER BY event_count DESC
+
+TYPE endpoint
+        

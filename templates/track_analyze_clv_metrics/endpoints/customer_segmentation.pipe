@@ -1,6 +1,6 @@
 
 DESCRIPTION >
-    Segment customers based on RFM (Recency, Frequency, Monetary) analysis
+    Segments customers based on RFM (Recency, Frequency, Monetary) analysis
 
 NODE customer_segmentation_node
 SQL >
@@ -8,78 +8,121 @@ SQL >
     WITH customer_rfm AS (
         SELECT 
             c.customer_id,
-            c.name,
-            c.email,
-            c.signup_date,
-            c.country,
+            c.registration_date,
+            c.segment as original_segment,
             c.acquisition_source,
-            DATEDIFF('day', MAX(p.purchase_date), now()) AS recency_days,
-            COUNT(p.purchase_id) AS frequency,
-            SUM(p.purchase_amount) AS monetary,
-            -- Recency score (lower days = higher score)
-            CASE 
-                WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 30 THEN 5
-                WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 90 THEN 4
-                WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 180 THEN 3
-                WHEN DATEDIFF('day', MAX(p.purchase_date), now()) <= 365 THEN 2
-                ELSE 1
-            END AS r_score,
-            -- Frequency score
-            CASE 
-                WHEN COUNT(p.purchase_id) >= 15 THEN 5
-                WHEN COUNT(p.purchase_id) >= 10 THEN 4
-                WHEN COUNT(p.purchase_id) >= 5 THEN 3
-                WHEN COUNT(p.purchase_id) >= 2 THEN 2
-                ELSE 1
-            END AS f_score,
-            -- Monetary score
-            CASE 
-                WHEN SUM(p.purchase_amount) >= 1000 THEN 5
-                WHEN SUM(p.purchase_amount) >= 500 THEN 4
-                WHEN SUM(p.purchase_amount) >= 250 THEN 3
-                WHEN SUM(p.purchase_amount) >= 100 THEN 2
-                ELSE 1
-            END AS m_score
+            c.country,
+            c.is_active,
+            MAX(t.transaction_date) as last_purchase_date,
+            COUNT(DISTINCT t.transaction_id) as frequency,
+            SUM(CASE WHEN t.is_refund = 0 THEN t.amount ELSE 0 END) - SUM(CASE WHEN t.is_refund = 1 THEN t.amount ELSE 0 END) as monetary,
+            datediff('day', MAX(t.transaction_date), now()) as recency_days
         FROM customers c
-        JOIN purchases p ON c.customer_id = p.customer_id
+        LEFT JOIN transactions t ON c.customer_id = t.customer_id
         WHERE 1=1
-        {% if defined(country) %}
-            AND c.country = {{String(country, '')}}
-        {% end %}
-        {% if defined(acquisition_source) %}
-            AND c.acquisition_source = {{String(acquisition_source, '')}}
-        {% end %}
-        GROUP BY c.customer_id, c.name, c.email, c.signup_date, c.country, c.acquisition_source
+            {% if defined(start_date) %}
+            AND t.transaction_date >= {{DateTime(start_date, '2020-01-01 00:00:00')}}
+            {% end %}
+            {% if defined(end_date) %}
+            AND t.transaction_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% end %}
+            {% if defined(country) %}
+            AND c.country = {{String(country, 'US')}}
+            {% end %}
+        GROUP BY 
+            c.customer_id,
+            c.registration_date,
+            original_segment,
+            c.acquisition_source,
+            c.country,
+            c.is_active
+    ),
+    
+    rfm_scores AS (
+        SELECT
+            customer_id,
+            registration_date,
+            original_segment,
+            acquisition_source,
+            country,
+            is_active,
+            last_purchase_date,
+            frequency,
+            monetary,
+            recency_days,
+            CASE 
+                WHEN recency_days <= 30 THEN 5
+                WHEN recency_days <= 60 THEN 4
+                WHEN recency_days <= 90 THEN 3
+                WHEN recency_days <= 180 THEN 2
+                ELSE 1
+            END as recency_score,
+            CASE
+                WHEN frequency >= 20 THEN 5
+                WHEN frequency >= 10 THEN 4
+                WHEN frequency >= 5 THEN 3
+                WHEN frequency >= 2 THEN 2
+                ELSE 1
+            END as frequency_score,
+            CASE
+                WHEN monetary >= 1000 THEN 5
+                WHEN monetary >= 500 THEN 4
+                WHEN monetary >= 250 THEN 3
+                WHEN monetary >= 100 THEN 2
+                ELSE 1
+            END as monetary_score
+        FROM customer_rfm
     )
-    SELECT 
+    
+    SELECT
         customer_id,
-        name,
-        email,
-        signup_date,
-        country,
+        registration_date,
+        original_segment,
         acquisition_source,
-        recency_days,
+        country,
+        is_active,
+        last_purchase_date,
         frequency,
         monetary,
-        r_score,
-        f_score,
-        m_score,
-        (r_score + f_score + m_score) AS rfm_score,
-        CASE 
-            WHEN (r_score + f_score + m_score) >= 13 THEN 'Champions'
-            WHEN (r_score + f_score + m_score) >= 10 THEN 'Loyal Customers'
-            WHEN (r_score + f_score + m_score) >= 8 THEN 'Potential Loyalists'
-            WHEN (r_score + f_score + m_score) >= 6 THEN 'At Risk'
-            WHEN (r_score + f_score + m_score) >= 5 THEN 'Cannot Lose'
-            WHEN (r_score + f_score + m_score) >= 4 THEN 'Hibernating'
-            ELSE 'Lost'
-        END AS customer_segment
-    FROM customer_rfm
-    ORDER BY rfm_score DESC
-    {% if defined(limit) %}
-        LIMIT {{Int32(limit, 100)}}
-    {% else %}
-        LIMIT 100
-    {% end %}
+        recency_days,
+        recency_score,
+        frequency_score,
+        monetary_score,
+        recency_score + frequency_score + monetary_score as total_rfm_score,
+        CASE
+            WHEN recency_score >= 4 AND frequency_score >= 4 AND monetary_score >= 4 THEN 'Champions'
+            WHEN recency_score >= 3 AND frequency_score >= 3 AND monetary_score >= 3 THEN 'Loyal Customers'
+            WHEN recency_score >= 3 AND frequency_score <= 2 AND monetary_score >= 3 THEN 'Potential Loyalists'
+            WHEN recency_score >= 4 AND frequency_score <= 2 AND monetary_score <= 2 THEN 'New Customers'
+            WHEN recency_score <= 2 AND frequency_score >= 3 AND monetary_score >= 3 THEN 'At Risk'
+            WHEN recency_score <= 2 AND frequency_score >= 3 AND monetary_score <= 2 THEN 'Needs Attention'
+            WHEN recency_score <= 2 AND frequency_score <= 2 AND monetary_score <= 2 THEN 'Hibernating'
+            WHEN recency_score <= 1 AND frequency_score <= 2 THEN 'Lost'
+            ELSE 'Others'
+        END as rfm_segment
+    FROM rfm_scores
+    WHERE 1=1
+        {% if defined(min_frequency) %}
+        AND frequency >= {{Int(min_frequency, 1)}}
+        {% end %}
+        {% if defined(min_monetary) %}
+        AND monetary >= {{Float64(min_monetary, 0.0)}}
+        {% end %}
+        {% if defined(segment_filter) %}
+        AND CASE
+            WHEN recency_score >= 4 AND frequency_score >= 4 AND monetary_score >= 4 THEN 'Champions'
+            WHEN recency_score >= 3 AND frequency_score >= 3 AND monetary_score >= 3 THEN 'Loyal Customers'
+            WHEN recency_score >= 3 AND frequency_score <= 2 AND monetary_score >= 3 THEN 'Potential Loyalists'
+            WHEN recency_score >= 4 AND frequency_score <= 2 AND monetary_score <= 2 THEN 'New Customers'
+            WHEN recency_score <= 2 AND frequency_score >= 3 AND monetary_score >= 3 THEN 'At Risk'
+            WHEN recency_score <= 2 AND frequency_score >= 3 AND monetary_score <= 2 THEN 'Needs Attention'
+            WHEN recency_score <= 2 AND frequency_score <= 2 AND monetary_score <= 2 THEN 'Hibernating'
+            WHEN recency_score <= 1 AND frequency_score <= 2 THEN 'Lost'
+            ELSE 'Others'
+        END = {{String(segment_filter, 'all')}}
+        {% end %}
+    ORDER BY total_rfm_score DESC
+    LIMIT {{Int(limit, 1000)}}
+
 TYPE endpoint
         

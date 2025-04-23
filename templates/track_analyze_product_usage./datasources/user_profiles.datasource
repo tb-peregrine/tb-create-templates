@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    User profile data with demographic and account information
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `sign_up_date` DateTime `json:$.sign_up_date`,
+    `user_type` String `json:$.user_type`,
+    `account_status` String `json:$.account_status`,
+    `subscription_plan` String `json:$.subscription_plan`,
+    `country` String `json:$.country`,
+    `organization_id` String `json:$.organization_id`,
+    `organization_name` String `json:$.organization_name`,
+    `last_login` DateTime `json:$.last_login`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(sign_up_date)"
+ENGINE_SORTING_KEY "user_id, sign_up_date, organization_id"
+        

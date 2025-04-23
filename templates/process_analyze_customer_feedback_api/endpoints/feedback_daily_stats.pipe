@@ -1,0 +1,32 @@
+DESCRIPTION >
+    API endpoint to query pre-aggregated daily feedback stats
+
+NODE feedback_daily_stats_node
+SQL >
+    %
+    SELECT 
+        day,
+        category,
+        source,
+        countMerge(feedback_count) as total_count,
+        sumMerge(total_rating) / countMerge(feedback_count) as avg_rating,
+        avgMerge(avg_sentiment) as sentiment_score
+    FROM feedback_stats_daily
+    WHERE 1=1
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    {% if defined(source) %}
+        AND source = {{String(source, '')}}
+    {% end %}
+    {% if defined(date_from) %}
+        AND day >= toDate({{DateTime(date_from, '2023-01-01 00:00:00')}})
+    {% end %}
+    {% if defined(date_to) %}
+        AND day <= toDate({{DateTime(date_to, '2023-12-31 23:59:59')}})
+    {% end %}
+    GROUP BY day, category, source
+    ORDER BY day DESC, total_count DESC
+    LIMIT {{Int(limit, 1000)}}
+
+TYPE endpoint

@@ -1,0 +1,91 @@
+
+DESCRIPTION >
+    Forecasts future LTV based on historical customer spending patterns and tenure
+
+NODE ltv_forecast_node
+SQL >
+    %
+    WITH customer_spend AS (
+        SELECT 
+            c.customer_id,
+            c.registration_date,
+            datediff('month', c.registration_date, now()) as customer_age_months,
+            c.segment,
+            c.acquisition_source,
+            c.country,
+            SUM(CASE WHEN t.is_refund = 0 THEN t.amount ELSE 0 END) - SUM(CASE WHEN t.is_refund = 1 THEN t.amount ELSE 0 END) as current_ltv,
+            COUNT(DISTINCT t.transaction_id) as transaction_count,
+            MAX(t.transaction_date) as last_transaction_date
+        FROM customers c
+        LEFT JOIN transactions t ON c.customer_id = t.customer_id
+        WHERE c.is_active = 1
+            {% if defined(segment) %}
+            AND c.segment = {{String(segment, 'all')}}
+            {% end %}
+            {% if defined(country) %}
+            AND c.country = {{String(country, 'US')}}
+            {% end %}
+        GROUP BY 
+            c.customer_id,
+            c.registration_date,
+            c.segment,
+            c.acquisition_source,
+            c.country
+    ),
+    
+    monthly_cohort_ltv AS (
+        SELECT
+            toStartOfMonth(c.registration_date) as cohort_month,
+            c.segment,
+            c.acquisition_source,
+            datediff('month', cohort_month, toStartOfMonth(t.transaction_date)) as months_since_registration,
+            AVG(t.amount) as avg_monthly_spend
+        FROM customers c
+        JOIN transactions t ON c.customer_id = t.customer_id
+        WHERE t.is_refund = 0
+            {% if defined(segment) %}
+            AND c.segment = {{String(segment, 'all')}}
+            {% end %}
+            {% if defined(country) %}
+            AND c.country = {{String(country, 'US')}}
+            {% end %}
+        GROUP BY
+            cohort_month,
+            c.segment,
+            c.acquisition_source,
+            months_since_registration
+        HAVING months_since_registration >= 0 AND months_since_registration <= 24
+    )
+    
+    SELECT
+        cs.customer_id,
+        cs.registration_date,
+        cs.segment,
+        cs.acquisition_source,
+        cs.country,
+        cs.customer_age_months,
+        cs.current_ltv,
+        cs.transaction_count,
+        cs.last_transaction_date,
+        cs.current_ltv * (1 + (0.8 / cs.customer_age_months)) as projected_12_month_ltv,
+        cs.current_ltv * (1 + (1.5 / cs.customer_age_months)) as projected_24_month_ltv,
+        datediff('day', cs.last_transaction_date, now()) as days_since_last_transaction,
+        CASE 
+            WHEN datediff('day', cs.last_transaction_date, now()) > 90 THEN 'At Risk'
+            WHEN datediff('day', cs.last_transaction_date, now()) > 60 THEN 'Needs Attention'
+            WHEN datediff('day', cs.last_transaction_date, now()) <= 30 THEN 'Active'
+            ELSE 'Inactive'
+        END as customer_status
+    FROM customer_spend cs
+    WHERE cs.customer_age_months > 0
+        {% if defined(min_transactions) %}
+        AND cs.transaction_count >= {{Int(min_transactions, 1)}}
+        {% end %}
+        {% if defined(min_ltv) %}
+        AND cs.current_ltv >= {{Float64(min_ltv, 0.0)}}
+        {% end %}
+    ORDER BY projected_24_month_ltv DESC
+    LIMIT {{Int(limit, 1000)}}
+
+TYPE endpoint
+        

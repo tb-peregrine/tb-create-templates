@@ -1,88 +1,166 @@
-# Customer Lifetime Value Analysis API
+# Customer Lifetime Value Analytics API
 
-This project provides a robust API for tracking and analyzing customer lifetime value (CLV) metrics to help businesses understand customer behavior, retention, and revenue patterns.
+This project implements a real-time analytics API to track and analyze customer lifetime value metrics.
 
 ## Tinybird
 
 ### Overview
-This Tinybird project provides a comprehensive solution for analyzing customer lifetime value, segmenting customers based on their behavior, and predicting future value. It enables businesses to make data-driven decisions about customer acquisition, retention, and engagement strategies.
+
+The Customer Lifetime Value Analytics API leverages Tinybird's real-time data processing capabilities to analyze customer behavior, calculate lifetime value metrics, and provide insights into customer retention, segmentation, and forecasting. This enables businesses to make data-driven decisions about customer acquisition, retention strategies, and targeted marketing efforts.
 
 ### Data Sources
 
-#### Customers
-Stores customer information including ID, name, signup date, and other attributes.
+The API is built on three main data sources:
+
+#### 1. Customers
+
+Stores customer information including their ID, registration date, and other demographic data.
 
 ```bash
 curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=customers" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
-     -d '{"customer_id":"c123","name":"John Doe","email":"john@example.com","signup_date":"2023-01-15 10:30:00","country":"USA","customer_segment":"Premium","acquisition_source":"Organic Search","active":1,"created_at":"2023-01-15 10:30:00"}'
+     -d '{
+       "customer_id": "cust_123456",
+       "registration_date": "2023-01-15 10:30:00",
+       "country": "US",
+       "city": "New York",
+       "age": 35,
+       "gender": "F",
+       "acquisition_source": "organic_search",
+       "segment": "premium",
+       "is_active": 1
+     }'
 ```
 
-#### Customer CLV
-Aggregated customer lifetime value metrics.
+#### 2. Transactions
+
+Stores all customer transactions including amount, date, product category, and transaction type.
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=customer_clv" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=transactions" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
-     -d '{"customer_id":"c123","total_spend":500.25,"purchase_count":5,"first_purchase_date":"2023-01-16 14:20:00","last_purchase_date":"2023-06-20 09:15:00","customer_segment":"Premium","country":"USA","acquisition_source":"Organic Search","updated_at":"2023-06-20 09:15:00"}'
+     -d '{
+       "transaction_id": "tx_789012",
+       "customer_id": "cust_123456",
+       "transaction_date": "2023-02-20 14:25:00",
+       "amount": 89.99,
+       "product_category": "electronics",
+       "transaction_type": "purchase",
+       "payment_method": "credit_card",
+       "is_refund": 0
+     }'
 ```
 
-#### Purchases
-Stores individual purchase transactions with associated customer and product information.
+#### 3. Customer Interactions
+
+Stores customer interaction events such as logins, support contacts, and feature usage.
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=purchases" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=customer_interactions" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
-     -d '{"purchase_id":"p456","customer_id":"c123","product_id":"prod789","product_name":"Premium Subscription","product_category":"Subscription","purchase_amount":99.99,"purchase_date":"2023-01-16 14:20:00","payment_method":"Credit Card","currency":"USD","created_at":"2023-01-16 14:20:00"}'
+     -d '{
+       "interaction_id": "int_456789",
+       "customer_id": "cust_123456",
+       "interaction_date": "2023-03-05 09:15:00",
+       "interaction_type": "login",
+       "channel": "mobile_app",
+       "duration_seconds": 240,
+       "satisfaction_score": 5
+     }'
 ```
 
 ### Endpoints
 
-#### Customer Retention
-Analyze customer retention rates over time, showing how many customers from each cohort are still making purchases in subsequent months.
+The API provides several analytics endpoints to extract valuable insights from customer data:
+
+#### 1. Customer LTV
+
+Calculates the customer lifetime value (LTV) based on their transaction history.
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/customer_retention.json?token=$TB_ADMIN_TOKEN&country=USA&customer_segment=Premium"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/customer_ltv.json?start_date=2020-01-01%2000:00:00&country=US&is_active=1&token=$TB_ADMIN_TOKEN"
 ```
 
-#### CLV by Segment
-Analyze customer lifetime value metrics grouped by customer segments to identify the most valuable customer groups.
+Parameters:
+- `start_date`: Filter by registration date (YYYY-MM-DD HH:MM:SS)
+- `end_date`: Filter by registration date (YYYY-MM-DD HH:MM:SS)
+- `country`: Filter by country code
+- `segment`: Filter by customer segment
+- `is_active`: Filter by active status (1 or 0)
+
+#### 2. LTV by Cohort
+
+Analyzes customer lifetime value by cohort (month of registration).
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/clv_by_segment.json?token=$TB_ADMIN_TOKEN&start_date=2023-01-01 00:00:00&end_date=2023-12-31 23:59:59&country=USA"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/ltv_by_cohort.json?start_date=2020-01-01%2000:00:00&country=US&segment=premium&token=$TB_ADMIN_TOKEN"
 ```
 
-#### Purchase Frequency Analysis
-Analyze customer purchase frequency and recency patterns to understand buying behavior.
+Parameters:
+- `start_date`: Filter by registration date (YYYY-MM-DD HH:MM:SS)
+- `end_date`: Filter by registration date (YYYY-MM-DD HH:MM:SS)
+- `country`: Filter by country code
+- `acquisition_source`: Filter by acquisition source
+- `segment`: Filter by customer segment
+
+#### 3. LTV Influencing Factors
+
+Analyzes factors that influence customer lifetime value.
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/purchase_frequency_analysis.json?token=$TB_ADMIN_TOKEN&customer_segment=Premium&country=USA"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/ltv_influencing_factors.json?segment=premium&country=US&min_customers=10&token=$TB_ADMIN_TOKEN"
 ```
 
-#### CLV by Acquisition Source
-Analyze customer lifetime value metrics grouped by acquisition source to optimize marketing efforts.
+Parameters:
+- `start_date`: Filter by registration date (YYYY-MM-DD HH:MM:SS)
+- `end_date`: Filter by registration date (YYYY-MM-DD HH:MM:SS)
+- `segment`: Filter by customer segment
+- `acquisition_source`: Filter by acquisition source
+- `country`: Filter by country code
+- `min_customers`: Minimum number of customers to include in analysis
+
+#### 4. Customer Retention Analysis
+
+Analyzes customer retention rates by cohort over time.
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/clv_by_acquisition_source.json?token=$TB_ADMIN_TOKEN&start_date=2023-01-01 00:00:00&end_date=2023-12-31 23:59:59&customer_segment=Premium"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/customer_retention_analysis.json?start_date=2020-01-01%2000:00:00&country=US&segment=premium&token=$TB_ADMIN_TOKEN"
 ```
 
-#### CLV Prediction
-Predict future customer lifetime value based on historical data.
+Parameters:
+- `start_date`: Filter by registration date (YYYY-MM-DD HH:MM:SS)
+- `end_date`: Filter by registration date (YYYY-MM-DD HH:MM:SS)
+- `segment`: Filter by customer segment
+- `country`: Filter by country code
+
+#### 5. LTV Forecast
+
+Forecasts future LTV based on historical customer spending patterns and tenure.
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/clv_prediction.json?token=$TB_ADMIN_TOKEN&customer_segment=Premium&country=USA&limit=50"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/ltv_forecast.json?segment=premium&country=US&min_transactions=3&min_ltv=50&limit=100&token=$TB_ADMIN_TOKEN"
 ```
 
-#### Customer Segmentation
-Segment customers based on RFM (Recency, Frequency, Monetary) analysis.
+Parameters:
+- `segment`: Filter by customer segment
+- `country`: Filter by country code
+- `min_transactions`: Minimum number of transactions
+- `min_ltv`: Minimum current LTV
+- `limit`: Maximum number of results
+
+#### 6. Customer Segmentation
+
+Segments customers based on RFM (Recency, Frequency, Monetary) analysis.
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/customer_segmentation.json?token=$TB_ADMIN_TOKEN&country=USA&acquisition_source=Organic%20Search&limit=100"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/customer_segmentation.json?start_date=2020-01-01%2000:00:00&country=US&min_frequency=2&min_monetary=100&segment_filter=Champions&limit=100&token=$TB_ADMIN_TOKEN"
 ```
 
-#### Total Customer Value
-Calculate the total lifetime value for each customer.
-
-```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/total_customer_value.json?token=$TB_ADMIN_TOKEN&customer_id=c123&country=USA&customer_segment=Premium"
-```
+Parameters:
+- `start_date`: Filter by transaction date (YYYY-MM-DD HH:MM:SS)
+- `end_date`: Filter by transaction date (YYYY-MM-DD HH:MM:SS)
+- `country`: Filter by country code
+- `min_frequency`: Minimum purchase frequency
+- `min_monetary`: Minimum monetary value
+- `segment_filter`: Filter by RFM segment
+- `limit`: Maximum number of results

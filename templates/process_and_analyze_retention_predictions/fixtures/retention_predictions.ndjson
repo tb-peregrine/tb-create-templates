@@ -1,0 +1,10 @@
+{"user_id": "user_79357", "prediction_date": "2025-04-05", "predicted_retention_7d": 891344840, "predicted_retention_30d": 1188459786.267, "predicted_retention_90d": 1782689678.9, "prediction_model_version": "v3.7"}
+{"user_id": "user_12051", "prediction_date": "2025-04-11", "predicted_retention_7d": 670328013.5, "predicted_retention_30d": 893770684.267, "predicted_retention_90d": 1340656025.9, "prediction_model_version": "v3.1"}
+{"user_id": "user_16423", "prediction_date": "2025-03-30", "predicted_retention_7d": 515879106.5, "predicted_retention_30d": 687838808.267, "predicted_retention_90d": 1031758211.9, "prediction_model_version": "v3.3"}
+{"user_id": "user_12251", "prediction_date": "2025-03-02", "predicted_retention_7d": 112153063.5, "predicted_retention_30d": 149537417.6, "predicted_retention_90d": 224306125.9, "prediction_model_version": "v1.1"}
+{"user_id": "user_17252", "prediction_date": "2025-01-30", "predicted_retention_7d": 486279313.75, "predicted_retention_30d": 648372417.933, "predicted_retention_90d": 972558626.4, "prediction_model_version": "v2.2"}
+{"user_id": "user_58089", "prediction_date": "2025-03-04", "predicted_retention_7d": 813864523, "predicted_retention_30d": 1085152696.933, "predicted_retention_90d": 1627729044.9, "prediction_model_version": "v2.9"}
+{"user_id": "user_17121", "prediction_date": "2025-03-22", "predicted_retention_7d": 442604281, "predicted_retention_30d": 590139040.933, "predicted_retention_90d": 885208560.9, "prediction_model_version": "v2.1"}
+{"user_id": "user_51534", "prediction_date": "2025-02-27", "predicted_retention_7d": 308487884.25, "predicted_retention_30d": 411317178.6, "predicted_retention_90d": 616975767.4, "prediction_model_version": "v1.4"}
+{"user_id": "user_41494", "prediction_date": "2025-04-08", "predicted_retention_7d": 427760374.25, "predicted_retention_30d": 570347165.267, "predicted_retention_90d": 855520747.4, "prediction_model_version": "v3.4"}
+{"user_id": "user_35871", "prediction_date": "2025-03-22", "predicted_retention_7d": 76008968.5, "predicted_retention_30d": 101345290.933, "predicted_retention_90d": 152017935.9, "prediction_model_version": "v2.1"}

@@ -1,0 +1,14 @@
+DESCRIPTION >
+    Aggregated daily feedback statistics for faster analytics queries
+
+SCHEMA >
+    `day` Date `json:$.day`,
+    `category` String `json:$.category`,
+    `source` String `json:$.source`,
+    `feedback_count` AggregateFunction(count, UInt64) `json:$.feedback_count`,
+    `total_rating` AggregateFunction(sum, Int32) `json:$.total_rating`,
+    `avg_sentiment` AggregateFunction(avg, Float32) `json:$.avg_sentiment`
+
+ENGINE "AggregatingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(day)"
+ENGINE_SORTING_KEY "day, category, source"

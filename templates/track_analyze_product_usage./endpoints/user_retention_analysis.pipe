@@ -1,0 +1,71 @@
+
+DESCRIPTION >
+    Analyze user retention over different time periods
+
+NODE user_retention_analysis_node
+SQL >
+    %
+    WITH first_activity AS (
+        SELECT
+            user_id,
+            min(toStartOfDay(event_timestamp)) as first_day
+        FROM product_usage_events
+        WHERE 1=1
+        {% if defined(product_id) %}
+            AND product_id = {{String(product_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+            AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        GROUP BY user_id
+    ),
+    
+    activity_days AS (
+        SELECT
+            e.user_id,
+            f.first_day,
+            toStartOfDay(e.event_timestamp) as activity_day,
+            dateDiff('day', f.first_day, toStartOfDay(e.event_timestamp)) as day_number
+        FROM product_usage_events e
+        JOIN first_activity f ON e.user_id = f.user_id
+        WHERE 1=1
+        {% if defined(product_id) %}
+            AND e.product_id = {{String(product_id, '')}}
+        {% end %}
+        GROUP BY e.user_id, f.first_day, activity_day
+    ),
+    
+    cohort_size AS (
+        SELECT
+            first_day,
+            count(distinct user_id) as users
+        FROM first_activity
+        GROUP BY first_day
+    ),
+    
+    retention_data AS (
+        SELECT
+            a.first_day,
+            a.day_number,
+            count(distinct a.user_id) as active_users,
+            c.users as cohort_users
+        FROM activity_days a
+        JOIN cohort_size c ON a.first_day = c.first_day
+        WHERE a.day_number <= {{Int32(max_days, 30)}}
+        GROUP BY a.first_day, a.day_number, c.users
+    )
+    
+    SELECT
+        first_day,
+        day_number,
+        active_users,
+        cohort_users,
+        round(active_users / cohort_users * 100, 1) as retention_rate
+    FROM retention_data
+    ORDER BY first_day, day_number
+
+TYPE endpoint
+        

@@ -1,0 +1,65 @@
+
+DESCRIPTION >
+    Calculate daily cohort retention metrics for different time periods
+
+NODE daily_cohort_retention_node
+SQL >
+    %
+    WITH 
+        user_first_visit AS (
+            SELECT 
+                user_id,
+                toDate(min(timestamp)) as first_visit_date
+            FROM user_events
+            WHERE event_type = 'login'
+            GROUP BY user_id
+        ),
+        active_days AS (
+            SELECT 
+                user_id,
+                toDate(timestamp) as active_date
+            FROM user_events
+            WHERE event_type = 'login'
+            GROUP BY user_id, active_date
+        )
+    SELECT 
+        first_visit_date as cohort_date,
+        {{String(segment_by, 'overall')}} as segment,
+        count(DISTINCT u.user_id) as cohort_size,
+        count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 1 THEN a.user_id END) as day_1_retained,
+        count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 7 THEN a.user_id END) as day_7_retained,
+        count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 14 THEN a.user_id END) as day_14_retained,
+        count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 30 THEN a.user_id END) as day_30_retained,
+        count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 60 THEN a.user_id END) as day_60_retained,
+        count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 90 THEN a.user_id END) as day_90_retained,
+        round(count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 1 THEN a.user_id END) / count(DISTINCT u.user_id), 3) as day_1_rate,
+        round(count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 7 THEN a.user_id END) / count(DISTINCT u.user_id), 3) as day_7_rate,
+        round(count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 14 THEN a.user_id END) / count(DISTINCT u.user_id), 3) as day_14_rate,
+        round(count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 30 THEN a.user_id END) / count(DISTINCT u.user_id), 3) as day_30_rate,
+        round(count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 60 THEN a.user_id END) / count(DISTINCT u.user_id), 3) as day_60_rate,
+        round(count(DISTINCT CASE WHEN dateDiff('day', first_visit_date, active_date) = 90 THEN a.user_id END) / count(DISTINCT u.user_id), 3) as day_90_rate
+    FROM user_first_visit u
+    LEFT JOIN active_days a ON u.user_id = a.user_id
+    LEFT JOIN user_cohorts c ON u.user_id = c.user_id
+    WHERE 
+        first_visit_date BETWEEN {{Date(start_date, '2023-01-01')}} AND {{Date(end_date, '2023-12-31')}}
+        {% if segment_by == 'acquisition_source' %}
+        GROUP BY first_visit_date, c.acquisition_source as segment
+        {% elif segment_by == 'platform' %}
+        LEFT JOIN (
+            SELECT user_id, any(platform) as platform
+            FROM user_events
+            GROUP BY user_id
+        ) p ON u.user_id = p.user_id
+        GROUP BY first_visit_date, p.platform as segment
+        {% elif segment_by == 'user_segment' %}
+        GROUP BY first_visit_date, c.user_segment as segment
+        {% elif segment_by == 'subscription_plan' %}
+        GROUP BY first_visit_date, c.initial_subscription_plan as segment
+        {% else %}
+        GROUP BY first_visit_date, 'overall' as segment
+        {% end %}
+    ORDER BY cohort_date DESC, segment
+
+TYPE endpoint
+        

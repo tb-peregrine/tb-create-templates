@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Tracks error rates for products over time with daily or hourly granularity
+
+NODE error_rate_over_time_node
+SQL >
+    %
+    SELECT 
+        {% if String(granularity, 'day') == 'hour' %}
+            toStartOfHour(timestamp) AS time_period,
+        {% else %}
+            toStartOfDay(timestamp) AS time_period,
+        {% end %}
+        product_id,
+        product_name,
+        count() AS total_events,
+        countIf(is_error = 1) AS error_count,
+        round(countIf(is_error = 1) * 100.0 / count(), 2) AS error_rate
+    FROM product_events
+    WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(product_id) %}
+    AND product_id = {{String(product_id, '')}}
+    {% end %}
+    GROUP BY time_period, product_id, product_name
+    ORDER BY time_period, product_id
+
+TYPE endpoint
+        

@@ -1,0 +1,64 @@
+
+DESCRIPTION >
+    Comprehensive cohort analysis with retention curves
+
+NODE cohort_analysis_node
+SQL >
+    %
+    WITH 
+        cohorts AS (
+            SELECT 
+                user_id,
+                toStartOfMonth(cohort_date) as cohort_month,
+                {% if defined(cohort_by) and cohort_by == 'acquisition_source' %}
+                acquisition_source as cohort_segment
+                {% elif defined(cohort_by) and cohort_by == 'user_segment' %}
+                user_segment as cohort_segment
+                {% elif defined(cohort_by) and cohort_by == 'subscription_plan' %}
+                initial_subscription_plan as cohort_segment
+                {% else %}
+                'All Users' as cohort_segment
+                {% end %}
+            FROM user_cohorts
+            WHERE 
+                {% if defined(start_date) %}
+                cohort_date >= {{Date(start_date, '2023-01-01')}}
+                {% else %}
+                cohort_date >= toDate('2023-01-01')
+                {% end %}
+                {% if defined(end_date) %}
+                AND cohort_date <= {{Date(end_date, '2023-12-31')}}
+                {% else %}
+                AND cohort_date <= now()
+                {% end %}
+                {% if defined(segment) and cohort_by == 'acquisition_source' %}
+                AND acquisition_source = {{String(segment, 'all')}}
+                {% elif defined(segment) and cohort_by == 'user_segment' %}
+                AND user_segment = {{String(segment, 'all')}}
+                {% elif defined(segment) and cohort_by == 'subscription_plan' %}
+                AND initial_subscription_plan = {{String(segment, 'all')}}
+                {% end %}
+        ),
+        user_activity AS (
+            SELECT 
+                user_id,
+                toDate(timestamp) as activity_date
+            FROM user_events
+            WHERE event_type = 'login'
+            GROUP BY user_id, activity_date
+        )
+    SELECT 
+        c.cohort_month,
+        c.cohort_segment,
+        count(DISTINCT c.user_id) as cohort_size,
+        dateDiff('day', c.cohort_month, ua.activity_date) / 30 as month_number,
+        count(DISTINCT ua.user_id) as active_users,
+        round(count(DISTINCT ua.user_id) / count(DISTINCT c.user_id), 3) as retention_rate
+    FROM cohorts c
+    LEFT JOIN user_activity ua ON c.user_id = ua.user_id AND ua.activity_date >= c.cohort_month
+    GROUP BY c.cohort_month, c.cohort_segment, month_number
+    HAVING month_number >= 0 AND month_number <= 12
+    ORDER BY c.cohort_month DESC, c.cohort_segment, month_number
+
+TYPE endpoint
+        

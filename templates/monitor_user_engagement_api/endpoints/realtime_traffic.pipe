@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Get real-time traffic with page counts
+
+NODE realtime_traffic_node
+SQL >
+    %
+    SELECT 
+        page,
+        COUNT(*) AS page_views
+    FROM user_events
+    WHERE timestamp >= now() - interval {{String(time_window, '5 minute')}}
+    GROUP BY page
+    ORDER BY page_views DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint
+        

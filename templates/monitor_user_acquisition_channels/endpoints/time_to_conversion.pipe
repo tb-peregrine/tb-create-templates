@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Analyzes time from acquisition to conversion by channel
+
+NODE time_to_conversion_node
+SQL >
+    %
+    SELECT
+        a.channel,
+        a.campaign,
+        avg(dateDiff('day', a.acquisition_date, c.conversion_date)) AS avg_days_to_conversion,
+        median(dateDiff('day', a.acquisition_date, c.conversion_date)) AS median_days_to_conversion,
+        min(dateDiff('day', a.acquisition_date, c.conversion_date)) AS min_days_to_conversion,
+        max(dateDiff('day', a.acquisition_date, c.conversion_date)) AS max_days_to_conversion
+    FROM user_acquisitions a
+    JOIN user_conversions c ON a.user_id = c.user_id
+    WHERE 
+        a.acquisition_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        AND c.conversion_date >= a.acquisition_date
+        {% if defined(channel) %}
+        AND a.channel = {{String(channel, 'facebook')}}
+        {% end %}
+        {% if defined(campaign) %}
+        AND a.campaign = {{String(campaign, 'summer_promo')}}
+        {% end %}
+        {% if defined(country) %}
+        AND a.country = {{String(country, 'US')}}
+        {% end %}
+    GROUP BY a.channel, a.campaign
+    ORDER BY avg_days_to_conversion ASC
+
+TYPE endpoint
+        

@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    Evaluate the accuracy of retention predictions against actual user retention
+
+NODE retention_prediction_accuracy_node
+SQL >
+    %
+    WITH 
+        actual_retention AS (
+            SELECT 
+                user_id,
+                toDate(min(timestamp)) as first_activity_date,
+                max(CASE WHEN dateDiff('day', toDate(min(timestamp)), toDate(timestamp)) >= 7 THEN 1 ELSE 0 END) as actual_retained_7d,
+                max(CASE WHEN dateDiff('day', toDate(min(timestamp)), toDate(timestamp)) >= 30 THEN 1 ELSE 0 END) as actual_retained_30d,
+                max(CASE WHEN dateDiff('day', toDate(min(timestamp)), toDate(timestamp)) >= 90 THEN 1 ELSE 0 END) as actual_retained_90d
+            FROM user_events
+            GROUP BY user_id
+        )
+    SELECT 
+        p.prediction_model_version,
+        toStartOfMonth(p.prediction_date) as prediction_month,
+        count(*) as total_predictions,
+        avg(abs(p.predicted_retention_7d - ar.actual_retained_7d)) as mae_7d,
+        avg(abs(p.predicted_retention_30d - ar.actual_retained_30d)) as mae_30d,
+        avg(abs(p.predicted_retention_90d - ar.actual_retained_90d)) as mae_90d,
+        corr(p.predicted_retention_7d, ar.actual_retained_7d) as correlation_7d,
+        corr(p.predicted_retention_30d, ar.actual_retained_30d) as correlation_30d,
+        corr(p.predicted_retention_90d, ar.actual_retained_90d) as correlation_90d
+    FROM retention_predictions p
+    JOIN actual_retention ar ON p.user_id = ar.user_id
+    WHERE 
+        p.prediction_date BETWEEN {{Date(start_date, '2023-01-01')}} AND {{Date(end_date, '2023-12-31')}}
+        {% if defined(model_version) %}
+        AND p.prediction_model_version = {{String(model_version, 'all')}}
+        {% end %}
+    GROUP BY p.prediction_model_version, toStartOfMonth(p.prediction_date)
+    ORDER BY prediction_month DESC, p.prediction_model_version
+
+TYPE endpoint
+        

@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    Segment users based on their conversion behavior and value
+
+NODE user_segmentation_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        count() AS total_conversions,
+        sum(revenue) AS total_revenue,
+        avg(revenue) AS avg_revenue_per_conversion,
+        min(timestamp) AS first_conversion,
+        max(timestamp) AS last_conversion,
+        toUnixTimestamp(max(timestamp)) - toUnixTimestamp(min(timestamp)) AS user_lifetime_seconds,
+        countDistinct(channel) AS channel_count,
+        countDistinct(campaign) AS campaign_count,
+        groupArray(distinct device) AS devices,
+        groupArray(distinct country) AS countries
+    FROM user_conversion_events
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY user_id
+    {% if defined(min_conversions) %}
+        HAVING total_conversions >= {{Int(min_conversions, 1)}}
+    {% end %}
+    {% if defined(sort_by) and sort_by == 'conversions' %}
+        ORDER BY total_conversions DESC
+    {% elif defined(sort_by) and sort_by == 'revenue' %}
+        ORDER BY total_revenue DESC
+    {% elif defined(sort_by) and sort_by == 'recency' %}
+        ORDER BY last_conversion DESC
+    {% else %}
+        ORDER BY total_revenue DESC
+    {% end %}
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

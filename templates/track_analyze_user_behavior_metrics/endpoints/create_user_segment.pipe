@@ -1,0 +1,44 @@
+DESCRIPTION >
+    API to create a new user segment based on behavior criteria
+
+NODE create_user_segment_node
+SQL >
+    %
+    WITH segment_users AS (
+        SELECT DISTINCT user_id
+        FROM user_events
+        WHERE 1=1
+        {% if defined(event_type) %}
+            AND event_type = {{String(event_type, '')}}
+        {% end %}
+        {% if defined(min_event_count) %}
+            AND user_id IN (
+                SELECT user_id
+                FROM user_events
+                {% if defined(event_type) %}
+                    WHERE event_type = {{String(event_type, '')}}
+                {% end %}
+                GROUP BY user_id
+                HAVING count() >= {{Int32(min_event_count, 1)}}
+            )
+        {% end %}
+        {% if defined(country) %}
+            AND country = {{String(country, '')}}
+        {% end %}
+        {% if defined(device) %}
+            AND device = {{String(device, '')}}
+        {% end %}
+        {% if defined(time_period_days) %}
+            AND timestamp >= now() - interval {{Int32(time_period_days, 30)}} day
+        {% end %}
+    )
+    SELECT 
+        generateUUIDv4() as segment_id,
+        {{String(segment_name, 'New Segment')}} as segment_name,
+        user_id,
+        now() as created_at,
+        now() as updated_at,
+        1 as active
+    FROM segment_users
+
+TYPE endpoint

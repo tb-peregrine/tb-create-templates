@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    Analyze user retention by calculating returning users
+
+NODE user_retention_node
+SQL >
+    %
+    WITH first_visits AS (
+        SELECT 
+            user_id,
+            MIN(toDate(timestamp)) AS first_visit_date
+        FROM user_events
+        GROUP BY user_id
+    )
+    
+    SELECT 
+        dateDiff('day', first_visit_date, toDate(timestamp)) AS days_since_first_visit,
+        COUNT(DISTINCT user_events.user_id) AS returning_users
+    FROM user_events
+    JOIN first_visits ON user_events.user_id = first_visits.user_id
+    WHERE first_visit_date >= toDate(now()) - interval {{String(lookback_days, '30 day')}}
+    GROUP BY days_since_first_visit
+    ORDER BY days_since_first_visit
+    LIMIT 30
+
+TYPE endpoint
+        

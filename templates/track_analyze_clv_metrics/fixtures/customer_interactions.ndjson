@@ -1,0 +1,10 @@
+{"interaction_id": "int_6567", "customer_id": "cust_567", "interaction_date": "2025-02-14 15:33:32", "interaction_type": "feature_usage", "channel": "email", "duration_seconds": 397, "satisfaction_score": 8}
+{"interaction_id": "int_3504", "customer_id": "cust_504", "interaction_date": "2025-02-17 06:33:32", "interaction_type": "feedback", "channel": "in_person", "duration_seconds": 334, "satisfaction_score": 5}
+{"interaction_id": "int_172", "customer_id": "cust_172", "interaction_date": "2025-02-09 10:33:32", "interaction_type": "feature_usage", "channel": "email", "duration_seconds": 402, "satisfaction_score": 3}
+{"interaction_id": "int_2543", "customer_id": "cust_543", "interaction_date": "2025-03-10 15:33:32", "interaction_type": "purchase", "channel": "phone", "duration_seconds": 373, "satisfaction_score": 4}
+{"interaction_id": "int_8119", "customer_id": "cust_119", "interaction_date": "2025-02-02 15:33:32", "interaction_type": "feedback", "channel": "in_person", "duration_seconds": 349, "satisfaction_score": 10}
+{"interaction_id": "int_4165", "customer_id": "cust_165", "interaction_date": "2025-04-07 01:33:32", "interaction_type": "login", "channel": "web", "duration_seconds": 195, "satisfaction_score": 6}
+{"interaction_id": "int_9030", "customer_id": "cust_30", "interaction_date": "2025-02-11 00:33:32", "interaction_type": "login", "channel": "web", "duration_seconds": 460, "satisfaction_score": 1}
+{"interaction_id": "int_3531", "customer_id": "cust_531", "interaction_date": "2025-02-20 03:33:32", "interaction_type": "support", "channel": "mobile", "duration_seconds": 361, "satisfaction_score": 2}
+{"interaction_id": "int_2692", "customer_id": "cust_692", "interaction_date": "2025-04-20 02:33:32", "interaction_type": "feature_usage", "channel": "email", "duration_seconds": 122, "satisfaction_score": 3}
+{"interaction_id": "int_8924", "customer_id": "cust_924", "interaction_date": "2025-04-18 18:33:32", "interaction_type": "feedback", "channel": "in_person", "duration_seconds": 154, "satisfaction_score": 5}

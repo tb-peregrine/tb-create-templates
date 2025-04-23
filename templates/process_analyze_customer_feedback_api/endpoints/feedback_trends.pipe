@@ -1,0 +1,45 @@
+DESCRIPTION >
+    API endpoint to analyze feedback trends over time
+
+NODE feedback_trends_node
+SQL >
+    %
+    SELECT 
+        {{String(time_bucket, 'day')}} AS time_period,
+        COUNT(*) as feedback_count,
+        AVG(rating) as avg_rating,
+        AVG(sentiment_score) as avg_sentiment
+    FROM 
+    (
+        SELECT 
+            feedback_id,
+            rating,
+            sentiment_score,
+            {% if time_bucket == 'hour' %}
+                toStartOfHour(created_at) as day
+            {% elif time_bucket == 'week' %}
+                toStartOfWeek(created_at) as day
+            {% elif time_bucket == 'month' %}
+                toStartOfMonth(created_at) as day
+            {% else %}
+                toStartOfDay(created_at) as day
+            {% end %}
+        FROM customer_feedback
+        WHERE 1=1
+        {% if defined(category) %}
+            AND category = {{String(category, '')}}
+        {% end %}
+        {% if defined(source) %}
+            AND source = {{String(source, '')}}
+        {% end %}
+        {% if defined(date_from) %}
+            AND created_at >= {{DateTime(date_from, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(date_to) %}
+            AND created_at <= {{DateTime(date_to, '2023-12-31 23:59:59')}}
+        {% end %}
+    ) AS subquery
+    GROUP BY time_period
+    ORDER BY time_period
+
+TYPE endpoint

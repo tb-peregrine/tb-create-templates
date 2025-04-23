@@ -1,0 +1,63 @@
+
+DESCRIPTION >
+    Analyze user session patterns and engagement
+
+NODE user_session_analysis_node
+SQL >
+    %
+    WITH session_metrics AS (
+        SELECT
+            session_id,
+            user_id,
+            product_id,
+            platform,
+            device_type,
+            min(event_timestamp) as session_start,
+            max(event_timestamp) as session_end,
+            count() as event_count,
+            sum(duration_seconds) as total_duration,
+            uniq(feature_used) as features_used
+        FROM product_usage_events
+        WHERE 1=1
+        {% if defined(start_date) %}
+            AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(product_id) %}
+            AND product_id = {{String(product_id, '')}}
+        {% end %}
+        {% if defined(user_id) %}
+            AND user_id = {{String(user_id, '')}}
+        {% end %}
+        GROUP BY session_id, user_id, product_id, platform, device_type
+    )
+    
+    SELECT
+        session_id,
+        user_id,
+        product_id,
+        platform,
+        device_type,
+        session_start,
+        session_end,
+        dateDiff('second', session_start, session_end) as session_duration_seconds,
+        event_count,
+        total_duration,
+        features_used
+    FROM session_metrics
+    ORDER BY
+        {% if defined(sort_by) and sort_by == 'duration' %}
+            session_duration_seconds DESC
+        {% elif defined(sort_by) and sort_by == 'features' %}
+            features_used DESC
+        {% elif defined(sort_by) and sort_by == 'events' %}
+            event_count DESC
+        {% else %}
+            session_start DESC
+        {% end %}
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

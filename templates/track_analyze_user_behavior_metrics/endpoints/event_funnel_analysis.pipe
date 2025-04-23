@@ -1,0 +1,47 @@
+DESCRIPTION >
+    Analyzes conversion rates through defined event funnels across user segments
+
+NODE event_funnel_analysis_node
+SQL >
+    %
+    WITH 
+        funnel_events AS (
+            SELECT 
+                ue.user_id,
+                ue.session_id,
+                ue.event_type,
+                ue.timestamp,
+                us.segment_name,
+                ROW_NUMBER() OVER (PARTITION BY ue.user_id, ue.session_id, ue.event_type ORDER BY ue.timestamp) as event_occurrence
+            FROM user_events ue
+            JOIN user_segments us ON ue.user_id = us.user_id
+            WHERE us.active = 1
+            AND ue.event_type IN ({{String(event_steps, 'page_view,add_to_cart,checkout,purchase')}})
+            {% if defined(segment_id) %}
+                AND us.segment_id = {{String(segment_id, '')}}
+            {% end %}
+            {% if defined(start_date) %}
+                AND ue.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+            {% end %}
+            {% if defined(end_date) %}
+                AND ue.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% end %}
+        )
+    SELECT
+        segment_name,
+        event_type as step_name,
+        count(DISTINCT user_id) as users_count,
+        count(DISTINCT session_id) as sessions_count,
+        lag(count(DISTINCT user_id)) OVER (PARTITION BY segment_name ORDER BY indexOf({{String(event_steps, 'page_view,add_to_cart,checkout,purchase')}}, event_type)) as previous_step_users,
+        CASE 
+            WHEN lag(count(DISTINCT user_id)) OVER (PARTITION BY segment_name ORDER BY indexOf({{String(event_steps, 'page_view,add_to_cart,checkout,purchase')}}, event_type)) > 0 
+            THEN round(count(DISTINCT user_id) * 100.0 / lag(count(DISTINCT user_id)) OVER (PARTITION BY segment_name ORDER BY indexOf({{String(event_steps, 'page_view,add_to_cart,checkout,purchase')}}, event_type)), 2)
+            ELSE 100.0
+        END as conversion_rate,
+        round(count(DISTINCT user_id) * 100.0 / first_value(count(DISTINCT user_id)) OVER (PARTITION BY segment_name ORDER BY indexOf({{String(event_steps, 'page_view,add_to_cart,checkout,purchase')}}, event_type)), 2) as overall_conversion_rate
+    FROM funnel_events
+    WHERE event_occurrence = 1
+    GROUP BY segment_name, event_type, indexOf({{String(event_steps, 'page_view,add_to_cart,checkout,purchase')}}, event_type)
+    ORDER BY segment_name, indexOf({{String(event_steps, 'page_view,add_to_cart,checkout,purchase')}}, event_type)
+
+TYPE endpoint

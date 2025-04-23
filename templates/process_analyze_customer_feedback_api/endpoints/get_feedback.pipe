@@ -1,0 +1,50 @@
+DESCRIPTION >
+    API endpoint to retrieve customer feedback with filtering options
+
+NODE get_feedback_node
+SQL >
+    %
+    SELECT 
+        feedback_id,
+        customer_id,
+        product_id,
+        category,
+        rating,
+        comment,
+        sentiment_score,
+        created_at,
+        source
+    FROM customer_feedback
+    WHERE 1=1
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    {% if defined(min_rating) %}
+        AND rating >= {{Int(min_rating, 1)}}
+    {% end %}
+    {% if defined(max_rating) %}
+        AND rating <= {{Int(max_rating, 5)}}
+    {% end %}
+    {% if defined(source) %}
+        AND source = {{String(source, '')}}
+    {% end %}
+    {% if defined(date_from) %}
+        AND created_at >= {{DateTime(date_from, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(date_to) %}
+        AND created_at <= {{DateTime(date_to, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(sentiment) %}
+        {% if sentiment == 'positive' %}
+            AND sentiment_score > 0.5
+        {% elif sentiment == 'negative' %}
+            AND sentiment_score < 0
+        {% elif sentiment == 'neutral' %}
+            AND sentiment_score BETWEEN 0 AND 0.5
+        {% end %}
+    {% end %}
+    ORDER BY {{String(order_by, 'created_at')}} {{String(order, 'DESC')}}
+    LIMIT {{Int(limit, 100)}}
+    OFFSET {{Int(offset, 0)}}
+
+TYPE endpoint

@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Tracks daily performance metrics for acquisition channels
+
+NODE daily_channel_metrics_node
+SQL >
+    %
+    SELECT
+        toDate(a.acquisition_date) AS date,
+        a.channel,
+        count(DISTINCT a.user_id) AS new_users,
+        sum(a.cost) AS total_cost,
+        count(DISTINCT c.user_id) AS conversions,
+        sum(c.revenue) AS total_revenue,
+        sum(c.revenue) / nullIf(sum(a.cost), 0) AS daily_roi
+    FROM user_acquisitions a
+    LEFT JOIN user_conversions c ON a.user_id = c.user_id 
+        AND toDate(c.conversion_date) = toDate(a.acquisition_date)
+    WHERE 
+        a.acquisition_date BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(channel) %}
+        AND a.channel = {{String(channel, 'facebook')}}
+        {% end %}
+        {% if defined(country) %}
+        AND a.country = {{String(country, 'US')}}
+        {% end %}
+    GROUP BY date, a.channel
+    ORDER BY date DESC, daily_roi DESC
+
+TYPE endpoint
+        

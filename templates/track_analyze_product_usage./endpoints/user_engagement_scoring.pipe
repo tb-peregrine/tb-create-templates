@@ -1,0 +1,89 @@
+
+DESCRIPTION >
+    Calculate engagement scores for users based on their activity patterns
+
+NODE user_engagement_scoring_node
+SQL >
+    %
+    WITH user_metrics AS (
+        SELECT
+            e.user_id,
+            count(DISTINCT e.session_id) as session_count,
+            count() as event_count,
+            uniq(e.feature_used) as unique_features_used,
+            sum(e.duration_seconds) as total_duration,
+            max(e.event_timestamp) as last_activity,
+            p.sign_up_date,
+            p.user_type,
+            p.subscription_plan
+        FROM product_usage_events e
+        LEFT JOIN user_profiles p ON e.user_id = p.user_id
+        WHERE 1=1
+        {% if defined(start_date) %}
+            AND e.event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND e.event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(product_id) %}
+            AND e.product_id = {{String(product_id, '')}}
+        {% end %}
+        GROUP BY e.user_id, p.sign_up_date, p.user_type, p.subscription_plan
+    ),
+    
+    engagement_scores AS (
+        SELECT
+            user_id,
+            session_count,
+            event_count,
+            unique_features_used,
+            total_duration,
+            last_activity,
+            sign_up_date,
+            user_type,
+            subscription_plan,
+            
+            -- Calculate engagement score (example formula)
+            (
+                (session_count * 10) + 
+                (event_count * 0.5) + 
+                (unique_features_used * 20) + 
+                (total_duration / 60) -
+                (dateDiff('day', last_activity, now()) * 5)
+            ) as engagement_score
+        FROM user_metrics
+    )
+    
+    SELECT
+        user_id,
+        session_count,
+        event_count,
+        unique_features_used,
+        total_duration,
+        last_activity,
+        sign_up_date,
+        user_type,
+        subscription_plan,
+        engagement_score,
+        CASE
+            WHEN engagement_score >= 500 THEN 'Highly Engaged'
+            WHEN engagement_score >= 200 THEN 'Engaged'
+            WHEN engagement_score >= 100 THEN 'Moderately Engaged'
+            WHEN engagement_score >= 50 THEN 'Low Engagement'
+            ELSE 'At Risk'
+        END as engagement_level
+    FROM engagement_scores
+    ORDER BY 
+        {% if defined(sort_by) and sort_by == 'score' %}
+            engagement_score DESC
+        {% elif defined(sort_by) and sort_by == 'recency' %}
+            last_activity DESC
+        {% elif defined(sort_by) and sort_by == 'activity' %}
+            event_count DESC
+        {% else %}
+            engagement_score DESC
+        {% end %}
+    LIMIT {{Int32(limit, 1000)}}
+
+TYPE endpoint
+        

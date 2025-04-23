@@ -1,0 +1,53 @@
+
+DESCRIPTION >
+    Analyze feature usage trends over time with flexible time granularity
+
+NODE feature_usage_trends_node
+SQL >
+    %
+    WITH granularity AS (
+        SELECT
+            {% if defined(time_granularity) and time_granularity == 'hour' %}
+                toStartOfHour(event_timestamp) as time_bucket,
+                formatDateTime(toStartOfHour(event_timestamp), '%Y-%m-%d %H:00:00') as time_label
+            {% elif defined(time_granularity) and time_granularity == 'day' %}
+                toStartOfDay(event_timestamp) as time_bucket,
+                toDate(event_timestamp) as time_label
+            {% elif defined(time_granularity) and time_granularity == 'week' %}
+                toStartOfWeek(event_timestamp) as time_bucket,
+                formatDateTime(toMonday(event_timestamp), '%Y-%m-%d') as time_label
+            {% elif defined(time_granularity) and time_granularity == 'month' %}
+                toStartOfMonth(event_timestamp) as time_bucket,
+                formatDateTime(toStartOfMonth(event_timestamp), '%Y-%m') as time_label
+            {% else %}
+                toStartOfDay(event_timestamp) as time_bucket,
+                toDate(event_timestamp) as time_label
+            {% end %},
+            feature_used,
+            count() as usage_count,
+            uniq(user_id) as unique_users
+        FROM product_usage_events
+        WHERE event_type = 'feature_interaction'
+        {% if defined(start_date) %}
+            AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(product_id) %}
+            AND product_id = {{String(product_id, '')}}
+        {% end %}
+        GROUP BY time_bucket, time_label, feature_used
+        ORDER BY time_bucket, feature_used
+    )
+    
+    SELECT
+        time_label,
+        feature_used,
+        usage_count,
+        unique_users
+    FROM granularity
+    ORDER BY time_bucket ASC, usage_count DESC
+
+TYPE endpoint
+        

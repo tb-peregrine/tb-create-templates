@@ -1,0 +1,61 @@
+
+DESCRIPTION >
+    Analyze the feature adoption funnel to understand user progression through product workflows
+
+NODE feature_adoption_funnel_node
+SQL >
+    %
+    WITH user_feature_sequence AS (
+        SELECT
+            user_id,
+            feature_used,
+            event_timestamp,
+            row_number() OVER (PARTITION BY user_id ORDER BY event_timestamp) as step_number
+        FROM product_usage_events
+        WHERE 1=1
+        {% if defined(product_id) %}
+            AND product_id = {{String(product_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+            AND event_timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND event_timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(feature_sequence) %}
+            AND feature_used IN {{String(feature_sequence, 'login,dashboard,profile,settings')}}
+        {% else %}
+            AND feature_used IN ('login', 'dashboard', 'profile', 'settings')
+        {% end %}
+    ),
+    
+    funnel_stages AS (
+        SELECT
+            feature_used as stage,
+            count(DISTINCT user_id) as users,
+            min(step_number) as min_step,
+            max(step_number) as max_step,
+            avg(step_number) as avg_step
+        FROM user_feature_sequence
+        GROUP BY feature_used
+    ),
+    
+    total_users AS (
+        SELECT count(DISTINCT user_id) as total
+        FROM user_feature_sequence
+        WHERE step_number = 1
+    )
+    
+    SELECT
+        stage,
+        users,
+        (SELECT total FROM total_users) as total_users,
+        round(users / (SELECT total FROM total_users) * 100, 1) as conversion_rate,
+        min_step,
+        max_step,
+        round(avg_step, 1) as avg_step
+    FROM funnel_stages
+    ORDER BY avg_step ASC
+
+TYPE endpoint
+        

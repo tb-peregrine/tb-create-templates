@@ -1,0 +1,33 @@
+DESCRIPTION >
+    Calculates average customer satisfaction ratings over different time periods
+
+NODE average_satisfaction_by_period_node
+SQL >
+    %
+    SELECT 
+        {{String(period, 'day')}} as period_type,
+        CASE 
+            WHEN {{String(period, 'day')}} = 'hour' THEN toStartOfHour(timestamp)
+            WHEN {{String(period, 'day')}} = 'day' THEN toStartOfDay(timestamp)
+            WHEN {{String(period, 'day')}} = 'week' THEN toStartOfWeek(timestamp)
+            WHEN {{String(period, 'day')}} = 'month' THEN toStartOfMonth(timestamp)
+            ELSE toStartOfDay(timestamp)
+        END as period,
+        category,
+        ROUND(AVG(rating), 2) as avg_rating,
+        COUNT() as response_count
+    FROM customer_satisfaction
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    GROUP BY period, category
+    ORDER BY period DESC, category ASC
+
+TYPE endpoint

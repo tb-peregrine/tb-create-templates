@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Stores all customer transactions including amount, date, product category, and transaction type
+
+SCHEMA >
+    `transaction_id` String `json:$.transaction_id`,
+    `customer_id` String `json:$.customer_id`,
+    `transaction_date` DateTime `json:$.transaction_date`,
+    `amount` Float64 `json:$.amount`,
+    `product_category` String `json:$.product_category`,
+    `transaction_type` String `json:$.transaction_type`,
+    `payment_method` String `json:$.payment_method`,
+    `is_refund` UInt8 `json:$.is_refund`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(transaction_date)"
+ENGINE_SORTING_KEY "customer_id, transaction_date"
+        

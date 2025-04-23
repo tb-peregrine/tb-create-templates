@@ -1,0 +1,17 @@
+DESCRIPTION >
+    Materialize daily feedback statistics for faster analytics queries
+
+NODE materialize_daily_stats_node
+SQL >
+    SELECT 
+        toDate(created_at) as day,
+        category,
+        source,
+        countState(*) as feedback_count,
+        sumState(rating) as total_rating,
+        avgState(sentiment_score) as avg_sentiment
+    FROM customer_feedback
+    GROUP BY day, category, source
+
+TYPE MATERIALIZED
+DATASOURCE feedback_stats_daily

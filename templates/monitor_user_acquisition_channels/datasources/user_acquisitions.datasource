@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Stores user acquisition data from different channels with cost information
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `channel` String `json:$.channel`,
+    `campaign` String `json:$.campaign`,
+    `acquisition_date` DateTime `json:$.acquisition_date`,
+    `cost` Float64 `json:$.cost`,
+    `country` String `json:$.country`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(acquisition_date)"
+ENGINE_SORTING_KEY "acquisition_date, channel, campaign, country"
+        
