@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Endpoint to get inventory summary statistics by warehouse and category
+
+NODE get_inventory_summary_node
+SQL >
+    %
+    SELECT 
+        warehouse_id,
+        category,
+        count() AS total_items,
+        sum(current_stock) AS total_stock,
+        countIf(current_stock <= min_stock_level) AS low_stock_items,
+        round(avg(current_stock), 2) AS avg_stock_level,
+        sum(current_stock * unit_price) AS total_inventory_value
+    FROM inventory_items
+    WHERE 1=1
+    {% if defined(warehouse_id) %}
+        AND warehouse_id = {{String(warehouse_id, '')}}
+    {% end %}
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    GROUP BY warehouse_id, category
+    ORDER BY 
+    {% if defined(sort_by) %}
+        {{String(sort_by, 'total_inventory_value')}}
+    {% else %}
+        total_inventory_value
+    {% end %}
+    {% if defined(sort_desc) and sort_desc == '1' %}
+        DESC
+    {% else %}
+        DESC
+    {% end %}
+
+TYPE endpoint
+        

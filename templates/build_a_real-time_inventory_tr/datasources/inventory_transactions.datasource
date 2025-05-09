@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Tracks all inventory transactions including stock additions, removals and adjustments
+
+SCHEMA >
+    `transaction_id` String `json:$.transaction_id`,
+    `item_id` String `json:$.item_id`,
+    `warehouse_id` String `json:$.warehouse_id`,
+    `transaction_type` String `json:$.transaction_type`,
+    `quantity` Int32 `json:$.quantity`,
+    `transaction_date` DateTime `json:$.transaction_date`,
+    `user_id` String `json:$.user_id`,
+    `reference_id` String `json:$.reference_id`,
+    `notes` String `json:$.notes`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(transaction_date)"
+ENGINE_SORTING_KEY "item_id, warehouse_id, transaction_date"
+        

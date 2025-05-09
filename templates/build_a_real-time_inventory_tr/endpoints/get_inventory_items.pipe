@@ -1,0 +1,49 @@
+
+DESCRIPTION >
+    Endpoint to get inventory items with optional filtering by category, warehouse and low stock status
+
+NODE get_inventory_items_node
+SQL >
+    %
+    SELECT 
+        item_id,
+        item_name,
+        category,
+        current_stock,
+        min_stock_level,
+        max_stock_level,
+        unit_price,
+        supplier_id,
+        warehouse_id,
+        last_updated,
+        current_stock <= min_stock_level AS is_low_stock
+    FROM inventory_items
+    WHERE 1=1
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    {% if defined(warehouse_id) %}
+        AND warehouse_id = {{String(warehouse_id, '')}}
+    {% end %}
+    {% if defined(low_stock_only) and low_stock_only == '1' %}
+        AND current_stock <= min_stock_level
+    {% end %}
+    ORDER BY 
+    {% if defined(sort_by) %}
+        {{String(sort_by, 'item_name')}}
+    {% else %}
+        item_name
+    {% end %}
+    {% if defined(sort_desc) and sort_desc == '1' %}
+        DESC
+    {% else %}
+        ASC
+    {% end %}
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% else %}
+        LIMIT 100
+    {% end %}
+
+TYPE endpoint
+        

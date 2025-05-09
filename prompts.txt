@@ -1,106 +1,96 @@
-Build an API that provides real-time user engagement metrics with time series charts and filters
-Build an API that tracks API usage and performance metrics for multi-tenant applications
-Build an API that processes and analyzes e-commerce transaction data with revenue metrics
-Build an API that monitors server logs with anomaly detection and alerts
-Build an API that tracks user retention and churn metrics with cohort analysis
-Build an API that processes IoT sensor data with real-time alerts and thresholds
-Build an API that tracks and analyzes A/B test results with statistical significance
-Build an API that monitors ad campaign performance with conversion tracking
-Build an API that processes and analyzes clickstream data with user journey mapping
-Build an API that tracks and analyzes customer support ticket metrics and SLAs
-Build an API that monitors website performance metrics with real-time alerts
-Build an API that processes and analyzes social media engagement data
-Build an API that tracks user session data with funnel analysis and conversion rates
-Build an API that monitors application errors and exceptions with severity levels
-Build an API that processes and analyzes mobile app usage data with retention metrics
-Build an API that tracks and analyzes email campaign performance metrics
-Build an API that monitors API response times with percentile analysis
-Build an API that processes and analyzes user feedback data with sentiment analysis
-Build an API that tracks and analyzes product usage metrics with feature adoption
-Build an API that monitors system resource usage with capacity planning
-Build an API that processes and analyzes customer behavior data with segmentation
-Build an API that tracks and analyzes marketing campaign attribution
-Build an API that monitors user acquisition metrics with channel analysis
-Build an API that processes and analyzes payment transaction data with fraud detection
-Build an API that tracks user engagement with content and recommendations
-Build an API that monitors network traffic with security analysis
-Build an API that processes and analyzes customer satisfaction data with NPS tracking
-Build an API that tracks and analyzes product feature usage with adoption rates
-Build an API that monitors user conversion rates with funnel optimization
-Build an API that processes and analyzes search query data with intent analysis
-Build an API that tracks and analyzes user onboarding metrics with completion rates
-Build an API that monitors application performance with key metrics
-Build an API that processes and analyzes customer support response times
-Build an API that tracks and analyzes user referral metrics with viral coefficients
-Build an API that monitors user activity patterns with behavioral analysis
-Build an API that processes and analyzes user feedback sentiment with topic modeling
-Build an API that tracks and analyzes product adoption metrics with growth rates
-Build an API that monitors system health metrics with automated alerts
-Build an API that processes and analyzes user interaction data with engagement scores
-Build an API that tracks and analyzes customer journey metrics with touchpoints
-Build an API that monitors user engagement with features and usage patterns
-Build an API that processes and analyzes user behavior patterns with clustering
-Build an API that tracks and analyzes product performance metrics with benchmarks
-Build an API that monitors user satisfaction metrics with feedback analysis
-Build an API that processes and analyzes user retention data with cohort analysis
-Build an API that tracks and analyzes customer lifetime value metrics
-Build an API that monitors user acquisition channels with ROI analysis
-Build an API that processes and analyzes user conversion data with optimization
-Build an API that tracks and analyzes product usage patterns with trends
-Build an API that monitors user engagement metrics with real-time updates
-Build an API that processes and analyzes customer feedback data with insights
-Build an API that tracks and analyzes user behavior metrics with segmentation
-Build an API that monitors product performance with key indicators
-Build an API that processes and analyzes user retention patterns with predictions
-Build an API that tracks and analyzes customer satisfaction metrics with trends
-Build an API that monitors user acquisition patterns with forecasting
-Build an API that processes and analyzes user conversion patterns with optimization
-Build an API that tracks and analyzes product adoption patterns with insights
-Build an API that monitors user engagement patterns with real-time updates
-Build an API that processes and analyzes customer behavior patterns with predictions
-Build an API that tracks and analyzes user feedback patterns with trends
-Build an API that monitors product usage patterns with key metrics
-Build an API that processes and analyzes user retention patterns with insights
-Build an API that tracks and analyzes customer satisfaction patterns with trends
-Build an API that monitors user acquisition patterns with forecasting
-Build an API that processes and analyzes user conversion patterns with optimization
-Build an API that tracks and analyzes product adoption patterns with insights
-Build an API that monitors user engagement patterns with real-time updates
-Build an API that processes and analyzes customer behavior patterns with predictions
-Build an API that tracks and analyzes user feedback patterns with trends
-Build an API that monitors product usage patterns with key metrics
-Build an API that processes and analyzes user retention patterns with insights
-Build an API that tracks and analyzes customer satisfaction patterns with trends
-Build an API that monitors user acquisition patterns with forecasting
-Build an API that processes and analyzes user conversion patterns with optimization
-Build an API that tracks and analyzes product adoption patterns with insights
-Build an API that monitors user engagement patterns with real-time updates
-Build an API that processes and analyzes customer behavior patterns with predictions
-Build an API that tracks and analyzes user feedback patterns with trends
-Build an API that monitors product usage patterns with key metrics
-Build an API that processes and analyzes user retention patterns with insights
-Build an API that tracks and analyzes customer satisfaction patterns with trends
-Build an API that monitors user acquisition patterns with forecasting
-Build an API that processes and analyzes user conversion patterns with optimization
-Build an API that tracks and analyzes product adoption patterns with insights
-Build an API that monitors user engagement patterns with real-time updates
-Build an API that processes and analyzes customer behavior patterns with predictions
-Build an API that tracks and analyzes user feedback patterns with trends
-Build an API that monitors product usage patterns with key metrics
-Build an API that processes and analyzes user retention patterns with insights
-Build an API that tracks and analyzes customer satisfaction patterns with trends
-Build an API that monitors user acquisition patterns with forecasting
-Build an API that processes and analyzes user conversion patterns with optimization
-Build an API that tracks and analyzes product adoption patterns with insights
-Build an API that monitors user engagement patterns with real-time updates
-Build an API that processes and analyzes customer behavior patterns with predictions
-Build an API that tracks and analyzes user feedback patterns with trends
-Build an API that monitors product usage patterns with key metrics
-Build an API that processes and analyzes user retention patterns with insights
-Build an API that tracks and analyzes customer satisfaction patterns with trends
-Build an API that monitors user acquisition patterns with forecasting
-Build an API that processes and analyzes user conversion patterns with optimization
-Build an API that tracks and analyzes product adoption patterns with insights
-Build an API that monitors user engagement patterns with real-time updates
-Build an API that processes and analyzes customer behavior patterns with predictions
-Build an API that tracks and analyzes user feedback patterns with trends 
+Build an API that provides real-time usage analytics for SaaS applications. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time inventory tracking API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that detects fraud in payment transactions. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time user behavior analytics API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes IoT sensor data streams. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time product recommendation engine API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that monitors website performance metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time log analysis and anomaly detection API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks user session activity for multi-tenant applications. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time social media sentiment analysis API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that provides real-time A/B testing analytics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time data visualization API for e-commerce metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes clickstream data for user journey analysis. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API over a Kafka topic. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks gaming metrics and player behavior. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time customer segmentation API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that analyzes streaming data from mobile applications. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time ad performance monitoring API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes geolocation data for proximity analytics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for financial market data analysis. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that provides predictive maintenance insights for industrial equipment. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time supply chain analytics API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that monitors cloud resource utilization. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for healthcare monitoring systems. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that provides traffic pattern analysis for smart cities. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time event tracking API for web and mobile applications. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes and analyzes customer feedback in real-time. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time sales analytics dashboard API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks delivery fleet movements and logistics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time content engagement analytics API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that monitors network traffic for security threats. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time email campaign performance tracking API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes time-series data from wearable devices. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for detecting anomalies in system logs. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that analyzes customer support ticket trends. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time product usage analytics API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks conversion funnel metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for subscription analytics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes and analyzes video streaming metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for detecting price changes in e-commerce. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that provides real-time analytics for multi-channel marketing campaigns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring environmental sensor data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks energy consumption patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing user search behavior. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes real-time auction bidding data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing cryptocurrency transaction patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that monitors application error rates and performance. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time user engagement scoring API. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that analyzes customer churn signals. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for processing survey response data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks feature usage across product versions. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for social media interaction analysis. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that monitors infrastructure health metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing consumer spending patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes location-based marketing campaign data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for tracking inventory levels across multiple warehouses. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that analyzes voice call transcripts for sentiment. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring SLAs and service health. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes messaging app usage patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing music streaming behavior. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks real-time sports analytics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring agricultural sensor data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that analyzes employee productivity metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for processing weather pattern data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks shopping cart abandonment in real-time. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing classroom engagement metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes food delivery service analytics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring manufacturing quality metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks ride-sharing service performance. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing public transportation usage. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that monitors content moderation metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for tracking fitness app usage patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes hotel occupancy and booking analytics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing patient monitoring data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks real-estate market trends. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing event attendance patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes parking space availability data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring solar panel performance. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks package delivery status updates. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing restaurant reservation patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that monitors water consumption metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing tourist movement patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes EV charging station usage. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring home automation system data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks retail foot traffic patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing library book checkout patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes fitness wearable data. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring subscription renewal patterns. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that analyzes customer lifetime value in real-time. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring machine learning model performance. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that tracks user onboarding completion rates. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for processing LLM usage and performance metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that monitors API call patterns and usage. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for analyzing database query performance. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build an API that processes chat bot conversation analytics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution.
+Build a real-time API for monitoring microservice health metrics. Limit to 1-2 datasources and max 3 endpoints. Use materialized views only if necessary. Keep it simple and prioritize a working solution. 

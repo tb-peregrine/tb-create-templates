@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    Endpoint to get detailed information about a specific inventory item including recent transactions
+
+NODE get_inventory_details_node
+SQL >
+    %
+    WITH item AS (
+        SELECT 
+            item_id,
+            item_name,
+            category,
+            current_stock,
+            min_stock_level,
+            max_stock_level,
+            unit_price,
+            supplier_id,
+            warehouse_id,
+            last_updated,
+            current_stock <= min_stock_level AS is_low_stock
+        FROM inventory_items
+        WHERE item_id = {{String(item_id, '')}}
+        {% if defined(warehouse_id) %}
+            AND warehouse_id = {{String(warehouse_id, '')}}
+        {% end %}
+    )
+    SELECT 
+        i.*,
+        t.transaction_id,
+        t.transaction_type,
+        t.quantity,
+        t.transaction_date,
+        t.user_id,
+        t.reference_id,
+        t.notes
+    FROM item AS i
+    LEFT JOIN inventory_transactions AS t 
+    ON i.item_id = t.item_id AND i.warehouse_id = t.warehouse_id
+    WHERE t.transaction_date IS NULL OR t.transaction_date >= now() - interval 30 day
+    ORDER BY t.transaction_date DESC
+    LIMIT 100
+
+TYPE endpoint
+        
