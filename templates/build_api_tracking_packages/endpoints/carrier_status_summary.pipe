@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Get a summary of package delivery statuses by carrier
+
+NODE carrier_status_summary_node
+SQL >
+    %
+    SELECT 
+        carrier,
+        status,
+        count() as package_count
+    FROM (
+        SELECT 
+            package_id,
+            carrier,
+            argMax(status, event_timestamp) as status
+        FROM package_events
+        {% if defined(carrier) %}
+        WHERE carrier = {{String(carrier, 'all')}}
+        {% end %}
+        GROUP BY package_id, carrier
+    )
+    GROUP BY carrier, status
+    ORDER BY carrier, package_count DESC
+
+TYPE endpoint

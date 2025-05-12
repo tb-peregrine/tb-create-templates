@@ -1,0 +1,10 @@
+{"sensor_id": "sensor_29", "location": "Office", "reading_type": "pressure", "reading_value": 1597364956, "unit": "hPa", "timestamp": "2025-05-12 16:42:03", "battery_level": 0.1}
+{"sensor_id": "sensor_39", "location": "Office", "reading_type": "pressure", "reading_value": 645797676, "unit": "hPa", "timestamp": "2025-05-12 04:56:53", "battery_level": 0.2}
+{"sensor_id": "sensor_7", "location": "Attic", "reading_type": "humidity", "reading_value": 1466063232, "unit": "%", "timestamp": "2025-05-12 09:24:05", "battery_level": 0.8}
+{"sensor_id": "sensor_19", "location": "Office", "reading_type": "pressure", "reading_value": 2762925676, "unit": "hPa", "timestamp": "2025-05-12 09:50:33", "battery_level": 0.4}
+{"sensor_id": "sensor_92", "location": "Living Room", "reading_type": "humidity", "reading_value": 3897478112, "unit": "%", "timestamp": "2025-05-12 00:22:40", "battery_level": 0.3}
+{"sensor_id": "sensor_75", "location": "Garden", "reading_type": "light", "reading_value": 1790821848, "unit": "lux", "timestamp": "2025-05-12 14:41:17", "battery_level": 0.2}
+{"sensor_id": "sensor_38", "location": "Garage", "reading_type": "air_quality", "reading_value": 977206234, "unit": "AQI", "timestamp": "2025-05-12 11:01:54", "battery_level": 0.7}
+{"sensor_id": "sensor_33", "location": "Bedroom", "reading_type": "air_quality", "reading_value": 3419301564, "unit": "AQI", "timestamp": "2025-05-12 11:11:59", "battery_level": 0.5}
+{"sensor_id": "sensor_84", "location": "Bathroom", "reading_type": "pressure", "reading_value": 3027291716, "unit": "hPa", "timestamp": "2025-05-12 14:49:28", "battery_level": 0.6}
+{"sensor_id": "sensor_56", "location": "Basement", "reading_type": "temperature", "reading_value": 980545620, "unit": "\u00b0C", "timestamp": "2025-05-11 19:24:56", "battery_level": 0.2}

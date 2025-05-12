@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Get recent price changes within a product category
+
+NODE price_changes_by_category_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        product_name,
+        category,
+        merchant_id,
+        old_price,
+        new_price,
+        price_change,
+        price_change_percentage,
+        currency,
+        change_timestamp
+    FROM product_price_changes
+    WHERE category = {{String(category, "electronics")}}
+    {% if defined(min_percentage_change) %}
+    AND abs(price_change_percentage) >= {{Float32(min_percentage_change, 5.0)}}
+    {% end %}
+    {% if defined(from_date) %}
+    AND change_timestamp >= {{DateTime(from_date, "2023-01-01 00:00:00")}}
+    {% else %}
+    AND change_timestamp >= now() - interval 7 day
+    {% end %}
+    ORDER BY change_timestamp DESC
+    LIMIT {{UInt16(limit, 100)}}
+
+TYPE endpoint
+        

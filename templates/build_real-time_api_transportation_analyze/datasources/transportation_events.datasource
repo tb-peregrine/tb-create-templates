@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Data about public transportation usage events
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `vehicle_id` String `json:$.vehicle_id`,
+    `vehicle_type` String `json:$.vehicle_type`,
+    `route_id` String `json:$.route_id`,
+    `route_name` String `json:$.route_name`,
+    `passenger_count` Int32 `json:$.passenger_count`,
+    `stop_id` String `json:$.stop_id`,
+    `location_lat` Float64 `json:$.location_lat`,
+    `location_lng` Float64 `json:$.location_lng`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, vehicle_type, route_id"
+        

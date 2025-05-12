@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Raw engagement events from classroom activities
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `student_id` String `json:$.student_id`,
+    `class_id` String `json:$.class_id`,
+    `event_type` String `json:$.event_type`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `duration_seconds` Int32 `json:$.duration_seconds`,
+    `content_id` String `json:$.content_id`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, class_id, student_id, event_type"
+        

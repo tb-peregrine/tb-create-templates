@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Get interactions count grouped by platform and interaction type within a time range
+
+NODE interactions_by_platform_query
+SQL >
+    %
+    SELECT 
+        platform,
+        interaction_type,
+        count() AS total_interactions,
+        avg(engagement_count) AS avg_engagement
+    FROM social_interactions
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(platform_filter) %}
+        AND platform = {{String(platform_filter, 'all')}}
+        {% end %}
+    GROUP BY platform, interaction_type
+    ORDER BY total_interactions DESC
+
+TYPE endpoint
+        

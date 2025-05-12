@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Raw customer feedback events ingested in real-time
+
+SCHEMA >
+    `feedback_id` String `json:$.feedback_id`,
+    `customer_id` String `json:$.customer_id`,
+    `product_id` String `json:$.product_id`,
+    `rating` Int32 `json:$.rating`,
+    `feedback_text` String `json:$.feedback_text`,
+    `sentiment` String `json:$.sentiment`,
+    `tags` Array(String) `json:$.tags[:]`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, product_id, customer_id"
+        

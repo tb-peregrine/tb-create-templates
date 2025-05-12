@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Sales events data with transaction information including product, amount, customer, and timestamp
+
+SCHEMA >
+    `transaction_id` String `json:$.transaction_id`,
+    `product_id` String `json:$.product_id`,
+    `product_name` String `json:$.product_name`,
+    `category` String `json:$.category`,
+    `price` Float32 `json:$.price`,
+    `quantity` Int32 `json:$.quantity`,
+    `total_amount` Float32 `json:$.total_amount`,
+    `customer_id` String `json:$.customer_id`,
+    `store_id` String `json:$.store_id`,
+    `store_location` String `json:$.store_location`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, product_id, store_id"
+        

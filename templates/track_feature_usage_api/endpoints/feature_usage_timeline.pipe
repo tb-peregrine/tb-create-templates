@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Timeline of feature usage across time periods
+
+NODE feature_usage_timeline_node
+SQL >
+    %
+    SELECT 
+        feature_id,
+        product_version,
+        toStartOfDay(timestamp) as day,
+        count() as usage_count,
+        count(DISTINCT user_id) as unique_users
+    FROM feature_events
+    WHERE 1=1
+    {% if defined(feature_id) %}
+        AND feature_id = {{String(feature_id, '')}}
+    {% end %}
+    {% if defined(product_version) %}
+        AND product_version = {{String(product_version, '')}}
+    {% end %}
+    {% if defined(interval) %}
+        AND timestamp >= now() - interval {{String(interval, '30 day')}}
+    {% else %}
+        AND timestamp >= now() - interval 30 day
+    {% end %}
+    GROUP BY feature_id, product_version, day
+    ORDER BY day DESC, usage_count DESC
+
+TYPE endpoint
+        

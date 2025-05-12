@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    Endpoint to identify trending tags in customer feedback with optional filtering
+
+NODE get_trending_tags_node
+SQL >
+    %
+    WITH 
+    tag_array AS (
+        SELECT 
+            product_id,
+            timestamp,
+            arrayJoin(tags) AS tag
+        FROM feedback_events
+        WHERE 1=1
+        {% if defined(product_id) %}
+            AND product_id = {{String(product_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    )
+    
+    SELECT 
+        tag,
+        count() AS tag_count,
+        avg(rating) AS average_rating
+    FROM tag_array
+    JOIN feedback_events ON 
+        tag_array.product_id = feedback_events.product_id AND
+        tag_array.timestamp = feedback_events.timestamp
+    GROUP BY tag
+    ORDER BY tag_count DESC
+    LIMIT {{Int(limit, 20)}}
+
+TYPE endpoint
+        

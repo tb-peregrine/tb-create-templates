@@ -1,0 +1,19 @@
+DESCRIPTION >
+    API endpoint that shows genre popularity trends over time
+
+NODE genre_trends_node
+SQL >
+    %
+    SELECT 
+        toStartOfHour(stream_start_time) as hour,
+        genre,
+        count() as stream_count
+    FROM music_streams
+    WHERE stream_start_time BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(country) %}
+    AND country = {{String(country, 'US')}}
+    {% end %}
+    GROUP BY hour, genre
+    ORDER BY hour DESC, stream_count DESC
+
+TYPE endpoint

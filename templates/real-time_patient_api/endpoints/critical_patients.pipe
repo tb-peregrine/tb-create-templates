@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    Returns a list of patients with critical vital signs in a specific department
+
+NODE critical_patients_node
+SQL >
+    %
+    SELECT 
+        patient_id,
+        max(timestamp) as last_reading_time,
+        any(heart_rate) as heart_rate,
+        any(systolic_bp) as systolic_bp,
+        any(diastolic_bp) as diastolic_bp,
+        any(temperature) as temperature,
+        any(oxygen_level) as oxygen_level
+    FROM patient_vitals
+    WHERE 
+        is_critical = 1
+        {% if defined(department) %}
+        AND department = {{String(department, '')}}
+        {% end %}
+        AND timestamp >= now() - interval 1 hour
+    GROUP BY patient_id
+    ORDER BY last_reading_time DESC
+
+TYPE endpoint
+        

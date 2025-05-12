@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Provides overall ride statistics with filtering options
+
+NODE ride_statistics_node
+SQL >
+    %
+    SELECT 
+        city,
+        COUNT(*) as total_rides,
+        AVG(duration_minutes) as avg_duration,
+        AVG(distance_km) as avg_distance,
+        AVG(fare_amount) as avg_fare,
+        AVG(rating) as avg_rating,
+        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_rides,
+        COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_rides
+    FROM rides
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(city) %}
+        AND city = {{String(city, 'New York')}}
+    {% end %}
+    GROUP BY city
+    ORDER BY total_rides DESC
+
+TYPE endpoint
+        

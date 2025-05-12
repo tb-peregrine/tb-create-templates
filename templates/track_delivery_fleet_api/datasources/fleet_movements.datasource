@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Tracks the real-time movements of the delivery fleet.
+
+SCHEMA >
+    `event_time` DateTime `json:$.event_time`,
+    `vehicle_id` String `json:$.vehicle_id`,
+    `latitude` Float64 `json:$.latitude`,
+    `longitude` Float64 `json:$.longitude`,
+    `speed` Float32 `json:$.speed`,
+    `status` String `json:$.status`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(event_time)"
+ENGINE_SORTING_KEY "event_time, vehicle_id"
+        

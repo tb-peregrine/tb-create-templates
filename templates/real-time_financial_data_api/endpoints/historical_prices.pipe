@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Returns historical prices for a given stock symbol within a specified time range.
+
+NODE historical_prices_node
+SQL >
+    %
+    SELECT
+        timestamp,
+        price
+    FROM stock_trades
+    WHERE symbol = {{String(stock_symbol, 'AAPL')}}
+    AND timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-01-02 00:00:00')}}
+    ORDER BY timestamp
+
+TYPE endpoint
+        

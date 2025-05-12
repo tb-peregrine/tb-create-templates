@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Mobile application events data source for storing all app events
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `event_type` String `json:$.event_type`,
+    `event_time` DateTime `json:$.event_time`,
+    `app_version` String `json:$.app_version`,
+    `device_type` String `json:$.device_type`,
+    `os_version` String `json:$.os_version`,
+    `country` String `json:$.country`,
+    `properties` String `json:$.properties`,
+    `session_id` String `json:$.session_id`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(event_time)"
+ENGINE_SORTING_KEY "event_time, event_type, user_id"
+        

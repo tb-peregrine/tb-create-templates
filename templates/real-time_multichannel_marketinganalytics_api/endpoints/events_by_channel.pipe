@@ -1,0 +1,12 @@
+
+DESCRIPTION >
+    Endpoint to retrieve the number of events by channel.
+
+NODE events_by_channel_node
+SQL >
+    SELECT channel, count() AS event_count
+    FROM marketing_events
+    GROUP BY channel
+
+TYPE endpoint
+        

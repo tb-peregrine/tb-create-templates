@@ -1,0 +1,48 @@
+
+DESCRIPTION >
+    Detect weather anomalies based on thresholds
+
+NODE detect_anomalies
+SQL >
+    %
+    SELECT
+        station_id,
+        location,
+        region,
+        country,
+        temperature,
+        humidity,
+        pressure,
+        wind_speed,
+        precipitation,
+        timestamp
+    FROM weather_measurements
+    WHERE 1=1
+    {% if defined(min_temperature) %}
+        AND temperature < {{Float64(min_temperature, 0.0)}}
+    {% end %}
+    {% if defined(max_temperature) %}
+        AND temperature > {{Float64(max_temperature, 30.0)}}
+    {% end %}
+    {% if defined(min_humidity) %}
+        AND humidity < {{Float64(min_humidity, 20.0)}}
+    {% end %}
+    {% if defined(max_humidity) %}
+        AND humidity > {{Float64(max_humidity, 80.0)}}
+    {% end %}
+    {% if defined(max_wind_speed) %}
+        AND wind_speed > {{Float64(max_wind_speed, 20.0)}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

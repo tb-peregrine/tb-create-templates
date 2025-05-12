@@ -1,0 +1,10 @@
+{"event_id": "evt_92303", "customer_id": "cust_303", "event_type": "add_to_cart", "event_value": 2488992606, "product_id": "prod_303", "category": "beauty", "timestamp": "2025-05-09 01:48:29"}
+{"event_id": "evt_84206", "customer_id": "cust_206", "event_type": "login", "event_value": 1624084412, "product_id": "prod_206", "category": "electronics", "timestamp": "2025-05-06 10:48:29"}
+{"event_id": "evt_89748", "customer_id": "cust_748", "event_type": "add_to_cart", "event_value": 4273290496, "product_id": "prod_248", "category": "electronics", "timestamp": "2025-04-24 04:48:29"}
+{"event_id": "evt_99546", "customer_id": "cust_546", "event_type": "login", "event_value": 1400400092, "product_id": "prod_46", "category": "home", "timestamp": "2025-04-16 14:48:29"}
+{"event_id": "evt_2138", "customer_id": "cust_138", "event_type": "add_to_cart", "event_value": 2285602276, "product_id": "prod_138", "category": "food", "timestamp": "2025-04-14 06:48:29"}
+{"event_id": "evt_45923", "customer_id": "cust_923", "event_type": "add_to_cart", "event_value": 1563146846, "product_id": "prod_423", "category": "beauty", "timestamp": "2025-05-09 13:48:29"}
+{"event_id": "evt_39035", "customer_id": "cust_35", "event_type": "purchase", "event_value": 2112439070, "product_id": "prod_35", "category": "beauty", "timestamp": "2025-04-27 13:48:29"}
+{"event_id": "evt_21753", "customer_id": "cust_753", "event_type": "add_to_cart", "event_value": 1935422506, "product_id": "prod_253", "category": "clothing", "timestamp": "2025-04-29 15:48:29"}
+{"event_id": "evt_93162", "customer_id": "cust_162", "event_type": "page_view", "event_value": 3789593324, "product_id": "prod_162", "category": "home", "timestamp": "2025-05-10 14:48:29"}
+{"event_id": "evt_26111", "customer_id": "cust_111", "event_type": "login", "event_value": 4164126222, "product_id": "prod_111", "category": "beauty", "timestamp": "2025-04-21 01:48:29"}

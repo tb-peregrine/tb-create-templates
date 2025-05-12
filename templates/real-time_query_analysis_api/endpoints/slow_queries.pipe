@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Identifies and analyzes slow queries that exceed a specified duration threshold
+
+NODE slow_queries_node
+SQL >
+    %
+    SELECT 
+        query_id,
+        database,
+        query_type,
+        user,
+        query_text,
+        start_time,
+        duration_ms,
+        rows_read,
+        bytes_read,
+        memory_usage,
+        status,
+        error_message
+    FROM query_logs
+    WHERE 
+        duration_ms > {{Float64(duration_threshold_ms, 1000)}}
+        AND start_time BETWEEN {{DateTime(start_time, '2023-01-01 00:00:00')}} AND {{DateTime(end_time, '2023-12-31 23:59:59')}}
+        {% if defined(database) %}
+        AND database = {{String(database, 'production')}}
+        {% end %}
+        {% if defined(query_type) %}
+        AND query_type = {{String(query_type, 'SELECT')}}
+        {% end %}
+    ORDER BY duration_ms DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

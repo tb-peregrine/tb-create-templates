@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Get daily trends of orders, sales and average delivery time
+
+NODE daily_order_trends_node
+SQL >
+    %
+    SELECT 
+        toDate(timestamp) AS date,
+        count() AS total_orders,
+        sum(total_amount) AS total_sales,
+        avg(delivery_time_minutes) AS avg_delivery_time,
+        sum(delivery_fee) AS total_delivery_fees,
+        sum(tip_amount) AS total_tips
+    FROM food_delivery_orders
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(city) %}
+        AND city = {{String(city, 'New York')}}
+    {% end %}
+    GROUP BY date
+    ORDER BY date DESC
+    LIMIT {{Int32(limit, 30)}}
+
+TYPE endpoint
+        

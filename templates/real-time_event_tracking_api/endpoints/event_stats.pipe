@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Provides aggregated statistics for events
+
+NODE event_stats_node
+SQL >
+    %
+    SELECT
+        event_type,
+        count() as event_count,
+        countDistinct(user_id) as unique_users,
+        min(timestamp) as first_seen,
+        max(timestamp) as last_seen,
+        countDistinct(session_id) as session_count
+    FROM events
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(platform) %}
+        AND platform = {{String(platform, '')}}
+    {% end %}
+    GROUP BY event_type
+    ORDER BY event_count DESC
+
+TYPE endpoint
+        

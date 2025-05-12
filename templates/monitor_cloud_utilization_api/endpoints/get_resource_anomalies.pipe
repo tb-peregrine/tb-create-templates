@@ -1,0 +1,75 @@
+
+DESCRIPTION >
+    API endpoint to detect anomalies in resource metrics based on standard deviation
+
+NODE get_resource_anomalies_node
+SQL >
+    %
+    WITH 
+    resource_stats AS (
+        SELECT
+            resource_id,
+            resource_type,
+            resource_name,
+            metric_name,
+            avg(metric_value) as avg_value,
+            stddevSamp(metric_value) as std_dev
+        FROM cloud_resource_metrics
+        WHERE 1=1
+        {% if defined(resource_type) %}
+            AND resource_type = {{String(resource_type, '')}}
+        {% end %}
+        {% if defined(metric_name) %}
+            AND metric_name = {{String(metric_name, '')}}
+        {% end %}
+        {% if defined(region) %}
+            AND region = {{String(region, '')}}
+        {% end %}
+        {% if defined(environment) %}
+            AND environment = {{String(environment, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% else %}
+            AND timestamp >= now() - interval 24 hour
+        {% end %}
+        {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+            AND timestamp <= now()
+        {% end %}
+        GROUP BY resource_id, resource_type, resource_name, metric_name
+    )
+    SELECT
+        c.timestamp,
+        c.resource_id,
+        c.resource_type,
+        c.resource_name,
+        c.metric_name,
+        c.metric_value,
+        c.region,
+        c.environment,
+        r.avg_value,
+        r.std_dev,
+        abs(c.metric_value - r.avg_value) / nullIf(r.std_dev, 0) as deviation_score
+    FROM cloud_resource_metrics c
+    JOIN resource_stats r 
+        ON c.resource_id = r.resource_id 
+        AND c.metric_name = r.metric_name
+    WHERE 
+        abs(c.metric_value - r.avg_value) / nullIf(r.std_dev, 0) > {{Float64(threshold, 3.0)}}
+        {% if defined(start_date) %}
+            AND c.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% else %}
+            AND c.timestamp >= now() - interval 24 hour
+        {% end %}
+        {% if defined(end_date) %}
+            AND c.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+            AND c.timestamp <= now()
+        {% end %}
+    ORDER BY deviation_score DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

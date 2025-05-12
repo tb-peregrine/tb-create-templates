@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Get email campaign performance metrics over time, grouped by hour or day
+
+NODE campaign_timeline_node
+SQL >
+    %
+    SELECT
+        campaign_id,
+        {% if defined(group_by) and String(group_by, 'day') == 'hour' %}
+            toStartOfHour(timestamp) AS time_period,
+        {% else %}
+            toStartOfDay(timestamp) AS time_period,
+        {% end %}
+        sum(if(event_type = 'send', 1, 0)) AS sends,
+        sum(if(event_type = 'open', 1, 0)) AS opens,
+        sum(if(event_type = 'click', 1, 0)) AS clicks,
+        sum(if(event_type = 'bounce', 1, 0)) AS bounces,
+        sum(if(event_type = 'unsubscribe', 1, 0)) AS unsubscribes
+    FROM email_events
+    WHERE 1=1
+    {% if defined(campaign_id) %}
+        AND campaign_id = {{String(campaign_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY campaign_id, time_period
+    ORDER BY time_period ASC
+
+TYPE endpoint
+        

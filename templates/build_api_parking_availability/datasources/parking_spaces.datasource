@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Data source for parking space availability information
+
+SCHEMA >
+    `parking_lot_id` String `json:$.parking_lot_id`,
+    `location` String `json:$.location`,
+    `total_spaces` Int32 `json:$.total_spaces`,
+    `available_spaces` Int32 `json:$.available_spaces`,
+    `occupied_spaces` Int32 `json:$.occupied_spaces`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "parking_lot_id, timestamp"
+        

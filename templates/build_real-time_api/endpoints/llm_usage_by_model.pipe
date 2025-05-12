@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Real-time API for LLM usage by model
+
+NODE llm_usage_by_model_node
+SQL >
+    SELECT
+        model_name,
+        sum(prompt_tokens) AS total_prompt_tokens,
+        sum(completion_tokens) AS total_completion_tokens,
+        sum(total_tokens) AS total_tokens,
+        sum(cost) AS total_cost
+    FROM llm_events
+    GROUP BY model_name
+
+TYPE endpoint
+        

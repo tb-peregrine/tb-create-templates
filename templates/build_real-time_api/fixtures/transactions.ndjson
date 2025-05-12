@@ -1,0 +1,10 @@
+{"transaction_id": "tx_3563", "user_id": "user_563", "amount": 922504346, "category": "shopping", "merchant": "Starbucks", "timestamp": "2025-04-19 06:03:09", "payment_method": "cash", "location": "Houston"}
+{"transaction_id": "tx_51968", "user_id": "user_968", "amount": 3531552186, "category": "groceries", "merchant": "Home Depot", "timestamp": "2025-04-14 00:58:09", "payment_method": "cash", "location": "Boston"}
+{"transaction_id": "tx_65221", "user_id": "user_221", "amount": 553766032, "category": "travel", "merchant": "Amazon", "timestamp": "2025-04-20 20:05:09", "payment_method": "debit", "location": "Los Angeles"}
+{"transaction_id": "tx_30370", "user_id": "user_370", "amount": 866630590, "category": "entertainment", "merchant": "Walmart", "timestamp": "2025-05-11 22:56:09", "payment_method": "credit", "location": "New York"}
+{"transaction_id": "tx_89994", "user_id": "user_994", "amount": 4095690598, "category": "entertainment", "merchant": "Chipotle", "timestamp": "2025-04-17 22:32:09", "payment_method": "mobile_payment", "location": "Phoenix"}
+{"transaction_id": "tx_44151", "user_id": "user_151", "amount": 227644742, "category": "education", "merchant": "Amazon", "timestamp": "2025-04-30 18:15:09", "payment_method": "debit", "location": "Los Angeles"}
+{"transaction_id": "tx_82444", "user_id": "user_444", "amount": 3692482698, "category": "utilities", "merchant": "Chipotle", "timestamp": "2025-05-08 13:22:09", "payment_method": "mobile_payment", "location": "Phoenix"}
+{"transaction_id": "tx_50071", "user_id": "user_71", "amount": 2067450482, "category": "education", "merchant": "Amazon", "timestamp": "2025-04-30 18:15:09", "payment_method": "debit", "location": "Los Angeles"}
+{"transaction_id": "tx_15896", "user_id": "user_896", "amount": 1787116472, "category": "groceries", "merchant": "Uber", "timestamp": "2025-04-16 08:30:09", "payment_method": "debit", "location": "Seattle"}
+{"transaction_id": "tx_4028", "user_id": "user_28", "amount": 1846404606, "category": "utilities", "merchant": "Home Depot", "timestamp": "2025-04-14 12:58:09", "payment_method": "cash", "location": "Boston"}

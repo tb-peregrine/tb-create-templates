@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    API endpoint to track real-time participation in a classroom
+
+NODE real_time_participation_node
+SQL >
+    %
+    SELECT 
+        toStartOfHour(timestamp) as hour,
+        event_type,
+        count() as event_count,
+        count(DISTINCT student_id) as active_students
+    FROM engagement_events
+    WHERE class_id = {{String(class_id, "CL001")}}
+    AND timestamp >= now() - interval {{Int32(hours_back, 24)}} hour
+    GROUP BY hour, event_type
+    ORDER BY hour DESC, event_count DESC
+
+TYPE endpoint
+        

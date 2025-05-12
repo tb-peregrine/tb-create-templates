@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Customer activity events like purchases, logins, page views, etc.
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `customer_id` String `json:$.customer_id`,
+    `event_type` String `json:$.event_type`,
+    `event_value` Float64 `json:$.event_value`,
+    `product_id` String `json:$.product_id`,
+    `category` String `json:$.category`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "customer_id, timestamp"
+        

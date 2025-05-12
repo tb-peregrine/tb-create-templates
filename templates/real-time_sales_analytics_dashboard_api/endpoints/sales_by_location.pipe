@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Get sales data aggregated by store location
+
+NODE sales_by_location_node
+SQL >
+    %
+    SELECT
+        store_id,
+        store_location,
+        sum(total_amount) as revenue,
+        sum(quantity) as units_sold,
+        count() as transaction_count,
+        count(distinct product_id) as unique_products_sold
+    FROM sales_events
+    WHERE 1=1
+        {% if defined(category) %}
+        AND category = {{String(category, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+        AND timestamp <= now()
+        {% end %}
+    GROUP BY store_id, store_location
+    ORDER BY revenue DESC
+    LIMIT {{Int32(limit, 50)}}
+
+TYPE endpoint
+        

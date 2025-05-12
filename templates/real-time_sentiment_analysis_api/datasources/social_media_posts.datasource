@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Collection of social media posts with their metadata and content
+
+SCHEMA >
+    `post_id` String `json:$.post_id`,
+    `platform` String `json:$.platform`,
+    `content` String `json:$.content`,
+    `user_id` String `json:$.user_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `likes` Int32 `json:$.likes`,
+    `shares` Int32 `json:$.shares`,
+    `sentiment_score` Float32 `json:$.sentiment_score`,
+    `tags` Array(String) `json:$.tags[:]`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "platform, timestamp, user_id"
+        

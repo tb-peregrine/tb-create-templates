@@ -1,0 +1,15 @@
+
+DESCRIPTION >
+    Stores user onboarding events with step completion data
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `step_id` String `json:$.step_id`,
+    `step_name` String `json:$.step_name`,
+    `completed` UInt8 `json:$.completed`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "user_id, step_id, timestamp"
+        

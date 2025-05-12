@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Analyzes sentiment across different social media platforms, with optional time range filtering
+
+NODE sentiment_by_platform_node
+SQL >
+    %
+    SELECT 
+        platform,
+        count() as post_count,
+        avg(sentiment_score) as avg_sentiment,
+        min(sentiment_score) as min_sentiment,
+        max(sentiment_score) as max_sentiment
+    FROM social_media_posts
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(platform_filter) %}
+        AND platform = {{String(platform_filter, 'all')}}
+    {% end %}
+    GROUP BY platform
+    ORDER BY post_count DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Stores voice call transcripts with metadata for sentiment analysis
+
+SCHEMA >
+    `call_id` String `json:$.call_id`,
+    `transcript` String `json:$.transcript`,
+    `customer_id` String `json:$.customer_id`,
+    `agent_id` String `json:$.agent_id`,
+    `duration_seconds` Int32 `json:$.duration_seconds`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `call_type` String `json:$.call_type`,
+    `caller_phone` String `json:$.caller_phone`,
+    `tags` Array(String) `json:$.tags[:]`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "call_id, timestamp"
+        

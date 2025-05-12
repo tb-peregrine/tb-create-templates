@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Raw email campaign events data including sends, opens, clicks, bounces, and unsubscribes
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `event_type` String `json:$.event_type`,
+    `campaign_id` String `json:$.campaign_id`,
+    `email_id` String `json:$.email_id`,
+    `recipient_id` String `json:$.recipient_id`,
+    `recipient_email` String `json:$.recipient_email`,
+    `link_url` String `json:$.link_url`,
+    `metadata` String `json:$.metadata`,
+    `user_agent` String `json:$.user_agent`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "campaign_id, event_type, timestamp"
+        

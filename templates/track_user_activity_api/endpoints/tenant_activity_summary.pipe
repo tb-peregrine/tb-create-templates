@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Get summary of activity by tenant with optional date filtering
+
+NODE tenant_activity_node
+SQL >
+    %
+    SELECT 
+        tenant_id,
+        count(DISTINCT session_id) as total_sessions,
+        count(DISTINCT user_id) as total_users,
+        min(created_at) as first_activity,
+        max(updated_at) as last_activity,
+        count() as total_events
+    FROM user_sessions
+    WHERE 1=1
+    {% if defined(from_date) %}
+        AND created_at >= {{DateTime(from_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(to_date) %}
+        AND created_at <= {{DateTime(to_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY tenant_id
+    ORDER BY total_events DESC
+    LIMIT {{Int32(limit, 50)}}
+
+TYPE endpoint
+        

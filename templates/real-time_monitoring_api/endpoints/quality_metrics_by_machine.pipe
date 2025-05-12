@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Retrieves quality metrics aggregated by machine with filtering options
+
+NODE quality_metrics_by_machine_node
+SQL >
+    %
+    SELECT 
+        machine_id,
+        count() as total_measurements,
+        countIf(is_pass = 1) as passed_measurements,
+        round(countIf(is_pass = 1) / count() * 100, 2) as pass_rate,
+        min(timestamp) as first_measurement,
+        max(timestamp) as last_measurement
+    FROM quality_metrics
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(machine_id) %}
+        AND machine_id = {{String(machine_id, '')}}
+    {% end %}
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id, '')}}
+    {% end %}
+    GROUP BY machine_id
+    ORDER BY pass_rate ASC
+
+TYPE endpoint
+        

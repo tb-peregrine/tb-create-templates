@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Get hourly trends of transportation usage
+
+NODE hourly_usage_node
+SQL >
+    %
+    SELECT 
+        toStartOfHour(timestamp) as hour,
+        vehicle_type,
+        sum(passenger_count) as total_passengers,
+        count() as trip_count
+    FROM transportation_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(vehicle_type) %}
+        AND vehicle_type = {{String(vehicle_type, 'bus')}}
+        {% end %}
+    GROUP BY hour, vehicle_type
+    ORDER BY hour ASC
+
+TYPE endpoint
+        

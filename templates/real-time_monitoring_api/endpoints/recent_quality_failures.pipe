@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Returns recent quality check failures for quick investigation
+
+NODE recent_quality_failures_node
+SQL >
+    %
+    SELECT 
+        timestamp,
+        machine_id,
+        product_id, 
+        batch_id,
+        measurement_type,
+        value,
+        lower_limit,
+        upper_limit,
+        operator_id
+    FROM quality_metrics
+    WHERE is_pass = 0
+    {% if defined(machine_id) %}
+        AND machine_id = {{String(machine_id, '')}}
+    {% end %}
+    {% if defined(hours) %}
+        AND timestamp >= now() - interval {{Int(hours, 24)}} hour
+    {% else %}
+        AND timestamp >= now() - interval 24 hour
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    Calculates the total energy consumption for each device.
+
+NODE energy_consumption_by_device_node
+SQL >
+    SELECT
+        device_id,
+        SUM(energy_consumed) AS total_energy_consumed
+    FROM energy_consumption
+    GROUP BY device_id
+
+TYPE endpoint
+        

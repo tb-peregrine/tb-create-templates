@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Get products with recent significant price drops
+
+NODE significant_price_drops_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        product_name,
+        category,
+        merchant_id,
+        old_price,
+        new_price,
+        price_change,
+        price_change_percentage,
+        currency,
+        change_timestamp
+    FROM product_price_changes
+    WHERE price_change_percentage <= {{Float32(threshold, -10.0)}}
+    {% if defined(category) %}
+    AND category = {{String(category, "")}}
+    {% end %}
+    {% if defined(from_date) %}
+    AND change_timestamp >= {{DateTime(from_date, "2023-01-01 00:00:00")}}
+    {% else %}
+    AND change_timestamp >= now() - interval 7 day
+    {% end %}
+    ORDER BY price_change_percentage ASC
+    LIMIT {{UInt16(limit, 50)}}
+
+TYPE endpoint
+        

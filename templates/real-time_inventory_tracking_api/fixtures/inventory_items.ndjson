@@ -1,0 +1,10 @@
+{"item_id": "item_6396", "item_name": "Product 396", "category": "Clothing", "quantity": 396, "location": "Warehouse B", "last_updated": "2025-05-06 16:31:27", "low_stock_threshold": 56, "unit_price": 676}
+{"item_id": "item_5406", "item_name": "Product 406", "category": "Clothing", "quantity": 406, "location": "Warehouse B", "last_updated": "2025-04-16 16:31:27", "low_stock_threshold": 16, "unit_price": 486}
+{"item_id": "item_2524", "item_name": "Product 24", "category": "Home Goods", "quantity": 524, "location": "Online", "last_updated": "2025-04-28 16:31:27", "low_stock_threshold": 34, "unit_price": 624}
+{"item_id": "item_5016", "item_name": "Product 16", "category": "Clothing", "quantity": 16, "location": "Warehouse B", "last_updated": "2025-05-06 16:31:27", "low_stock_threshold": 26, "unit_price": 616}
+{"item_id": "item_1654", "item_name": "Product 154", "category": "Home Goods", "quantity": 654, "location": "Online", "last_updated": "2025-04-18 16:31:27", "low_stock_threshold": 14, "unit_price": 574}
+{"item_id": "item_3335", "item_name": "Product 335", "category": "Electronics", "quantity": 335, "location": "Warehouse A", "last_updated": "2025-04-17 16:31:27", "low_stock_threshold": 45, "unit_price": 485}
+{"item_id": "item_3559", "item_name": "Product 59", "category": "Home Goods", "quantity": 559, "location": "Online", "last_updated": "2025-05-03 16:31:27", "low_stock_threshold": 19, "unit_price": 889}
+{"item_id": "item_1514", "item_name": "Product 14", "category": "Home Goods", "quantity": 514, "location": "Online", "last_updated": "2025-04-18 16:31:27", "low_stock_threshold": 24, "unit_price": 844}
+{"item_id": "item_2595", "item_name": "Product 95", "category": "Electronics", "quantity": 595, "location": "Warehouse A", "last_updated": "2025-04-17 16:31:27", "low_stock_threshold": 55, "unit_price": 695}
+{"item_id": "item_9093", "item_name": "Product 93", "category": "Books", "quantity": 93, "location": "Store 2", "last_updated": "2025-04-19 16:31:27", "low_stock_threshold": 53, "unit_price": 93}

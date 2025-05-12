@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Get email campaign performance metrics including sends, opens, clicks, bounces, and unsubscribes
+
+NODE campaign_stats_node
+SQL >
+    %
+    SELECT
+        campaign_id,
+        sum(if(event_type = 'send', 1, 0)) AS sends,
+        sum(if(event_type = 'open', 1, 0)) AS opens,
+        sum(if(event_type = 'click', 1, 0)) AS clicks,
+        sum(if(event_type = 'bounce', 1, 0)) AS bounces,
+        sum(if(event_type = 'unsubscribe', 1, 0)) AS unsubscribes,
+        round(opens / sends * 100, 2) AS open_rate,
+        round(clicks / opens * 100, 2) AS click_to_open_rate,
+        round(bounces / sends * 100, 2) AS bounce_rate,
+        min(timestamp) AS campaign_start,
+        max(timestamp) AS last_activity
+    FROM email_events
+    WHERE 1=1
+    {% if defined(campaign_id) %}
+        AND campaign_id = {{String(campaign_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY campaign_id
+    ORDER BY campaign_start DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Get current transportation usage grouped by vehicle type
+
+NODE current_usage_node
+SQL >
+    %
+    SELECT 
+        vehicle_type,
+        count() as active_vehicles,
+        sum(passenger_count) as current_passengers
+    FROM transportation_events
+    WHERE 
+        timestamp >= now() - interval {{Int32(timespan_minutes, 30)}} minute
+        {% if defined(vehicle_type) %}
+        AND vehicle_type = {{String(vehicle_type, 'bus')}}
+        {% end %}
+    GROUP BY vehicle_type
+    ORDER BY current_passengers DESC
+
+TYPE endpoint
+        

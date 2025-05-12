@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Returns recent bids for a specific auction or all auctions, with optional pagination
+
+NODE recent_bids_node
+SQL >
+    %
+    SELECT 
+        bid_id,
+        auction_id,
+        bidder_id,
+        bid_amount,
+        timestamp,
+        status,
+        item_id
+    FROM auction_bids
+    WHERE 1=1
+    {%if defined(auction_id)%}
+        AND auction_id = {{String(auction_id, '')}}
+    {%end%}
+    {%if defined(status)%}
+        AND status = {{String(status, 'active')}}
+    {%end%}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 100)}}
+    OFFSET {{Int32(offset, 0)}}
+
+TYPE endpoint
+        

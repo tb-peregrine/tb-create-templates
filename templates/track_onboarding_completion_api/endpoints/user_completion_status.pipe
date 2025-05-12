@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Returns completion status for a specific user
+
+NODE completion_status
+SQL >
+    %
+    SELECT 
+        user_id,
+        step_id,
+        step_name,
+        completed,
+        timestamp
+    FROM user_onboarding_events
+    WHERE user_id = {{String(user_id, '')}}
+    ORDER BY timestamp DESC
+
+TYPE endpoint
+        

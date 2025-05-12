@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    System logs containing messages, severity levels, timestamps, and other system information
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `server_id` String `json:$.server_id`,
+    `service` String `json:$.service`,
+    `severity` String `json:$.severity`,
+    `message` String `json:$.message`,
+    `error_code` String `json:$.error_code`,
+    `resource_id` String `json:$.resource_id`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, server_id, service, severity"
+        

@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Records of attendance at different events, including user information and timestamps
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `attendance_status` String `json:$.attendance_status`,
+    `check_in_time` DateTime `json:$.check_in_time`,
+    `event_type` String `json:$.event_type`,
+    `venue` String `json:$.venue`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "event_id, user_id, timestamp"
+        

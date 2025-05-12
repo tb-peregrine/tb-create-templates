@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Get the full history of a package's status updates
+
+NODE package_history_node
+SQL >
+    %
+    SELECT 
+        package_id,
+        event_timestamp,
+        status,
+        location,
+        carrier,
+        notes,
+        updated_by
+    FROM package_events
+    WHERE package_id = {{String(package_id, '')}}
+    ORDER BY event_timestamp DESC
+
+TYPE endpoint

@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Summary of customer segments showing counts and average lifetime value by segment
+
+NODE customer_segments_summary_node
+SQL >
+    %
+    SELECT 
+        CASE
+            WHEN lifetime_value > 1000 THEN 'VIP'
+            WHEN lifetime_value > 500 THEN 'High Value'
+            WHEN lifetime_value > 100 THEN 'Medium Value'
+            ELSE 'Low Value'
+        END AS value_segment,
+        CASE
+            WHEN DATEDIFF('day', signup_date, now()) > 365 THEN 'Loyal'
+            WHEN DATEDIFF('day', signup_date, now()) > 180 THEN 'Established'
+            ELSE 'New'
+        END AS loyalty_segment,
+        count() AS customer_count,
+        avg(lifetime_value) AS avg_lifetime_value,
+        min(signup_date) AS earliest_signup,
+        max(signup_date) AS latest_signup
+    FROM customers
+    WHERE 1=1
+    {% if defined(location) %}
+        AND location = {{String(location, '')}}
+    {% end %}
+    {% if defined(min_age) %}
+        AND age >= {{Int32(min_age, 0)}}
+    {% end %}
+    {% if defined(max_age) %}
+        AND age <= {{Int32(max_age, 100)}}
+    {% end %}
+    GROUP BY value_segment, loyalty_segment
+    ORDER BY avg_lifetime_value DESC
+
+TYPE endpoint
+        

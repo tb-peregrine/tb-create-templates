@@ -1,0 +1,46 @@
+
+DESCRIPTION >
+    Analyze checkout trends over time by day or genre
+
+NODE checkout_trends_node
+SQL >
+    %
+    SELECT 
+        {% if defined(group_by) and group_by == 'genre' %}
+            genre,
+            toStartOfDay(checkout_date) AS day,
+            count() AS checkout_count
+        {% else %}
+            toStartOfDay(checkout_date) AS day,
+            count() AS checkout_count
+        {% end %}
+    FROM book_checkouts
+    WHERE 1=1
+    {% if defined(genre) %}
+        AND genre = {{String(genre, 'Fiction')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND checkout_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND checkout_date >= '2023-01-01 00:00:00'
+    {% end %}
+    {% if defined(end_date) %}
+        AND checkout_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND checkout_date <= '2023-12-31 23:59:59'
+    {% end %}
+    GROUP BY 
+        {% if defined(group_by) and group_by == 'genre' %}
+            genre, day
+        {% else %}
+            day
+        {% end %}
+    ORDER BY 
+        {% if defined(group_by) and group_by == 'genre' %}
+            genre ASC, day ASC
+        {% else %}
+            day ASC
+        {% end %}
+
+TYPE endpoint
+        

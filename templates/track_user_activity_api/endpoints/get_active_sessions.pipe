@@ -1,0 +1,36 @@
+
+DESCRIPTION >
+    Get active sessions with optional filtering by tenant_id, time range, and user_id
+
+NODE get_active_sessions_node
+SQL >
+    %
+    SELECT 
+        session_id,
+        user_id,
+        tenant_id,
+        min(created_at) as session_start,
+        max(updated_at) as last_activity,
+        max(updated_at) - min(created_at) as session_duration_seconds,
+        count() as event_count,
+        groupArray(event_type) as events
+    FROM user_sessions
+    WHERE 1=1
+    {% if defined(tenant_id) %}
+        AND tenant_id = {{String(tenant_id, '')}}
+    {% end %}
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(from_date) %}
+        AND created_at >= {{DateTime(from_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(to_date) %}
+        AND created_at <= {{DateTime(to_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY session_id, user_id, tenant_id
+    ORDER BY last_activity DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

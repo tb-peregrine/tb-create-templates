@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Retrieve messages from a specific conversation with optional filtering by date range
+
+NODE get_messages_node
+SQL >
+    %
+    SELECT 
+        message_id,
+        sender_id,
+        recipient_id,
+        message_type,
+        message_content,
+        timestamp,
+        read,
+        attachments,
+        character_count
+    FROM messages
+    WHERE conversation_id = {{String(conversation_id, '')}}
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY timestamp
+    {% if defined(limit) %}
+    LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

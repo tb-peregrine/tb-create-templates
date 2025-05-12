@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Get analytics on location events by aggregating data over different time periods
+
+NODE location_analytics_node
+SQL >
+    %
+    SELECT 
+        {{String(time_bucket, 'hour')}} AS time_bucket,
+        CASE 
+            WHEN {{String(time_bucket, 'hour')}} = 'hour' THEN toStartOfHour(timestamp)
+            WHEN {{String(time_bucket, 'hour')}} = 'day' THEN toStartOfDay(timestamp)
+            WHEN {{String(time_bucket, 'hour')}} = 'week' THEN toStartOfWeek(timestamp)
+            WHEN {{String(time_bucket, 'hour')}} = 'month' THEN toStartOfMonth(timestamp)
+            ELSE toStartOfHour(timestamp)
+        END AS bucket_start,
+        event_type,
+        count() AS event_count,
+        count(DISTINCT user_id) AS unique_users,
+        avg(accuracy) AS avg_accuracy
+    FROM location_events
+    WHERE 
+        timestamp >= {{DateTime(start_time, '2023-01-01 00:00:00')}}
+        AND timestamp <= {{DateTime(end_time, '2023-12-31 23:59:59')}}
+        {% if defined(event_type) %}
+        AND event_type = {{String(event_type, '')}}
+        {% end %}
+    GROUP BY 
+        time_bucket,
+        bucket_start,
+        event_type
+    ORDER BY bucket_start DESC
+
+TYPE endpoint
+        

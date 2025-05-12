@@ -1,0 +1,45 @@
+
+DESCRIPTION >
+    Provides statistical analysis of sensor readings for a specified time period
+
+NODE sensor_stats_node
+SQL >
+    %
+    SELECT 
+        sensor_id,
+        location,
+        reading_type,
+        min(reading_value) AS min_value,
+        max(reading_value) AS max_value,
+        avg(reading_value) AS avg_value,
+        count() AS reading_count,
+        min(timestamp) AS first_reading,
+        max(timestamp) AS last_reading,
+        min(battery_level) AS min_battery,
+        max(battery_level) AS max_battery
+    FROM sensor_readings
+    WHERE 
+        {% if defined(sensor_id) %}
+        sensor_id = {{String(sensor_id, '')}}
+        {% else %}
+        1=1
+        {% end %}
+        {% if defined(location) %}
+        AND location = {{String(location, '')}}
+        {% end %}
+        {% if defined(reading_type) %}
+        AND reading_type = {{String(reading_type, '')}}
+        {% end %}
+        AND timestamp BETWEEN 
+            now() - interval {{Int(time_window_hours, 24)}} hour AND now()
+    GROUP BY 
+        sensor_id, 
+        location, 
+        reading_type
+    ORDER BY 
+        location, 
+        sensor_id, 
+        reading_type
+
+TYPE endpoint
+        

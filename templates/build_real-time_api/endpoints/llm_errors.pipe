@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Real-time API for LLM error metrics
+
+NODE llm_errors_node
+SQL >
+    %
+    SELECT
+        model_name,
+        error_message,
+        count() AS error_count
+    FROM llm_events
+    WHERE success = 0
+    {% if defined(model_name) %}
+        AND model_name = {{ String(model_name, 'model_a') }}
+    {% end %}
+    GROUP BY model_name, error_message
+
+TYPE endpoint
+        

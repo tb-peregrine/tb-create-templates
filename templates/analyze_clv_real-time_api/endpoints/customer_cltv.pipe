@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    This endpoint retrieves CLTV for a specific customer.
+
+NODE customer_cltv_node
+SQL >
+    %
+    SELECT
+        customer_id,
+        sum(transaction_amount) AS cltv
+    FROM customer_transactions
+    WHERE customer_id = {{String(customer_id, 'default_customer')}}
+    GROUP BY customer_id
+
+TYPE endpoint
+        

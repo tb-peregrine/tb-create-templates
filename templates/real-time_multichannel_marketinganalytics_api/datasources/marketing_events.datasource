@@ -1,0 +1,15 @@
+
+DESCRIPTION >
+    Datasource to store marketing events.
+
+SCHEMA >
+    `event_time` DateTime `json:$.event_time`,
+    `channel` String `json:$.channel`,
+    `campaign` String `json:$.campaign`,
+    `user_id` String `json:$.user_id`,
+    `event_type` String `json:$.event_type`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(event_time)"
+ENGINE_SORTING_KEY "event_time, channel, campaign"
+        

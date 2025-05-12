@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    Reference table for all onboarding steps with their sequence and details
+
+SCHEMA >
+    `step_id` String `json:$.step_id`,
+    `step_name` String `json:$.step_name`,
+    `step_description` String `json:$.step_description`,
+    `step_order` UInt16 `json:$.step_order`,
+    `is_required` UInt8 `json:$.is_required`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "step_order, step_id"
+        

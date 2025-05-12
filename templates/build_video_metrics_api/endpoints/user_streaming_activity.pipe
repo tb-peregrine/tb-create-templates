@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    API endpoint to analyze user engagement and streaming behavior over time
+
+NODE user_streaming_activity_node
+SQL >
+    %
+    SELECT 
+        toDate(timestamp) AS date,
+        device_type,
+        country,
+        count() AS view_count,
+        countIf(event_type = 'play') AS play_events,
+        countIf(event_type = 'pause') AS pause_events,
+        countIf(event_type = 'complete') AS complete_views,
+        countIf(event_type = 'error') AS error_events,
+        round(avg(duration), 2) AS avg_duration
+    FROM video_streaming_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(device_type) %}
+        AND device_type = {{String(device_type, '')}}
+        {% end %}
+        {% if defined(country) %}
+        AND country = {{String(country, '')}}
+        {% end %}
+    GROUP BY date, device_type, country
+    ORDER BY date DESC, view_count DESC
+    LIMIT {{Int32(limit, 1000)}}
+
+TYPE endpoint
+        

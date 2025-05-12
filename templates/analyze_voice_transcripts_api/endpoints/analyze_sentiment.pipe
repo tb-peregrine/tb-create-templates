@@ -1,0 +1,50 @@
+
+DESCRIPTION >
+    Analyzes voice call transcripts for sentiment using simple keyword matching
+
+NODE analyze_sentiment_node
+SQL >
+    %
+    SELECT 
+        call_id,
+        transcript,
+        customer_id,
+        agent_id,
+        timestamp,
+        multiIf(
+            position(lowerUTF8(transcript), 'happy') > 0 OR 
+            position(lowerUTF8(transcript), 'great') > 0 OR 
+            position(lowerUTF8(transcript), 'excellent') > 0 OR 
+            position(lowerUTF8(transcript), 'thank you') > 0 OR 
+            position(lowerUTF8(transcript), 'appreciate') > 0, 'positive',
+            
+            position(lowerUTF8(transcript), 'unhappy') > 0 OR 
+            position(lowerUTF8(transcript), 'angry') > 0 OR 
+            position(lowerUTF8(transcript), 'terrible') > 0 OR 
+            position(lowerUTF8(transcript), 'upset') > 0 OR 
+            position(lowerUTF8(transcript), 'frustrated') > 0, 'negative',
+            
+            'neutral'
+        ) AS sentiment,
+        duration_seconds
+    FROM voice_call_transcripts
+    WHERE 1=1
+    {% if defined(call_id) %}
+        AND call_id = {{String(call_id, '')}}
+    {% end %}
+    {% if defined(customer_id) %}
+        AND customer_id = {{String(customer_id, '')}}
+    {% end %}
+    {% if defined(agent_id) %}
+        AND agent_id = {{String(agent_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Provides summary metrics for each A/B test, including users, conversions, conversion rate, and revenue
+
+NODE test_summary_node
+SQL >
+    %
+    SELECT 
+        test_id,
+        variant,
+        count(DISTINCT user_id) AS users,
+        countIf(conversion = 1) AS conversions,
+        round(countIf(conversion = 1) / count(DISTINCT user_id), 4) AS conversion_rate,
+        sum(revenue) AS total_revenue,
+        round(sum(revenue) / count(DISTINCT user_id), 4) AS revenue_per_user
+    FROM ab_test_events
+    WHERE 1=1
+        {% if defined(test_id) %}
+        AND test_id = {{String(test_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    GROUP BY test_id, variant
+    ORDER BY test_id, variant
+
+TYPE endpoint
+        

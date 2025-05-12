@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Raw e-commerce events
+
+SCHEMA >
+    `event_time` DateTime `json:$.event_time`,
+    `event_type` String `json:$.event_type`,
+    `user_id` String `json:$.user_id`,
+    `product_id` String `json:$.product_id`,
+    `category` String `json:$.category`,
+    `price` Float64 `json:$.price`,
+    `quantity` Int64 `json:$.quantity`,
+    `session_id` String `json:$.session_id`,
+    `country` String `json:$.country`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(event_time)"
+ENGINE_SORTING_KEY "event_time, product_id"
+        

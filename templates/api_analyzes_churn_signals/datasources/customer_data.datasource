@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Stores customer profile data and interactions with the platform
+
+SCHEMA >
+    `customer_id` String `json:$.customer_id`,
+    `join_date` DateTime `json:$.join_date`,
+    `last_login_date` DateTime `json:$.last_login_date`,
+    `subscription_plan` String `json:$.subscription_plan`,
+    `subscription_amount` Float32 `json:$.subscription_amount`,
+    `billing_cycle` String `json:$.billing_cycle`,
+    `payment_status` String `json:$.payment_status`,
+    `total_spend` Float32 `json:$.total_spend`,
+    `number_of_logins` UInt32 `json:$.number_of_logins`,
+    `customer_service_tickets` UInt16 `json:$.customer_service_tickets`,
+    `ticket_satisfaction_score` Float32 `json:$.ticket_satisfaction_score`,
+    `churn` UInt8 `json:$.churn`,
+    `churn_date` DateTime `json:$.churn_date`,
+    `region` String `json:$.region`,
+    `platform` String `json:$.platform`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "customer_id, timestamp"
+        

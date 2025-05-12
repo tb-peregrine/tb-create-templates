@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Detect anomalies in sensor readings based on deviation from typical values
+
+NODE anomaly_detection_node
+SQL >
+    %
+    WITH stats AS (
+        SELECT 
+            device_id,
+            sensor_type,
+            avg(reading) as avg_reading,
+            stddevSamp(reading) as stddev_reading
+        FROM sensor_data
+        WHERE timestamp > now() - interval {{Int(baseline_days, 30)}} day
+        GROUP BY device_id, sensor_type
+    )
+    
+    SELECT 
+        s.device_id,
+        s.sensor_type,
+        s.reading,
+        s.reading_unit,
+        s.timestamp,
+        s.location,
+        s.battery_level,
+        stats.avg_reading,
+        stats.stddev_reading,
+        abs(s.reading - stats.avg_reading) / stats.stddev_reading as deviation_score
+    FROM sensor_data s
+    JOIN stats ON s.device_id = stats.device_id AND s.sensor_type = stats.sensor_type
+    WHERE s.timestamp > now() - interval {{Int(hours_back, 24)}} hour
+    AND stats.stddev_reading > 0
+    AND abs(s.reading - stats.avg_reading) / stats.stddev_reading > {{Float32(threshold, 3.0)}}
+    ORDER BY deviation_score DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

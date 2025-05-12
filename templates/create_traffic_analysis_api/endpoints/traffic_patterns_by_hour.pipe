@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Analyzes traffic patterns by hour for a given date range
+
+NODE hourly_patterns_node
+SQL >
+    %
+    SELECT
+        toStartOfHour(timestamp) AS hour,
+        location_name,
+        avg(vehicle_count) AS avg_vehicle_count,
+        avg(average_speed_kph) AS avg_speed,
+        avg(congestion_level) AS avg_congestion_level
+    FROM traffic_events
+    WHERE 
+    {% if defined(start_date) %}
+        timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        timestamp >= now() - interval 7 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-01-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    {% if defined(location_filter) %}
+        AND location_name = {{String(location_filter, '')}}
+    {% end %}
+    GROUP BY hour, location_name
+    ORDER BY hour, avg_congestion_level DESC
+
+TYPE endpoint
+        

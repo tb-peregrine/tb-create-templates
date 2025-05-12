@@ -1,0 +1,31 @@
+DESCRIPTION >
+    API to get time series metrics for service health analysis
+
+NODE service_timeseries_node
+SQL >
+    %
+    SELECT 
+        toStartOfInterval(timestamp, INTERVAL {{String(interval, '1 hour')}}) AS time_bucket,
+        service_name,
+        sum(request_count) AS total_requests,
+        sum(error_count) AS total_errors,
+        avg(response_time_ms) AS avg_response_time
+    FROM service_health_metrics
+    WHERE 1=1
+    {% if defined(service_name) %}
+        AND service_name = {{String(service_name, 'auth-service')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 1 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-01-02 00:00:00')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY time_bucket, service_name
+    ORDER BY time_bucket ASC
+
+TYPE endpoint

@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Raw transaction data containing consumer spending information
+
+SCHEMA >
+    `transaction_id` String `json:$.transaction_id`,
+    `user_id` String `json:$.user_id`,
+    `amount` Float64 `json:$.amount`,
+    `category` String `json:$.category`,
+    `merchant` String `json:$.merchant`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `payment_method` String `json:$.payment_method`,
+    `location` String `json:$.location`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, category"
+        

@@ -1,0 +1,34 @@
+
+DESCRIPTION >
+    Get usage statistics for individual EV charging users
+
+NODE user_usage_node
+SQL >
+    %
+    SELECT
+        user_id,
+        count() AS total_sessions,
+        sum(energy_consumed) AS total_energy_consumed,
+        sum(amount_paid) AS total_amount_spent,
+        avg(energy_consumed) AS avg_energy_per_session,
+        avg(amount_paid) AS avg_amount_per_session,
+        min(start_time) AS first_session,
+        max(start_time) AS latest_session,
+        count(DISTINCT station_id) AS unique_stations_used
+    FROM charging_sessions
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND start_time >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND start_time <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    GROUP BY user_id
+    ORDER BY total_sessions DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

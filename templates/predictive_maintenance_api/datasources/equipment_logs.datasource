@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Raw data from industrial equipment sensors including temperature, vibration, pressure, and other metrics
+
+SCHEMA >
+    `equipment_id` String `json:$.equipment_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `temperature` Float32 `json:$.temperature`,
+    `vibration` Float32 `json:$.vibration`,
+    `pressure` Float32 `json:$.pressure`,
+    `noise_level` Float32 `json:$.noise_level`,
+    `status` String `json:$.status`,
+    `maintenance_due` UInt8 `json:$.maintenance_due`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "equipment_id, timestamp"
+        

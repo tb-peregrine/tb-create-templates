@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Stores message data from a messaging application including metadata about sender, recipient, timestamp, and message content
+
+SCHEMA >
+    `message_id` String `json:$.message_id`,
+    `sender_id` String `json:$.sender_id`,
+    `recipient_id` String `json:$.recipient_id`,
+    `conversation_id` String `json:$.conversation_id`,
+    `message_type` String `json:$.message_type`,
+    `message_content` String `json:$.message_content`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `read` UInt8 `json:$.read`,
+    `attachments` Array(String) `json:$.attachments[:]`,
+    `character_count` UInt32 `json:$.character_count`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "conversation_id, timestamp"
+        

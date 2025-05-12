@@ -1,0 +1,42 @@
+
+DESCRIPTION >
+    Get top-selling products by revenue or quantity
+
+NODE top_products_node
+SQL >
+    %
+    SELECT
+        product_id,
+        product_name,
+        category,
+        sum(total_amount) as revenue,
+        sum(quantity) as units_sold,
+        count() as transaction_count
+    FROM sales_events
+    WHERE 1=1
+        {% if defined(category) %}
+        AND category = {{String(category, '')}}
+        {% end %}
+        {% if defined(store_id) %}
+        AND store_id = {{String(store_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+        AND timestamp <= now()
+        {% end %}
+    GROUP BY product_id, product_name, category
+    ORDER BY 
+        {% if String(sort_by, 'revenue') == 'units_sold' %}
+            units_sold
+        {% else %}
+            revenue
+        {% end %}
+    DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint
+        

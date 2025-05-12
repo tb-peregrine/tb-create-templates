@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Returns the most recent vital signs for a specific patient
+
+NODE patient_current_status_node
+SQL >
+    %
+    SELECT 
+        patient_id,
+        device_id,
+        timestamp,
+        heart_rate,
+        systolic_bp,
+        diastolic_bp,
+        temperature,
+        oxygen_level,
+        department,
+        is_critical
+    FROM patient_vitals
+    WHERE patient_id = {{String(patient_id, '')}}
+    ORDER BY timestamp DESC
+    LIMIT 1
+
+TYPE endpoint
+        

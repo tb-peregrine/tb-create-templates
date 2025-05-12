@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Returns the historical movements of a specific vehicle within a time range.
+
+NODE vehicle_history_node
+SQL >
+    %
+    SELECT
+        event_time,
+        latitude,
+        longitude,
+        speed,
+        status
+    FROM fleet_movements
+    WHERE
+        vehicle_id = {{String(vehicle_id, 'vehicle_123')}}
+        AND event_time BETWEEN {{DateTime(start_time, '2024-01-01 00:00:00')}} AND {{DateTime(end_time, '2024-01-01 23:59:59')}}
+    ORDER BY event_time
+
+TYPE endpoint
+        

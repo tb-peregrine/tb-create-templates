@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Analyze customer engagement based on events, with filters for date range and event types
+
+NODE customer_engagement_analysis_node
+SQL >
+    %
+    SELECT 
+        c.customer_id,
+        c.name,
+        c.email,
+        count(e.event_id) AS event_count,
+        sum(e.event_value) AS total_value,
+        max(e.timestamp) AS last_activity,
+        CASE
+            WHEN max(e.timestamp) > now() - interval 7 day THEN 'Active'
+            WHEN max(e.timestamp) > now() - interval 30 day THEN 'Recent'
+            WHEN max(e.timestamp) > now() - interval 90 day THEN 'Inactive'
+            ELSE 'Dormant'
+        END AS activity_segment
+    FROM customers c
+    LEFT JOIN customer_events e ON c.customer_id = e.customer_id
+    WHERE 1=1
+    {% if defined(event_type) %}
+        AND e.event_type = {{String(event_type, 'purchase')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND e.timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND e.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY c.customer_id, c.name, c.email
+    ORDER BY event_count DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

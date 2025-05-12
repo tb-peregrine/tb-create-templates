@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Collects A/B test events from users, including test ID, variant, conversions, and related metrics
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `user_id` String `json:$.user_id`,
+    `test_id` String `json:$.test_id`,
+    `variant` String `json:$.variant`,
+    `event_type` String `json:$.event_type`,
+    `conversion` UInt8 `json:$.conversion`,
+    `revenue` Float64 `json:$.revenue`,
+    `session_id` String `json:$.session_id`,
+    `device` String `json:$.device`,
+    `country` String `json:$.country`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, test_id, variant, user_id"
+        

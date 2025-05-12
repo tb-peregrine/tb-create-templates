@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    API endpoint to retrieve quality metrics for videos including buffer events and playback issues
+
+NODE video_quality_metrics_node
+SQL >
+    %
+    SELECT 
+        video_id,
+        count() AS total_views,
+        round(avg(duration), 2) AS avg_view_duration,
+        countIf(event_type = 'buffer') AS buffer_events,
+        round(avg(buffer_count), 2) AS avg_buffer_count,
+        countIf(event_type = 'error') AS error_count
+    FROM video_streaming_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(video_id) %}
+        AND video_id = {{String(video_id, '')}}
+        {% end %}
+    GROUP BY video_id
+    ORDER BY 
+        {% if defined(sort_by) %}
+            {{String(sort_by, 'total_views')}} 
+        {% else %}
+            total_views
+        {% end %}
+        DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

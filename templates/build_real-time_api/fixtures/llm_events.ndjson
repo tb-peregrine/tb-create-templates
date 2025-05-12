@@ -1,0 +1,10 @@
+{"event_time": "2025-05-09 05:16:02", "model_name": "gpt-4", "prompt_tokens": 776, "completion_tokens": 276, "total_tokens": 1052, "cost": 0.1328, "latency": 2738839277.5, "success": 1, "error_message": ""}
+{"event_time": "2025-05-06 17:41:20", "model_name": "llama-2", "prompt_tokens": 158, "completion_tokens": 108, "total_tokens": 266, "cost": 0.0374, "latency": 985133761.5, "success": 1, "error_message": ""}
+{"event_time": "2025-05-10 19:17:35", "model_name": "llama-2", "prompt_tokens": 683, "completion_tokens": 183, "total_tokens": 866, "cost": 0.1049, "latency": 398731186.5, "success": 1, "error_message": ""}
+{"event_time": "2025-05-07 05:11:31", "model_name": "claude-2", "prompt_tokens": 147, "completion_tokens": 97, "total_tokens": 244, "cost": 0.0341, "latency": 3916557949.5, "success": 1, "error_message": ""}
+{"event_time": "2025-05-12 02:05:19", "model_name": "mistral-7b", "prompt_tokens": 519, "completion_tokens": 469, "total_tokens": 988, "cost": 0.1457, "latency": 454866723.5, "success": 1, "error_message": ""}
+{"event_time": "2025-05-12 10:16:50", "model_name": "llama-2", "prompt_tokens": 728, "completion_tokens": 228, "total_tokens": 956, "cost": 0.1184, "latency": 3227240431.5, "success": 1, "error_message": ""}
+{"event_time": "2025-05-08 16:43:18", "model_name": "gpt-3.5-turbo", "prompt_tokens": 940, "completion_tokens": 440, "total_tokens": 1380, "cost": 0.182, "latency": 2408058840.5, "success": 0, "error_message": "Rate limit exceeded"}
+{"event_time": "2025-05-09 23:22:02", "model_name": "gpt-4", "prompt_tokens": 416, "completion_tokens": 366, "total_tokens": 782, "cost": 0.1148, "latency": 2237999717.5, "success": 1, "error_message": ""}
+{"event_time": "2025-05-07 15:01:53", "model_name": "gpt-3.5-turbo", "prompt_tokens": 725, "completion_tokens": 225, "total_tokens": 950, "cost": 0.1175, "latency": 1652125.5, "success": 1, "error_message": ""}
+{"event_time": "2025-05-07 19:29:10", "model_name": "llama-2", "prompt_tokens": 888, "completion_tokens": 388, "total_tokens": 1276, "cost": 0.1664, "latency": 1864420091.5, "success": 1, "error_message": ""}

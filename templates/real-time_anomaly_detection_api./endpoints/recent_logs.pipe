@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Retrieves recent system logs with filtering options for time range, severity, and service
+
+NODE recent_logs_node
+SQL >
+    %
+    SELECT
+        timestamp,
+        server_id,
+        service,
+        severity,
+        message,
+        error_code,
+        resource_id,
+        metadata
+    FROM system_logs
+    WHERE 1=1
+    {% if defined(start_time) %}
+        AND timestamp >= {{DateTime(start_time, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 1 hour
+    {% end %}
+    {% if defined(end_time) %}
+        AND timestamp <= {{DateTime(end_time, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    {% if defined(severity) %}
+        AND severity = {{String(severity, 'ERROR')}}
+    {% end %}
+    {% if defined(service) %}
+        AND service = {{String(service, '')}}
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

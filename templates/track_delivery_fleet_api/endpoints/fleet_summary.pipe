@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Provides a summary of the entire fleet's current status.
+
+NODE fleet_summary_node
+SQL >
+    SELECT
+        vehicle_id,
+        argMax(latitude, event_time) AS current_latitude,
+        argMax(longitude, event_time) AS current_longitude,
+        max(event_time) AS last_event_time,
+        argMax(status, event_time) AS current_status
+    FROM fleet_movements
+    GROUP BY vehicle_id
+
+TYPE endpoint
+        

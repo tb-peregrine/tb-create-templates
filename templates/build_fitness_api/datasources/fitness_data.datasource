@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Raw fitness wearable data containing metrics like steps, heart rate, and calories burned
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `device_id` String `json:$.device_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `steps` Int32 `json:$.steps`,
+    `heart_rate` Int16 `json:$.heart_rate`,
+    `calories_burned` Float32 `json:$.calories_burned`,
+    `distance_meters` Float32 `json:$.distance_meters`,
+    `sleep_minutes` Int16 `json:$.sleep_minutes`,
+    `active_minutes` Int16 `json:$.active_minutes`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "user_id, timestamp"
+        

@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Top selling products
+
+NODE top_products_node
+SQL >
+    SELECT
+        product_id,
+        sum(quantity) AS total_quantity,
+        sum(price * quantity) AS total_revenue
+    FROM ecommerce_events
+    WHERE event_type = 'purchase'
+    GROUP BY product_id
+    ORDER BY total_revenue DESC
+    LIMIT 10
+
+TYPE endpoint
+        

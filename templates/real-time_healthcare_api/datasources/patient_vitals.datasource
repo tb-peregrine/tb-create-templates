@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Datasource for patient vital signs
+
+SCHEMA >
+    `patient_id` String `json:$.patient_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `heart_rate` Float32 `json:$.heart_rate`,
+    `blood_pressure_systolic` UInt16 `json:$.blood_pressure_systolic`,
+    `blood_pressure_diastolic` UInt16 `json:$.blood_pressure_diastolic`,
+    `oxygen_saturation` Float32 `json:$.oxygen_saturation`,
+    `temperature` Float32 `json:$.temperature`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "patient_id, timestamp"

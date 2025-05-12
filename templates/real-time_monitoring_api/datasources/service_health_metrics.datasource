@@ -1,0 +1,15 @@
+DESCRIPTION >
+    Datasource for storing service health metrics
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `service_name` String `json:$.service_name`,
+    `endpoint` String `json:$.endpoint`,
+    `response_time_ms` UInt32 `json:$.response_time_ms`,
+    `status_code` UInt16 `json:$.status_code`,
+    `error_count` UInt16 `json:$.error_count`,
+    `request_count` UInt16 `json:$.request_count`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, service_name, endpoint"

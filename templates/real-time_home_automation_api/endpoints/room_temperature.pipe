@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Returns the average temperature in each room that has thermostats
+
+NODE room_temperature_node
+SQL >
+    %
+    SELECT
+        room,
+        avg(value) as avg_temperature,
+        min(value) as min_temperature,
+        max(value) as max_temperature,
+        max(timestamp) as last_updated
+    FROM home_automation_events
+    WHERE device_type = 'thermostat'
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+    AND timestamp >= now() - interval 1 day
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+    AND timestamp <= now()
+    {% end %}
+    GROUP BY room
+    ORDER BY room
+
+TYPE endpoint

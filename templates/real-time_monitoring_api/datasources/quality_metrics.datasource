@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Manufacturing quality metrics data - stores individual measurements and quality checks
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `machine_id` String `json:$.machine_id`,
+    `product_id` String `json:$.product_id`,
+    `batch_id` String `json:$.batch_id`,
+    `measurement_type` String `json:$.measurement_type`,
+    `value` Float64 `json:$.value`,
+    `lower_limit` Float64 `json:$.lower_limit`,
+    `upper_limit` Float64 `json:$.upper_limit`,
+    `is_pass` UInt8 `json:$.is_pass`,
+    `operator_id` String `json:$.operator_id`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, machine_id, product_id"
+        

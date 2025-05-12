@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    API endpoint to get a summary of classroom activity
+
+NODE class_activity_node
+SQL >
+    %
+    SELECT 
+        class_id,
+        event_type,
+        count() as event_count,
+        count(DISTINCT student_id) as unique_students,
+        avg(duration_seconds) as avg_duration_seconds,
+        sum(duration_seconds) as total_duration_seconds
+    FROM engagement_events
+    WHERE class_id = {{String(class_id, "CL001")}}
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, "2023-01-01 00:00:00")}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, "2023-12-31 23:59:59")}}
+    {% end %}
+    GROUP BY class_id, event_type
+    ORDER BY event_count DESC
+
+TYPE endpoint
+        

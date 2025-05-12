@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Raw data for EV charging sessions
+
+SCHEMA >
+    `session_id` String `json:$.session_id`,
+    `station_id` String `json:$.station_id`,
+    `user_id` String `json:$.user_id`,
+    `start_time` DateTime `json:$.start_time`,
+    `end_time` DateTime `json:$.end_time`,
+    `energy_consumed` Float64 `json:$.energy_consumed`,
+    `amount_paid` Float64 `json:$.amount_paid`,
+    `charging_type` String `json:$.charging_type`,
+    `location` String `json:$.location`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "station_id, start_time, session_id"
+        

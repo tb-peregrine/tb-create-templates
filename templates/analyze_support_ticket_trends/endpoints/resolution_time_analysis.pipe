@@ -1,0 +1,34 @@
+
+DESCRIPTION >
+    Analyze resolution time for support tickets by category and priority
+
+NODE resolution_time_node
+SQL >
+    %
+    SELECT
+        category,
+        priority,
+        round(avg(resolution_time_mins), 2) AS avg_resolution_time,
+        min(resolution_time_mins) AS min_resolution_time,
+        max(resolution_time_mins) AS max_resolution_time,
+        count() AS ticket_count
+    FROM support_tickets
+    WHERE status = 'resolved'
+    {% if defined(start_date) %}
+        AND created_at >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND created_at >= now() - interval 30 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND created_at <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND created_at <= now()
+    {% end %}
+    {% if defined(category) %}
+        AND category = {{String(category, 'all')}}
+    {% end %}
+    GROUP BY category, priority
+    ORDER BY avg_resolution_time DESC
+
+TYPE endpoint
+        

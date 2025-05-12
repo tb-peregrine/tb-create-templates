@@ -1,0 +1,17 @@
+DESCRIPTION >
+    Track subscription events including creation, renewal, and cancellation
+
+SCHEMA >
+    `subscription_id` String `json:$.subscription_id`,
+    `customer_id` String `json:$.customer_id`,
+    `plan_id` String `json:$.plan_id`,
+    `event_type` String `json:$.event_type`, 
+    `timestamp` DateTime `json:$.timestamp`,
+    `amount` Float32 `json:$.amount`,
+    `currency` String `json:$.currency`,
+    `next_renewal_date` DateTime `json:$.next_renewal_date`,
+    `status` String `json:$.status`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "customer_id, subscription_id, timestamp"

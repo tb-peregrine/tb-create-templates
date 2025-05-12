@@ -21,8 +21,7 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 TINYBIRD_DIR = Path('tinybird')
 
 def summarize_prompt(prompt):
-    """
-    Use OpenAI to summarize the prompt into 3-4 words with underscores.
+    # Use OpenAI to summarize the prompt into 3-4 words with underscores.
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -35,7 +34,7 @@ def summarize_prompt(prompt):
         return summary
     except Exception as e:
         print(f"Error summarizing prompt: {e}")
-    """
+
     # Fallback to a simple summary if OpenAI fails
     return prompt[:30].replace(' ', '_').lower()
 
@@ -180,7 +179,7 @@ def cleanup_tinybird_dir():
     os.chdir(TINYBIRD_DIR)
     
     system_dirs = ['.venv', '.git']
-    system_files = ['.tinyb', '.gitignore', 'requirements.txt']
+    system_files = ['.tinyb', '.gitignore', 'requirements.txt', '.env', '.env.local', '.env.example']
     
     for item in Path('.').iterdir():
         if item.is_dir() and item.name not in system_dirs:

@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    API endpoint to get the latest vital signs for a given patient.
+
+NODE latest_vitals_node
+SQL >
+    %
+    SELECT
+        patient_id,
+        timestamp,
+        heart_rate,
+        blood_pressure_systolic,
+        blood_pressure_diastolic,
+        oxygen_saturation,
+        temperature
+    FROM patient_vitals
+    WHERE patient_id = {{String(patient_id, 'patient_123')}}
+    ORDER BY timestamp DESC
+    LIMIT 1
+
+TYPE endpoint

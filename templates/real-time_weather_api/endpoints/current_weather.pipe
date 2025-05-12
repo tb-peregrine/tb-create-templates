@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Get current weather data by location or region
+
+NODE get_current_weather
+SQL >
+    %
+    SELECT
+        station_id,
+        location,
+        latitude,
+        longitude,
+        temperature,
+        humidity,
+        pressure,
+        wind_speed,
+        wind_direction,
+        precipitation,
+        timestamp
+    FROM weather_measurements
+    WHERE 1=1
+    {% if defined(location) %}
+        AND location = {{String(location, '')}}
+    {% end %}
+    {% if defined(region) %}
+        AND region = {{String(region, '')}}
+    {% end %}
+    {% if defined(country) %}
+        AND country = {{String(country, '')}}
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

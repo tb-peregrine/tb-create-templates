@@ -1,0 +1,18 @@
+DESCRIPTION >
+    Generates product recommendations based on user interactions
+
+NODE user_based_recommendations_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        count() AS popularity_score,
+        arrayStringConcat(groupArray(DISTINCT user_id), ',') AS users_who_interacted
+    FROM user_interactions
+    WHERE {% if defined(user_id) %}user_id != {{String(user_id, '')}} AND{% end %}
+          interaction_type IN ('purchase', 'view', 'click')
+    GROUP BY product_id
+    ORDER BY popularity_score DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint

@@ -1,0 +1,35 @@
+DESCRIPTION >
+    API endpoint to get the most engaging content based on events
+
+NODE top_content_node
+SQL >
+    %
+    SELECT 
+        content_id,
+        content_type,
+        content_category,
+        count() AS total_events,
+        countIf(event_type = 'view') AS view_count,
+        countIf(event_type = 'like') AS like_count,
+        countIf(event_type = 'share') AS share_count,
+        countIf(event_type = 'comment') AS comment_count,
+        avg(time_spent) AS avg_time_spent
+    FROM content_events
+    WHERE 1=1
+        {% if defined(content_type) %}
+        AND content_type = {{String(content_type, 'article')}}
+        {% end %}
+        {% if defined(content_category) %}
+        AND content_category = {{String(content_category, 'all')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND event_time >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND event_time <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    GROUP BY content_id, content_type, content_category
+    ORDER BY {{String(sort_by, 'total_events')}} DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint

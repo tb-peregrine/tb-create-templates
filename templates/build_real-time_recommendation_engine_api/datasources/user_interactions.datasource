@@ -1,0 +1,14 @@
+DESCRIPTION >
+    Stores user interactions with products such as views, clicks, purchases
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `product_id` String `json:$.product_id`,
+    `interaction_type` String `json:$.interaction_type`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `session_id` String `json:$.session_id`,
+    `value` Float32 `json:$.value`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "user_id, product_id, timestamp"

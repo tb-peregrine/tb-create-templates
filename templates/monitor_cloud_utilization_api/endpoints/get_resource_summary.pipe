@@ -1,0 +1,46 @@
+
+DESCRIPTION >
+    API endpoint to get summary statistics for resources over a time period
+
+NODE get_resource_summary_node
+SQL >
+    %
+    SELECT
+        resource_id,
+        resource_type,
+        resource_name,
+        metric_name,
+        avg(metric_value) as avg_value,
+        min(metric_value) as min_value,
+        max(metric_value) as max_value,
+        count() as data_points
+    FROM cloud_resource_metrics
+    WHERE 1=1
+    {% if defined(resource_type) %}
+        AND resource_type = {{String(resource_type, '')}}
+    {% end %}
+    {% if defined(metric_name) %}
+        AND metric_name = {{String(metric_name, '')}}
+    {% end %}
+    {% if defined(region) %}
+        AND region = {{String(region, '')}}
+    {% end %}
+    {% if defined(environment) %}
+        AND environment = {{String(environment, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 24 hour
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY resource_id, resource_type, resource_name, metric_name
+    ORDER BY avg_value DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Get visit counts by store with optional date range filtering
+
+NODE visits_by_store_node
+SQL >
+    %
+    SELECT 
+        store_id,
+        count() as visit_count,
+        min(timestamp) as first_visit,
+        max(timestamp) as last_visit,
+        avg(dwell_time_seconds) as avg_dwell_time
+    FROM store_visits
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(store_id) %}
+        AND store_id = {{String(store_id, '')}}
+    {% end %}
+    GROUP BY store_id
+    ORDER BY visit_count DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Endpoint to get shipment summary by product.
+
+NODE product_shipment_summary_node
+SQL >
+    %
+    SELECT
+        rs.product_id,
+        pc.product_name,
+        pc.category,
+        sum(rs.quantity) AS total_quantity_shipped,
+        count() AS total_shipments,
+        avg(rs.actual_delivery_timestamp - rs.shipment_timestamp) AS avg_delivery_time
+    FROM raw_shipments rs
+    JOIN product_catalog pc ON rs.product_id = pc.product_id
+    {% if defined(product_category) %}
+    WHERE pc.category = {{String(product_category, "Electronics")}}
+    {% end %}
+    GROUP BY rs.product_id, pc.product_name, pc.category
+
+TYPE endpoint
+        

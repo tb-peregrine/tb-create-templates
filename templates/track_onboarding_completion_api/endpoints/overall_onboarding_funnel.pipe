@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Shows the overall onboarding funnel with completion rates at each step
+
+NODE funnel_analysis
+SQL >
+    %
+    WITH step_stats AS (
+        SELECT 
+            s.step_id,
+            s.step_name,
+            s.step_order,
+            count(DISTINCT e.user_id) AS users_reached,
+            sum(e.completed) AS users_completed
+        FROM onboarding_steps s
+        LEFT JOIN user_onboarding_events e ON s.step_id = e.step_id
+        WHERE e.timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2024-12-31 23:59:59')}}
+        GROUP BY s.step_id, s.step_name, s.step_order
+    ),
+    total_users AS (
+        SELECT count(DISTINCT user_id) AS count
+        FROM user_onboarding_events
+        WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2024-12-31 23:59:59')}}
+    )
+    SELECT 
+        step_id,
+        step_name,
+        step_order,
+        users_reached,
+        users_completed,
+        round(users_reached / (SELECT count FROM total_users), 2) AS reach_rate,
+        round(users_completed / users_reached, 2) AS completion_rate,
+        round(users_completed / (SELECT count FROM total_users), 2) AS overall_completion_rate
+    FROM step_stats
+    ORDER BY step_order
+
+TYPE endpoint
+        

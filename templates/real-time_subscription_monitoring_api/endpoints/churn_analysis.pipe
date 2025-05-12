@@ -1,0 +1,30 @@
+DESCRIPTION >
+    API endpoint for analyzing subscription churn patterns
+
+NODE churn_analysis_node
+SQL >
+    %
+    SELECT 
+        toStartOfMonth(timestamp) AS month,
+        plan_id,
+        count() AS total_cancellations,
+        sum(amount) AS lost_revenue
+    FROM subscription_events
+    WHERE 
+        event_type = 'cancellation'
+        AND
+        {%if defined(start_date)%}
+        timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {%else%}
+        timestamp >= '2023-01-01 00:00:00'
+        {%end%}
+        AND
+        {%if defined(end_date)%}
+        timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {%else%}
+        timestamp <= '2023-12-31 23:59:59'
+        {%end%}
+    GROUP BY month, plan_id
+    ORDER BY month ASC, total_cancellations DESC
+
+TYPE endpoint

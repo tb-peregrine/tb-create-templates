@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    Retrieve all events for a specific session
+
+NODE get_session_events_node
+SQL >
+    %
+    SELECT 
+        event_id,
+        user_id,
+        timestamp,
+        event_type,
+        page_url,
+        page_title,
+        referrer,
+        device_type,
+        browser,
+        properties
+    FROM clickstream_events
+    WHERE session_id = {{String(session_id, '')}}
+    ORDER BY timestamp ASC
+
+TYPE endpoint
+        

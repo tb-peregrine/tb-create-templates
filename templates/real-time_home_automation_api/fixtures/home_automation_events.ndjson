@@ -1,0 +1,10 @@
+{"device_id": "dev_909", "device_type": "window_sensor", "room": "kitchen", "event_type": "measurement", "status": "off", "value": 163950490900, "battery_level": 163950490900, "timestamp": "2025-05-11 23:48:22"}
+{"device_id": "dev_505", "device_type": "thermostat", "room": "bathroom", "event_type": "activated", "status": "closed", "value": 101929750500, "battery_level": 101929750500, "timestamp": "2025-05-12 07:38:26"}
+{"device_id": "dev_350", "device_type": "thermostat", "room": "garage", "event_type": "activated", "status": "detected", "value": 29594935000, "battery_level": 29594935000, "timestamp": "2025-05-12 09:41:01"}
+{"device_id": "dev_477", "device_type": "motion_sensor", "room": "kitchen", "event_type": "status_change", "status": "off", "value": 176665347700, "battery_level": 176665347700, "timestamp": "2025-05-12 08:45:34"}
+{"device_id": "dev_774", "device_type": "window_sensor", "room": "garage", "event_type": "measurement", "status": "detected", "value": 331841877400, "battery_level": 331841877400, "timestamp": "2025-05-12 02:50:37"}
+{"device_id": "dev_830", "device_type": "thermostat", "room": "living_room", "event_type": "activated", "status": "on", "value": 24425583000, "battery_level": 24425583000, "timestamp": "2025-05-12 16:59:41"}
+{"device_id": "dev_919", "device_type": "window_sensor", "room": "kitchen", "event_type": "measurement", "status": "off", "value": 300488491900, "battery_level": 300488491900, "timestamp": "2025-05-11 23:34:52"}
+{"device_id": "dev_292", "device_type": "motion_sensor", "room": "bedroom", "event_type": "status_change", "status": "open", "value": 269251029200, "battery_level": 269251029200, "timestamp": "2025-05-12 10:18:39"}
+{"device_id": "dev_338", "device_type": "door_sensor", "room": "bedroom", "event_type": "alert", "status": "open", "value": 288875433800, "battery_level": 288875433800, "timestamp": "2025-05-12 02:04:33"}
+{"device_id": "dev_241", "device_type": "light", "room": "bathroom", "event_type": "deactivated", "status": "closed", "value": 35641724100, "battery_level": 35641724100, "timestamp": "2025-05-12 13:02:50"}

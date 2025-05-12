@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Captures all user events from SaaS applications
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `session_id` String `json:$.session_id`,
+    `event_type` String `json:$.event_type`,
+    `feature` String `json:$.feature`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `device_type` String `json:$.device_type`,
+    `browser` String `json:$.browser`,
+    `os` String `json:$.os`,
+    `location` String `json:$.location`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, event_type"
+        

@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Stores subscription-related events like creation, cancellation, renewal, and upgrades
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `subscription_id` String `json:$.subscription_id`,
+    `event_type` String `json:$.event_type`,
+    `plan_id` String `json:$.plan_id`,
+    `plan_name` String `json:$.plan_name`,
+    `amount` Float64 `json:$.amount`,
+    `currency` String `json:$.currency`,
+    `billing_period` String `json:$.billing_period`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "user_id, subscription_id, timestamp"
+        

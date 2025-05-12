@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Get order analytics by restaurant with optional time range and city filters
+
+NODE orders_by_restaurant_node
+SQL >
+    %
+    SELECT 
+        restaurant_id,
+        count() AS total_orders,
+        sum(total_amount) AS total_sales,
+        avg(delivery_time_minutes) AS avg_delivery_time,
+        sum(tip_amount) / sum(total_amount) * 100 AS tip_percentage
+    FROM food_delivery_orders
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(city) %}
+        AND city = {{String(city, 'New York')}}
+    {% end %}
+    GROUP BY restaurant_id
+    ORDER BY total_sales DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

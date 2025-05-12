@@ -1,0 +1,13 @@
+
+DESCRIPTION >
+    This datasource contains customer demographic information.
+
+SCHEMA >
+    `customer_id` String `json:$.customer_id`,
+    `age` UInt8 `json:$.age`,
+    `location` String `json:$.location`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "location"
+ENGINE_SORTING_KEY "customer_id"
+        

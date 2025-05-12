@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Identify the most common support ticket categories
+
+NODE common_categories_node
+SQL >
+    %
+    SELECT
+        category,
+        status,
+        count() AS ticket_count,
+        round(count() * 100.0 / sum(count()) OVER (), 2) AS percentage
+    FROM support_tickets
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND created_at >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND created_at >= now() - interval 30 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND created_at <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND created_at <= now()
+    {% end %}
+    GROUP BY category, status
+    ORDER BY ticket_count DESC
+
+TYPE endpoint
+        

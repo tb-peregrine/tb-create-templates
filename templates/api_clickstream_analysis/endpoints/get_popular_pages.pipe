@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Get the most popular pages based on pageview count
+
+NODE get_popular_pages_node
+SQL >
+    %
+    SELECT 
+        page_url,
+        page_title,
+        count() AS view_count
+    FROM clickstream_events
+    WHERE event_type = 'pageview'
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY page_url, page_title
+    ORDER BY view_count DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint
+        

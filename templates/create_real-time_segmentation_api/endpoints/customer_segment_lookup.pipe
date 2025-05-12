@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Endpoint to look up a customer's segment based on their customer ID
+
+NODE customer_segment_lookup_node
+SQL >
+    %
+    SELECT 
+        c.customer_id,
+        c.name,
+        c.email,
+        c.age,
+        c.gender,
+        c.location,
+        c.lifetime_value,
+        CASE
+            WHEN c.lifetime_value > 1000 THEN 'VIP'
+            WHEN c.lifetime_value > 500 THEN 'High Value'
+            WHEN c.lifetime_value > 100 THEN 'Medium Value'
+            ELSE 'Low Value'
+        END AS value_segment,
+        CASE
+            WHEN DATEDIFF('day', c.signup_date, now()) > 365 THEN 'Loyal'
+            WHEN DATEDIFF('day', c.signup_date, now()) > 180 THEN 'Established'
+            ELSE 'New'
+        END AS loyalty_segment
+    FROM customers c
+    WHERE c.customer_id = {{String(customer_id, '')}}
+
+TYPE endpoint
+        

@@ -1,0 +1,13 @@
+
+DESCRIPTION >
+    This datasource contains customer transaction data.
+
+SCHEMA >
+    `customer_id` String `json:$.customer_id`,
+    `transaction_date` DateTime `json:$.transaction_date`,
+    `transaction_amount` Float64 `json:$.transaction_amount`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(transaction_date)"
+ENGINE_SORTING_KEY "customer_id, transaction_date"
+        

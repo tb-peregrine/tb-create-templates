@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Stores ride-sharing service data including ride details, driver information, and customer feedback
+
+SCHEMA >
+    `ride_id` String `json:$.ride_id`,
+    `driver_id` String `json:$.driver_id`,
+    `user_id` String `json:$.user_id`,
+    `pickup_time` DateTime `json:$.pickup_time`,
+    `dropoff_time` DateTime `json:$.dropoff_time`,
+    `pickup_location` String `json:$.pickup_location`,
+    `dropoff_location` String `json:$.dropoff_location`,
+    `distance_km` Float32 `json:$.distance_km`,
+    `duration_minutes` Int32 `json:$.duration_minutes`,
+    `fare_amount` Float32 `json:$.fare_amount`,
+    `rating` Int8 `json:$.rating`,
+    `status` String `json:$.status`,
+    `platform` String `json:$.platform`,
+    `city` String `json:$.city`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "city, driver_id, timestamp"
+        

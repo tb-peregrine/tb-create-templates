@@ -1,0 +1,34 @@
+
+DESCRIPTION >
+    Fetches the most recent readings for each sensor and reading type
+
+NODE current_sensor_readings_node
+SQL >
+    %
+    SELECT 
+        sensor_id,
+        location,
+        reading_type,
+        reading_value,
+        unit,
+        timestamp,
+        battery_level
+    FROM sensor_readings
+    WHERE 
+        {% if defined(sensor_id) %}
+        sensor_id = {{String(sensor_id, '')}}
+        {% else %}
+        1=1
+        {% end %}
+        {% if defined(location) %}
+        AND location = {{String(location, '')}}
+        {% end %}
+        {% if defined(reading_type) %}
+        AND reading_type = {{String(reading_type, '')}}
+        {% end %}
+        AND timestamp >= now() - interval {{Int(time_window_hours, 24)}} hour
+    ORDER BY sensor_id, reading_type, timestamp DESC
+    LIMIT {{Int(limit, 1000)}}
+
+TYPE endpoint
+        

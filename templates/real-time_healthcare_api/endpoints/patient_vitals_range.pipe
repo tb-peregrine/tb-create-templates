@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    API endpoint to get vital signs for a given patient within a specified time range.
+
+NODE patient_vitals_range_node
+SQL >
+    %
+    SELECT
+        patient_id,
+        timestamp,
+        heart_rate,
+        blood_pressure_systolic,
+        blood_pressure_diastolic,
+        oxygen_saturation,
+        temperature
+    FROM patient_vitals
+    WHERE patient_id = {{String(patient_id, 'patient_123')}}
+    AND timestamp BETWEEN {{DateTime(start_time, '2024-01-01 00:00:00')}} AND {{DateTime(end_time, '2024-01-01 01:00:00')}}
+    ORDER BY timestamp
+
+TYPE endpoint

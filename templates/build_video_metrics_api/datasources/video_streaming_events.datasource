@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    Raw events from video streaming platform including video views, quality metrics, and user interactions
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `user_id` String `json:$.user_id`,
+    `video_id` String `json:$.video_id`,
+    `event_type` String `json:$.event_type`,
+    `duration` Float64 `json:$.duration`,
+    `buffer_count` UInt16 `json:$.buffer_count`,
+    `quality_level` String `json:$.quality_level`,
+    `device_type` String `json:$.device_type`,
+    `country` String `json:$.country`,
+    `session_id` String `json:$.session_id`,
+    `position` Float64 `json:$.position`,
+    `error_type` String `json:$.error_type`,
+    `cdn` String `json:$.cdn`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, video_id, user_id, event_type"
+        

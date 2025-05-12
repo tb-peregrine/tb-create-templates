@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Retrieve charging sessions with filters by time period, station, and user
+
+NODE get_sessions_node
+SQL >
+    %
+    SELECT
+        session_id,
+        station_id,
+        user_id,
+        start_time,
+        end_time,
+        energy_consumed,
+        amount_paid,
+        charging_type,
+        location,
+        end_time - start_time AS duration_seconds
+    FROM charging_sessions
+    WHERE 1=1
+    {% if defined(station_id) %}
+        AND station_id = {{String(station_id, '')}}
+    {% end %}
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND start_time >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND start_time <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY start_time DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

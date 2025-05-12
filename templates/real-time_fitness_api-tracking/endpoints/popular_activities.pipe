@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Get most popular activities based on user engagement
+
+NODE popular_activities_node
+SQL >
+    %
+    SELECT 
+        activity_type,
+        count(*) as activity_count,
+        count(DISTINCT user_id) as user_count,
+        avg(duration_seconds) as avg_duration,
+        avg(calories_burned) as avg_calories,
+        avg(distance_km) as avg_distance
+    FROM app_events
+    WHERE event_type = 'workout_completed'
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date)}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date)}}
+    {% end %}
+    GROUP BY activity_type
+    ORDER BY user_count DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint
+        

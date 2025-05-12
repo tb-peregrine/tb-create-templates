@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Get summary of order statuses with optional time range filter
+
+NODE order_status_summary_node
+SQL >
+    %
+    SELECT 
+        status,
+        count() AS order_count,
+        sum(total_amount) AS total_sales,
+        avg(delivery_time_minutes) AS avg_delivery_time
+    FROM food_delivery_orders
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY status
+    ORDER BY order_count DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Returns the current status of devices in the home automation system, with optional filtering by device type or room
+
+NODE device_status_node
+SQL >
+    %
+    SELECT
+        device_id,
+        device_type,
+        room,
+        status,
+        value,
+        battery_level,
+        timestamp
+    FROM home_automation_events
+    WHERE 1=1
+    {% if defined(device_type) %}
+    AND device_type = {{String(device_type, 'thermostat')}}
+    {% end %}
+    {% if defined(room) %}
+    AND room = {{String(room, 'living_room')}}
+    {% end %}
+    {% if defined(min_battery) %}
+    AND battery_level >= {{Float64(min_battery, 10)}}
+    {% end %}
+    QUALIFY row_number() OVER (PARTITION BY device_id ORDER BY timestamp DESC) = 1
+    ORDER BY room, device_type, device_id
+
+TYPE endpoint

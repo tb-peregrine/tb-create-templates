@@ -1,0 +1,43 @@
+
+DESCRIPTION >
+    Get aggregated statistics for sensors within a time period
+
+NODE sensor_stats_node
+SQL >
+    %
+    SELECT 
+        device_id,
+        sensor_type,
+        min(reading) as min_reading,
+        max(reading) as max_reading,
+        avg(reading) as avg_reading,
+        min(battery_level) as min_battery,
+        max(battery_level) as max_battery,
+        avg(battery_level) as avg_battery,
+        count() as reading_count
+    FROM sensor_data
+    WHERE 1=1
+    {% if defined(device_id) %}
+        AND device_id = {{String(device_id, '')}}
+    {% end %}
+    {% if defined(sensor_type) %}
+        AND sensor_type = {{String(sensor_type, '')}}
+    {% end %}
+    {% if defined(location) %}
+        AND location = {{String(location, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 7 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY device_id, sensor_type
+    ORDER BY device_id, sensor_type
+
+TYPE endpoint
+        

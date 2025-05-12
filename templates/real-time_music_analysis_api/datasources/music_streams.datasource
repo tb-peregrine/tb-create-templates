@@ -1,0 +1,19 @@
+DESCRIPTION >
+    Records of music streaming events capturing user listening behavior
+
+SCHEMA >
+    `stream_id` String `json:$.stream_id`,
+    `user_id` String `json:$.user_id`,
+    `track_id` String `json:$.track_id`,
+    `artist_id` String `json:$.artist_id`,
+    `album_id` String `json:$.album_id`,
+    `genre` String `json:$.genre`,
+    `stream_start_time` DateTime `json:$.stream_start_time`,
+    `stream_duration_seconds` Int32 `json:$.stream_duration_seconds`,
+    `completed` UInt8 `json:$.completed`,
+    `device_type` String `json:$.device_type`,
+    `country` String `json:$.country`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(stream_start_time)"
+ENGINE_SORTING_KEY "stream_start_time, country, user_id"

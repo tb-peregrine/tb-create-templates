@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Customer information including demographic data and customer IDs
+
+SCHEMA >
+    `customer_id` String `json:$.customer_id`,
+    `name` String `json:$.name`,
+    `email` String `json:$.email`,
+    `age` Int32 `json:$.age`,
+    `gender` String `json:$.gender`,
+    `location` String `json:$.location`,
+    `signup_date` DateTime `json:$.signup_date`,
+    `lifetime_value` Float64 `json:$.lifetime_value`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "customer_id, timestamp"
+        

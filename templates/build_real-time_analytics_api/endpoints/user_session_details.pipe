@@ -1,0 +1,34 @@
+
+DESCRIPTION >
+    Get detailed information about user sessions
+
+NODE user_session_node
+SQL >
+    %
+    SELECT 
+        session_id,
+        user_id,
+        min(timestamp) as session_start,
+        max(timestamp) as session_end,
+        count(*) as event_count,
+        arrayStringConcat(groupArray(DISTINCT event_type), ', ') as event_types,
+        arrayStringConcat(groupArray(DISTINCT page), ', ') as pages_visited
+    FROM events
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(session_id) %}
+        AND session_id = {{String(session_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY session_id, user_id
+    ORDER BY session_start DESC
+    LIMIT 100
+
+TYPE endpoint

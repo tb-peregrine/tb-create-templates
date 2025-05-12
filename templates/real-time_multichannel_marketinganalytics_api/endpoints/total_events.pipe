@@ -1,0 +1,11 @@
+
+DESCRIPTION >
+    Endpoint to retrieve the total number of events.
+
+NODE total_events_node
+SQL >
+    SELECT count() AS total_events
+    FROM marketing_events
+
+TYPE endpoint
+        

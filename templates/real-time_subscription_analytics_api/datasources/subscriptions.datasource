@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    Stores current subscription status and details
+
+SCHEMA >
+    `subscription_id` String `json:$.subscription_id`,
+    `user_id` String `json:$.user_id`,
+    `plan_id` String `json:$.plan_id`,
+    `plan_name` String `json:$.plan_name`,
+    `status` String `json:$.status`,
+    `amount` Float64 `json:$.amount`,
+    `currency` String `json:$.currency`,
+    `billing_period` String `json:$.billing_period`,
+    `start_date` DateTime `json:$.start_date`,
+    `end_date` DateTime `json:$.end_date`,
+    `trial_end_date` DateTime `json:$.trial_end_date`,
+    `cancel_at_period_end` UInt8 `json:$.cancel_at_period_end`,
+    `created_at` DateTime `json:$.created_at`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(created_at)"
+ENGINE_SORTING_KEY "user_id, subscription_id, plan_id"
+        

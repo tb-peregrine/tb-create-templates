@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Stores real-time auction bidding data including bid amount, auction ID, bidder ID, and timestamp
+
+SCHEMA >
+    `bid_id` String `json:$.bid_id`,
+    `auction_id` String `json:$.auction_id`,
+    `bidder_id` String `json:$.bidder_id`,
+    `bid_amount` Float64 `json:$.bid_amount`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `status` String `json:$.status`,
+    `item_id` String `json:$.item_id`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "auction_id, timestamp, bidder_id"
+        

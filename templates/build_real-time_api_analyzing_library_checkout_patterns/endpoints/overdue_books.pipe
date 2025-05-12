@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Get list of currently overdue books
+
+NODE overdue_books_node
+SQL >
+    %
+    SELECT 
+        checkout_id,
+        book_id,
+        book_title,
+        author,
+        genre,
+        user_id,
+        checkout_date,
+        due_date,
+        dateDiff('day', due_date, now()) AS days_overdue
+    FROM book_checkouts
+    WHERE is_returned = 0
+        AND due_date < now()
+    {% if defined(min_days_overdue) %}
+        AND dateDiff('day', due_date, now()) >= {{Int32(min_days_overdue, 1)}}
+    {% end %}
+    {% if defined(genre) %}
+        AND genre = {{String(genre, '')}}
+    {% end %}
+    ORDER BY days_overdue DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

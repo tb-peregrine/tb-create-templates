@@ -1,0 +1,15 @@
+
+DESCRIPTION >
+    Number of events per country
+
+NODE events_by_country_node
+SQL >
+    SELECT
+        country,
+        count() AS event_count
+    FROM ecommerce_events
+    GROUP BY country
+    ORDER BY event_count DESC
+
+TYPE endpoint
+        

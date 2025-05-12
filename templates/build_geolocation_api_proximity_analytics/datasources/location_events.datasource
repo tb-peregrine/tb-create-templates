@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Stores location events with user IDs, coordinates, and timestamps
+
+SCHEMA >
+    `user_id` String `json:$.user_id`,
+    `latitude` Float64 `json:$.latitude`,
+    `longitude` Float64 `json:$.longitude`,
+    `accuracy` Float32 `json:$.accuracy`,
+    `event_type` String `json:$.event_type`,
+    `device_id` String `json:$.device_id`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, event_type"
+        

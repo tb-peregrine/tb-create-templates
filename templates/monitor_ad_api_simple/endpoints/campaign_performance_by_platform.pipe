@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    API endpoint that shows campaign performance broken down by platform
+
+NODE campaign_performance_by_platform_node
+SQL >
+    %
+    SELECT 
+        ai.campaign_id,
+        ai.platform,
+        count() AS impressions,
+        countIf(ac.click_id IS NOT NULL) AS clicks,
+        round(countIf(ac.click_id IS NOT NULL) / count() * 100, 2) AS ctr
+    FROM ad_impressions AS ai
+    LEFT JOIN ad_clicks AS ac ON ai.impression_id = ac.impression_id
+    WHERE ai.timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(campaign_id) %}
+        AND ai.campaign_id = {{String(campaign_id, '')}}
+    {% end %}
+    GROUP BY ai.campaign_id, ai.platform
+    ORDER BY ai.campaign_id, impressions DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,34 @@
+
+DESCRIPTION >
+    Analyze most popular books by checkout count
+
+NODE popular_books_node
+SQL >
+    %
+    SELECT 
+        book_id,
+        book_title,
+        author,
+        genre,
+        count() AS checkout_count
+    FROM book_checkouts
+    WHERE 1=1
+    {% if defined(genre) %}
+        AND genre = {{String(genre, 'Fiction')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND checkout_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND checkout_date >= '2023-01-01 00:00:00'
+    {% end %}
+    {% if defined(end_date) %}
+        AND checkout_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND checkout_date <= '2023-12-31 23:59:59'
+    {% end %}
+    GROUP BY book_id, book_title, author, genre
+    ORDER BY checkout_count DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint
+        

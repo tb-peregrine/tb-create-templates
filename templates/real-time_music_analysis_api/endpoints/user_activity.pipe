@@ -1,0 +1,22 @@
+DESCRIPTION >
+    API endpoint that analyzes a specific user's streaming activity
+
+NODE user_activity_node
+SQL >
+    %
+    SELECT 
+        toDate(stream_start_time) as date,
+        count() as stream_count,
+        sum(stream_duration_seconds) / 60 as listening_minutes,
+        uniq(track_id) as unique_tracks,
+        uniq(artist_id) as unique_artists,
+        uniq(album_id) as unique_albums,
+        arraySort(groupArray(genre)) as genres_listened
+    FROM music_streams
+    WHERE user_id = {{String(user_id, '12345')}}
+    AND stream_start_time BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    GROUP BY date
+    ORDER BY date DESC
+    LIMIT {{Int32(limit, 30)}}
+
+TYPE endpoint

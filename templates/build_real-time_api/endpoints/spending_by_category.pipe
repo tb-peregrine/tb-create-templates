@@ -1,0 +1,34 @@
+
+DESCRIPTION >
+    Analyzes spending patterns by category within a specified date range
+
+NODE spending_by_category_node
+SQL >
+    %
+    SELECT 
+        category,
+        count() as transaction_count,
+        sum(amount) as total_spent,
+        avg(amount) as average_transaction,
+        min(amount) as min_transaction,
+        max(amount) as max_transaction
+    FROM transactions
+    WHERE 
+        {% if defined(start_date) %}
+        timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% else %}
+        timestamp >= '2023-01-01 00:00:00'
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+        AND timestamp <= '2023-12-31 23:59:59'
+        {% end %}
+        {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+        {% end %}
+    GROUP BY category
+    ORDER BY total_spent DESC
+
+TYPE endpoint
+        

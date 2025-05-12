@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    Retrieves the current traffic conditions for a specific location or across the city
+
+NODE current_traffic_node
+SQL >
+    %
+    SELECT
+        location_name,
+        avg(vehicle_count) AS avg_vehicle_count,
+        avg(average_speed_kph) AS avg_speed,
+        max(congestion_level) AS max_congestion_level,
+        count() AS data_points,
+        max(timestamp) AS latest_update
+    FROM traffic_events
+    WHERE timestamp >= now() - interval {{Int32(time_window_minutes, 30)}} minute
+    {% if defined(location_filter) %}
+        AND location_name = {{String(location_filter, '')}}
+    {% end %}
+    GROUP BY location_name
+    ORDER BY max_congestion_level DESC, avg_vehicle_count DESC
+
+TYPE endpoint
+        

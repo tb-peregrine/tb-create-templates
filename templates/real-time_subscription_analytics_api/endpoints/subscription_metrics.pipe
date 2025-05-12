@@ -1,0 +1,54 @@
+
+DESCRIPTION >
+    Provides key subscription metrics including MRR, churn rate, and subscriber count by time period
+
+NODE subscription_metrics_node
+SQL >
+    %
+    WITH 
+        active_subs AS (
+            SELECT 
+                toStartOfMonth(start_date) as month,
+                sum(CASE 
+                    WHEN billing_period = 'monthly' THEN amount
+                    WHEN billing_period = 'quarterly' THEN amount / 3
+                    WHEN billing_period = 'yearly' THEN amount / 12
+                    ELSE amount
+                END) as mrr,
+                count() as subscriber_count
+            FROM subscriptions
+            WHERE status = 'active'
+            {% if defined(start_date) %}
+            AND start_date >= {{DateTime(start_date, '2020-01-01 00:00:00')}}
+            {% end %}
+            {% if defined(end_date) %}
+            AND start_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% end %}
+            GROUP BY month
+        ),
+        cancelled_subs AS (
+            SELECT 
+                toStartOfMonth(timestamp) as month,
+                count() as cancellations
+            FROM subscription_events
+            WHERE event_type = 'cancelled'
+            {% if defined(start_date) %}
+            AND timestamp >= {{DateTime(start_date, '2020-01-01 00:00:00')}}
+            {% end %}
+            {% if defined(end_date) %}
+            AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+            {% end %}
+            GROUP BY month
+        )
+    SELECT 
+        a.month,
+        a.mrr,
+        a.subscriber_count,
+        c.cancellations,
+        if(a.subscriber_count > 0, round(c.cancellations / a.subscriber_count * 100, 2), 0) as churn_rate
+    FROM active_subs a
+    LEFT JOIN cancelled_subs c ON a.month = c.month
+    ORDER BY a.month
+
+TYPE endpoint
+        

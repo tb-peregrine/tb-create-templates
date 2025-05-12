@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Analyzes feature usage patterns across the application
+
+NODE feature_usage_node
+SQL >
+    %
+    SELECT
+        feature,
+        count() AS total_events,
+        count(DISTINCT user_id) AS unique_users,
+        round(count() / count(DISTINCT user_id), 2) AS avg_usage_per_user
+    FROM app_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2024-12-31 23:59:59')}}
+        {% if defined(device_type) %} AND device_type = {{String(device_type)}} {% end %}
+    GROUP BY feature
+    ORDER BY total_events DESC
+
+TYPE endpoint
+        

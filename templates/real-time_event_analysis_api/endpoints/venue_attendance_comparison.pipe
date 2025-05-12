@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Compare attendance metrics across different venues or event types
+
+NODE venue_attendance_comparison_node
+SQL >
+    %
+    SELECT 
+        venue,
+        count(DISTINCT event_id) AS total_events,
+        count(DISTINCT user_id) AS unique_attendees,
+        countIf(attendance_status = 'checked_in') AS total_check_ins,
+        round(countIf(attendance_status = 'checked_in') / 
+              countIf(attendance_status IN ('checked_in', 'registered', 'no_show')) * 100, 2) AS overall_check_in_rate
+    FROM event_attendance
+    WHERE 
+        {% if defined(event_type) %}
+        event_type = {{String(event_type, 'conference')}}
+        {% else %}
+        1=1
+        {% end %}
+    GROUP BY venue
+    ORDER BY total_events DESC
+
+TYPE endpoint
+        

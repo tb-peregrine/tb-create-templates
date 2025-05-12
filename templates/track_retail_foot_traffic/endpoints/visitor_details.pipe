@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Get details for a specific visitor or latest visitors
+
+NODE visitor_details_node
+SQL >
+    %
+    SELECT 
+        visitor_id,
+        count() as total_visits,
+        min(timestamp) as first_visit,
+        max(timestamp) as last_visit,
+        avg(dwell_time_seconds) as avg_dwell_time,
+        groupArray(store_id) as visited_stores,
+        groupArray(entry_point) as entry_points,
+        groupArray(tags) as visit_tags
+    FROM store_visits
+    WHERE 1=1
+    {% if defined(visitor_id) %}
+        AND visitor_id = {{String(visitor_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY visitor_id
+    {% if not defined(visitor_id) %}
+    ORDER BY last_visit DESC
+    LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

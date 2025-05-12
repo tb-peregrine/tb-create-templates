@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Find users within a specified radius of a given coordinate
+
+NODE nearby_users_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        latitude,
+        longitude,
+        event_type,
+        timestamp,
+        111.111 * 
+        SQRT(
+            POW(latitude - {{Float64(target_lat, 0.0)}}, 2) + 
+            POW(longitude * COS(PI() * latitude / 180.0) - {{Float64(target_lon, 0.0)}} * COS(PI() * {{Float64(target_lat, 0.0)}} / 180.0), 2)
+        ) AS distance_km
+    FROM location_events
+    WHERE 
+        timestamp >= {{DateTime(start_time, '2023-01-01 00:00:00')}} AND 
+        timestamp <= {{DateTime(end_time, '2023-12-31 23:59:59')}}
+        AND 111.111 * 
+        SQRT(
+            POW(latitude - {{Float64(target_lat, 0.0)}}, 2) + 
+            POW(longitude * COS(PI() * latitude / 180.0) - {{Float64(target_lon, 0.0)}} * COS(PI() * {{Float64(target_lat, 0.0)}} / 180.0), 2)
+        ) <= {{Float64(radius_km, 1.0)}}
+    ORDER BY distance_km ASC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

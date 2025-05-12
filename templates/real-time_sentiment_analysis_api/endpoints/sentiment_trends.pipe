@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Shows sentiment trends over time with customizable time intervals and platform filtering
+
+NODE sentiment_trends_node
+SQL >
+    %
+    SELECT 
+        toStartOfInterval(timestamp, INTERVAL {{String(interval, '1 day')}}) as time_bucket,
+        platform,
+        count() as post_count,
+        avg(sentiment_score) as avg_sentiment
+    FROM social_media_posts
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(platform_filter) %}
+        AND platform = {{String(platform_filter, 'all')}}
+    {% end %}
+    GROUP BY time_bucket, platform
+    ORDER BY time_bucket ASC, platform
+
+TYPE endpoint
+        

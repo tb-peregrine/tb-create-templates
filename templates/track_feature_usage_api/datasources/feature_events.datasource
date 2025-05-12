@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Events that track feature usage across product versions
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `feature_id` String `json:$.feature_id`,
+    `product_version` String `json:$.product_version`,
+    `event_type` String `json:$.event_type`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `session_id` String `json:$.session_id`,
+    `metadata` String `json:$.metadata`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, feature_id, product_version"
+        

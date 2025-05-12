@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    Stores database query logs for performance analysis
+
+SCHEMA >
+    `query_id` String `json:$.query_id`,
+    `database` String `json:$.database`,
+    `query_text` String `json:$.query_text`,
+    `query_type` String `json:$.query_type`,
+    `user` String `json:$.user`,
+    `start_time` DateTime `json:$.start_time`,
+    `end_time` DateTime `json:$.end_time`, 
+    `duration_ms` Float64 `json:$.duration_ms`,
+    `rows_read` UInt64 `json:$.rows_read`,
+    `bytes_read` UInt64 `json:$.bytes_read`,
+    `memory_usage` UInt64 `json:$.memory_usage`,
+    `status` String `json:$.status`,
+    `error_message` String `json:$.error_message`,
+    `client_ip` String `json:$.client_ip`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(start_time)"
+ENGINE_SORTING_KEY "start_time, database, query_type, user"
+        

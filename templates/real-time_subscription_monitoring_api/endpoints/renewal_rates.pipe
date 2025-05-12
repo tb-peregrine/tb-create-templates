@@ -1,0 +1,66 @@
+DESCRIPTION >
+    API endpoint for tracking subscription renewal rates over time
+
+NODE renewal_rates_node
+SQL >
+    %
+    WITH 
+        renewals AS (
+            SELECT 
+                toStartOfMonth(timestamp) AS month,
+                plan_id,
+                count() AS renewal_count
+            FROM subscription_events
+            WHERE 
+                event_type = 'renewal'
+                AND
+                {%if defined(start_date)%}
+                timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+                {%else%}
+                timestamp >= '2023-01-01 00:00:00'
+                {%end%}
+                AND
+                {%if defined(end_date)%}
+                timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+                {%else%}
+                timestamp <= '2023-12-31 23:59:59'
+                {%end%}
+            GROUP BY month, plan_id
+        ),
+        eligible AS (
+            SELECT 
+                toStartOfMonth(next_renewal_date) AS month,
+                plan_id,
+                count() AS eligible_count
+            FROM subscription_events
+            WHERE 
+                event_type IN ('new', 'renewal')
+                AND
+                {%if defined(start_date)%}
+                next_renewal_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+                {%else%}
+                next_renewal_date >= '2023-01-01 00:00:00'
+                {%end%}
+                AND
+                {%if defined(end_date)%}
+                next_renewal_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+                {%else%}
+                next_renewal_date <= '2023-12-31 23:59:59'
+                {%end%}
+            GROUP BY month, plan_id
+        )
+    SELECT 
+        e.month,
+        e.plan_id,
+        e.eligible_count,
+        r.renewal_count,
+        round(r.renewal_count / e.eligible_count * 100, 2) AS renewal_rate
+    FROM eligible e
+    LEFT JOIN renewals r ON e.month = r.month AND e.plan_id = r.plan_id
+    WHERE e.eligible_count > 0
+    {%if defined(plan_id)%}
+    AND e.plan_id = {{String(plan_id, 'all')}}
+    {%end%}
+    ORDER BY e.month ASC, renewal_rate DESC
+
+TYPE endpoint

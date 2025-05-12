@@ -1,0 +1,10 @@
+{"feedback_id": "fb_6577", "customer_id": "cust_577", "product_id": "prod_77", "rating": 3, "feedback_text": "Shipping was too slow", "sentiment": "negative", "tags": ["quality"], "timestamp": "2025-04-25 23:07:53"}
+{"feedback_id": "fb_4020", "customer_id": "cust_20", "product_id": "prod_20", "rating": 1, "feedback_text": "Great product!", "sentiment": "neutral", "tags": [], "timestamp": "2025-04-28 19:37:10"}
+{"feedback_id": "fb_2993", "customer_id": "cust_993", "product_id": "prod_93", "rating": 4, "feedback_text": "Not what I expected", "sentiment": "neutral", "tags": ["quality"], "timestamp": "2025-04-27 14:27:37"}
+{"feedback_id": "fb_3577", "customer_id": "cust_577", "product_id": "prod_77", "rating": 3, "feedback_text": "Shipping was too slow", "sentiment": "negative", "tags": ["quality"], "timestamp": "2025-05-01 23:17:53"}
+{"feedback_id": "fb_6823", "customer_id": "cust_823", "product_id": "prod_23", "rating": 4, "feedback_text": "Not what I expected", "sentiment": "positive", "tags": ["quality", "price", "delivery"], "timestamp": "2025-04-25 14:10:27"}
+{"feedback_id": "fb_3581", "customer_id": "cust_581", "product_id": "prod_81", "rating": 2, "feedback_text": "Could be better", "sentiment": "negative", "tags": ["quality"], "timestamp": "2025-04-25 20:04:29"}
+{"feedback_id": "fb_542", "customer_id": "cust_542", "product_id": "prod_42", "rating": 3, "feedback_text": "Excellent service", "sentiment": "negative", "tags": ["quality", "price"], "timestamp": "2025-04-21 06:55:08"}
+{"feedback_id": "fb_1509", "customer_id": "cust_509", "product_id": "prod_9", "rating": 5, "feedback_text": "Will recommend to friends", "sentiment": "neutral", "tags": ["quality"], "timestamp": "2025-04-26 23:19:01"}
+{"feedback_id": "fb_380", "customer_id": "cust_380", "product_id": "prod_80", "rating": 1, "feedback_text": "Great product!", "sentiment": "positive", "tags": [], "timestamp": "2025-04-26 21:24:30"}
+{"feedback_id": "fb_1602", "customer_id": "cust_602", "product_id": "prod_2", "rating": 3, "feedback_text": "Excellent service", "sentiment": "positive", "tags": ["quality", "price"], "timestamp": "2025-05-11 20:30:48"}

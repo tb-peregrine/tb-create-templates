@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Raw data of customer visits to retail stores
+
+SCHEMA >
+    `visit_id` String `json:$.visit_id`,
+    `store_id` String `json:$.store_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `visitor_id` String `json:$.visitor_id`,
+    `entry_point` String `json:$.entry_point`,
+    `exit_point` String `json:$.exit_point`,
+    `dwell_time_seconds` Int32 `json:$.dwell_time_seconds`,
+    `tags` Array(String) `json:$.tags[:]`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "store_id, timestamp"
+        

@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Stores machine learning model predictions and actual outcomes for performance monitoring
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `model_id` String `json:$.model_id`,
+    `prediction_id` String `json:$.prediction_id`,
+    `features` String `json:$.features`,
+    `predicted_value` Float64 `json:$.predicted_value`,
+    `actual_value` Float64 `json:$.actual_value`,
+    `model_version` String `json:$.model_version`,
+    `environment` String `json:$.environment`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, model_id, prediction_id"
+        

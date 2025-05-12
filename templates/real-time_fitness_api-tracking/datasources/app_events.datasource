@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Stores fitness app events/activities from users
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `event_type` String `json:$.event_type`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `app_version` String `json:$.app_version`,
+    `device_type` String `json:$.device_type`,
+    `device_os` String `json:$.device_os`,
+    `session_id` String `json:$.session_id`,
+    `duration_seconds` Int32 `json:$.duration_seconds`,
+    `activity_type` String `json:$.activity_type`,
+    `calories_burned` Int32 `json:$.calories_burned`,
+    `distance_km` Float32 `json:$.distance_km`,
+    `heart_rate` Int32 `json:$.heart_rate`,
+    `location_lat` Float64 `json:$.location_lat`,
+    `location_lon` Float64 `json:$.location_lon`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, event_type"
+        

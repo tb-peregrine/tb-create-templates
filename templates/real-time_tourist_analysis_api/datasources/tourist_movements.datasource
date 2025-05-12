@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Records of tourist movements including location, timestamp, and tourist information
+
+SCHEMA >
+    `tourist_id` String `json:$.tourist_id`,
+    `location_id` String `json:$.location_id`,
+    `location_name` String `json:$.location_name`,
+    `latitude` Float64 `json:$.latitude`,
+    `longitude` Float64 `json:$.longitude`,
+    `country` String `json:$.country`,
+    `city` String `json:$.city`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `activity_type` String `json:$.activity_type`,
+    `duration_minutes` Int32 `json:$.duration_minutes`,
+    `tourist_origin` String `json:$.tourist_origin`,
+    `age_group` String `json:$.age_group`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, location_id, tourist_id"
+        

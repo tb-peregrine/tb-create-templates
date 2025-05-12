@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Get detailed events for a specific session
+
+NODE get_session_details_node
+SQL >
+    %
+    SELECT 
+        session_id,
+        user_id,
+        tenant_id,
+        event_type,
+        event_data,
+        page_url,
+        referrer,
+        device_type,
+        browser,
+        ip_address,
+        created_at,
+        updated_at
+    FROM user_sessions
+    WHERE session_id = {{String(session_id, '')}}
+    ORDER BY created_at ASC
+
+TYPE endpoint
+        

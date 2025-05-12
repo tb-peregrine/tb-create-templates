@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Raw metrics data for cloud resource utilization monitoring
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `resource_id` String `json:$.resource_id`,
+    `resource_type` String `json:$.resource_type`,
+    `resource_name` String `json:$.resource_name`,
+    `metric_name` String `json:$.metric_name`,
+    `metric_value` Float64 `json:$.metric_value`,
+    `region` String `json:$.region`,
+    `account_id` String `json:$.account_id`,
+    `environment` String `json:$.environment`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, resource_id, metric_name"
+        

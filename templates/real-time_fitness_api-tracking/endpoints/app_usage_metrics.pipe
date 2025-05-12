@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Get app usage metrics over a time range with optional filters
+
+NODE app_usage_metrics_node
+SQL >
+    %
+    SELECT 
+        toStartOfDay(timestamp) as day,
+        count(DISTINCT user_id) as daily_active_users,
+        count(DISTINCT session_id) as total_sessions,
+        count(*) as total_events,
+        avg(duration_seconds) as avg_session_duration,
+        countIf(event_type = 'app_open') as app_opens,
+        countIf(event_type = 'workout_completed') as workouts_completed
+    FROM app_events
+    WHERE 1=1
+    {% if defined(device_os) %}
+    AND device_os = {{String(device_os)}}
+    {% end %}
+    {% if defined(app_version) %}
+    AND app_version = {{String(app_version)}}
+    {% end %}
+    AND timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    GROUP BY day
+    ORDER BY day
+
+TYPE endpoint
+        

@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Raw social media interactions including posts, comments, likes, and shares
+
+SCHEMA >
+    `interaction_id` String `json:$.interaction_id`,
+    `user_id` String `json:$.user_id`,
+    `interaction_type` String `json:$.interaction_type`,
+    `content_id` String `json:$.content_id`,
+    `platform` String `json:$.platform`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `text_content` String `json:$.text_content`,
+    `engagement_count` Int32 `json:$.engagement_count`,
+    `tags` Array(String) `json:$.tags[:]`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "platform, interaction_type, timestamp"
+        

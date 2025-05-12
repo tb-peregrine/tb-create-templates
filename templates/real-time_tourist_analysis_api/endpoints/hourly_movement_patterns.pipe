@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Analyzes tourist movement patterns by hour of day
+
+NODE hourly_movement_node
+SQL >
+    %
+    SELECT 
+        toHour(timestamp) AS hour_of_day,
+        count() AS movement_count,
+        uniq(tourist_id) AS unique_tourists,
+        uniq(location_id) AS unique_locations,
+        avg(duration_minutes) AS avg_duration
+    FROM tourist_movements
+    WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(location_id) %}
+    AND location_id = {{String(location_id, '')}}
+    {% end %}
+    {% if defined(activity_type) %}
+    AND activity_type = {{String(activity_type, '')}}
+    {% end %}
+    GROUP BY hour_of_day
+    ORDER BY hour_of_day ASC
+
+TYPE endpoint
+        

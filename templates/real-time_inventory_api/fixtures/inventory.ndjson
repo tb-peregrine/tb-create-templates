@@ -1,0 +1,10 @@
+{"product_id": "P1851", "warehouse_id": "WH2", "quantity": 851, "timestamp": "2025-04-21 14:28:00", "operation": "transfer", "batch_id": "B17851", "unit_price": 931}
+{"product_id": "P1581", "warehouse_id": "WH2", "quantity": 581, "timestamp": "2025-05-01 12:28:00", "operation": "remove", "batch_id": "B12581", "unit_price": 981}
+{"product_id": "P1650", "warehouse_id": "WH1", "quantity": 650, "timestamp": "2025-05-11 23:28:00", "operation": "adjust", "batch_id": "B10650", "unit_price": 760}
+{"product_id": "P1741", "warehouse_id": "WH2", "quantity": 741, "timestamp": "2025-05-11 04:28:00", "operation": "remove", "batch_id": "B16741", "unit_price": 821}
+{"product_id": "P1012", "warehouse_id": "WH3", "quantity": 12, "timestamp": "2025-05-09 21:28:00", "operation": "add", "batch_id": "B16012", "unit_price": 852}
+{"product_id": "P1475", "warehouse_id": "WH6", "quantity": 475, "timestamp": "2025-04-16 22:28:00", "operation": "transfer", "batch_id": "B15475", "unit_price": 125}
+{"product_id": "P1055", "warehouse_id": "WH6", "quantity": 55, "timestamp": "2025-04-27 02:28:00", "operation": "transfer", "batch_id": "B12055", "unit_price": 685}
+{"product_id": "P1737", "warehouse_id": "WH8", "quantity": 737, "timestamp": "2025-04-15 08:28:00", "operation": "remove", "batch_id": "B10737", "unit_price": 487}
+{"product_id": "P1435", "warehouse_id": "WH6", "quantity": 435, "timestamp": "2025-04-27 14:28:00", "operation": "transfer", "batch_id": "B11435", "unit_price": 265}
+{"product_id": "P1816", "warehouse_id": "WH7", "quantity": 816, "timestamp": "2025-04-26 01:28:00", "operation": "add", "batch_id": "B18816", "unit_price": 836}

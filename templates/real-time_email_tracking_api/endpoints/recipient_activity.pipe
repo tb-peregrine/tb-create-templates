@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    Get detailed activity log for a specific email recipient
+
+NODE recipient_activity_node
+SQL >
+    %
+    SELECT
+        recipient_id,
+        recipient_email,
+        campaign_id,
+        event_type,
+        timestamp,
+        link_url,
+        user_agent
+    FROM email_events
+    WHERE 1=1
+    {% if defined(recipient_id) %}
+        AND recipient_id = {{String(recipient_id, '')}}
+    {% end %}
+    {% if defined(recipient_email) %}
+        AND recipient_email = {{String(recipient_email, '')}}
+    {% end %}
+    {% if defined(campaign_id) %}
+        AND campaign_id = {{String(campaign_id, '')}}
+    {% end %}
+    {% if defined(event_type) %}
+        AND event_type = {{String(event_type, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY timestamp DESC
+    {% if defined(limit) %}
+        LIMIT {{Int(limit, 100)}}
+    {% else %}
+        LIMIT 100
+    {% end %}
+
+TYPE endpoint
+        

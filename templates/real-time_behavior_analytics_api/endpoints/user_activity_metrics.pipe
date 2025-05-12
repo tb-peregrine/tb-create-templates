@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Provides aggregated metrics on user activity over a time period
+
+NODE user_activity_metrics_node
+SQL >
+    %
+    SELECT
+        toDate(timestamp) as date,
+        countDistinct(user_id) as unique_users,
+        countDistinct(session_id) as unique_sessions,
+        count() as total_events,
+        countIf(event_type = 'page_view') as page_views,
+        countIf(event_type = 'click') as clicks,
+        round(countIf(event_type = 'click') / countIf(event_type = 'page_view'), 2) as click_through_rate
+    FROM user_events
+    WHERE 
+        {% if defined(start_date) %}
+        timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% else %}
+        timestamp >= now() - interval 30 day
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+        AND timestamp <= now()
+        {% end %}
+        {% if defined(country) %}
+        AND country = {{String(country, '')}}
+        {% end %}
+        {% if defined(device_type) %}
+        AND device_type = {{String(device_type, '')}}
+        {% end %}
+    GROUP BY date
+    ORDER BY date DESC
+
+TYPE endpoint

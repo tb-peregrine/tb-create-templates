@@ -1,0 +1,18 @@
+DESCRIPTION >
+    Tracks user interactions with content such as views, likes, shares, and comments
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `content_id` String `json:$.content_id`,
+    `event_type` String `json:$.event_type`,
+    `event_time` DateTime `json:$.event_time`,
+    `content_type` String `json:$.content_type`,
+    `content_category` String `json:$.content_category`,
+    `session_id` String `json:$.session_id`,
+    `time_spent` Int32 `json:$.time_spent`,
+    `referrer` String `json:$.referrer`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(event_time)"
+ENGINE_SORTING_KEY "event_time, content_id, event_type"

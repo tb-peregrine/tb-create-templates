@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Stores package delivery events with status updates
+
+SCHEMA >
+    `package_id` String `json:$.package_id`,
+    `event_timestamp` DateTime `json:$.event_timestamp`,
+    `status` String `json:$.status`,
+    `location` String `json:$.location`,
+    `carrier` String `json:$.carrier`,
+    `notes` String `json:$.notes`,
+    `updated_by` String `json:$.updated_by`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(event_timestamp)"
+ENGINE_SORTING_KEY "package_id, event_timestamp"

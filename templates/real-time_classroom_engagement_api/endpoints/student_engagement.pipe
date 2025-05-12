@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    API endpoint to track engagement metrics for a specific student over time
+
+NODE student_engagement_node
+SQL >
+    %
+    SELECT 
+        student_id,
+        event_type,
+        count() as event_count,
+        sum(duration_seconds) as total_duration_seconds,
+        min(timestamp) as first_event,
+        max(timestamp) as last_event
+    FROM engagement_events
+    WHERE student_id = {{String(student_id, "ST001")}}
+    {% if defined(class_id) %}
+    AND class_id = {{String(class_id)}}
+    {% end %}
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, "2023-01-01 00:00:00")}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, "2023-12-31 23:59:59")}}
+    {% end %}
+    GROUP BY student_id, event_type
+    ORDER BY event_type
+
+TYPE endpoint
+        

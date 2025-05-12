@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Endpoint to get trends in user feedback over time
+
+NODE get_user_feedback_trends_node
+SQL >
+    %
+    SELECT
+        toStartOfDay(timestamp) AS day,
+        survey_id,
+        count() AS responses_count,
+        avg(rating) AS avg_daily_rating
+    FROM survey_responses
+    WHERE 1=1
+    {% if defined(survey_id) %}
+    AND survey_id = {{String(survey_id, '')}}
+    {% end %}
+    {% if defined(from_date) %}
+    AND timestamp >= {{DateTime(from_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(to_date) %}
+    AND timestamp <= {{DateTime(to_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY day, survey_id
+    ORDER BY day DESC, survey_id
+
+TYPE endpoint
+        

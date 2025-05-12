@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Retrieve location history for a specific user within a time range
+
+NODE user_location_history_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        latitude,
+        longitude,
+        accuracy,
+        event_type,
+        device_id,
+        timestamp
+    FROM location_events
+    WHERE 
+        user_id = {{String(user_id, '')}}
+        AND timestamp >= {{DateTime(start_time, '2023-01-01 00:00:00')}}
+        AND timestamp <= {{DateTime(end_time, '2023-12-31 23:59:59')}}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 1000)}}
+
+TYPE endpoint
+        

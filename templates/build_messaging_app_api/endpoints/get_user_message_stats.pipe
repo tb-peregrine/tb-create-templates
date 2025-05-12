@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Retrieve messaging stats for a specific user, including message counts, average message length, and activity patterns
+
+NODE user_stats_node
+SQL >
+    %
+    SELECT 
+        COUNT() as total_messages,
+        countIf(sender_id = {{String(user_id, '')}}) as sent_messages,
+        countIf(recipient_id = {{String(user_id, '')}}) as received_messages,
+        avg(character_count) as avg_message_length,
+        max(timestamp) as last_activity,
+        toDate(min(timestamp)) as first_activity,
+        count(distinct conversation_id) as active_conversations
+    FROM messages
+    WHERE sender_id = {{String(user_id, '')}} OR recipient_id = {{String(user_id, '')}}
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+
+TYPE endpoint
+        

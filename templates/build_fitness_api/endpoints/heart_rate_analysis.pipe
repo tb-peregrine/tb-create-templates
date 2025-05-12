@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Provides heart rate statistics for users
+
+NODE heart_rate_stats
+SQL >
+    %
+    SELECT
+        user_id,
+        toDate(timestamp) as date,
+        min(heart_rate) as min_heart_rate,
+        max(heart_rate) as max_heart_rate,
+        avg(heart_rate) as avg_heart_rate,
+        count() as readings_count
+    FROM fitness_data
+    WHERE heart_rate > 0
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND date >= {{Date(start_date, '2023-01-01')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND date <= {{Date(end_date, '2023-12-31')}}
+    {% end %}
+    GROUP BY user_id, date
+    ORDER BY date DESC
+
+TYPE endpoint
+        

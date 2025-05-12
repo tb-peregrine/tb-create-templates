@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Tracks user events such as page views, clicks, and other interactions
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `user_id` String `json:$.user_id`,
+    `session_id` String `json:$.session_id`,
+    `event_type` String `json:$.event_type`,
+    `page_url` String `json:$.page_url`,
+    `referrer` String `json:$.referrer`,
+    `device_type` String `json:$.device_type`,
+    `browser` String `json:$.browser`,
+    `country` String `json:$.country`,
+    `city` String `json:$.city`,
+    `properties` String `json:$.properties`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, user_id, event_type"

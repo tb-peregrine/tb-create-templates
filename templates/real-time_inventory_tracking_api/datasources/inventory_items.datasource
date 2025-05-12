@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Stores inventory items with their current stock levels and other details
+
+SCHEMA >
+    `item_id` String `json:$.item_id`,
+    `item_name` String `json:$.item_name`,
+    `category` String `json:$.category`,
+    `quantity` Int32 `json:$.quantity`,
+    `location` String `json:$.location`,
+    `last_updated` DateTime `json:$.last_updated`,
+    `low_stock_threshold` Int32 `json:$.low_stock_threshold`,
+    `unit_price` Float32 `json:$.unit_price`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(last_updated)"
+ENGINE_SORTING_KEY "category, item_id"
+        

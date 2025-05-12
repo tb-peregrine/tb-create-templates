@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    This endpoint calculates the average CLTV.
+
+NODE cltv_summary_node
+SQL >
+    SELECT avg(cltv) AS average_cltv
+    FROM (
+        SELECT
+            customer_id,
+            sum(transaction_amount) AS cltv
+        FROM customer_transactions
+        GROUP BY customer_id
+    )
+
+TYPE endpoint
+        

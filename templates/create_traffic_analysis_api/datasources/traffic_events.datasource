@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Raw traffic events data collected from various sensors across the city
+
+SCHEMA >
+    `event_id` String `json:$.event_id`,
+    `device_id` String `json:$.device_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `location_lat` Float64 `json:$.location_lat`,
+    `location_lon` Float64 `json:$.location_lon`,
+    `location_name` String `json:$.location_name`,
+    `vehicle_count` Int32 `json:$.vehicle_count`,
+    `average_speed_kph` Float32 `json:$.average_speed_kph`,
+    `congestion_level` Int8 `json:$.congestion_level`,
+    `weather_condition` String `json:$.weather_condition`,
+    `event_type` String `json:$.event_type`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, location_name, device_id"
+        

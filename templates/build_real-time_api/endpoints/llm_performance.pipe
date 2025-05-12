@@ -1,0 +1,15 @@
+
+DESCRIPTION >
+    Real-time API for LLM performance metrics
+
+NODE llm_performance_node
+SQL >
+    SELECT
+        model_name,
+        avg(latency) AS avg_latency,
+        avg(success) AS success_rate
+    FROM llm_events
+    GROUP BY model_name
+
+TYPE endpoint
+        

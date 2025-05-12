@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Provides insights on user sessions including duration and engagement metrics
+
+NODE session_insights_node
+SQL >
+    %
+    SELECT
+        session_id,
+        user_id,
+        min(timestamp) AS session_start,
+        max(timestamp) AS session_end,
+        dateDiff('second', min(timestamp), max(timestamp)) AS session_duration_seconds,
+        count() AS event_count,
+        device_type,
+        browser,
+        os,
+        location
+    FROM app_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2024-12-31 23:59:59')}}
+        {% if defined(user_id) %} AND user_id = {{String(user_id)}} {% end %}
+    GROUP BY
+        session_id,
+        user_id,
+        device_type,
+        browser,
+        os,
+        location
+    HAVING session_duration_seconds > 0
+    ORDER BY session_start DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

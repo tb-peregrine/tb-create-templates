@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    Get inventory summary by warehouse
+
+NODE warehouse_summary_node
+SQL >
+    %
+    SELECT 
+        warehouse_id,
+        count(distinct product_id) as unique_products,
+        sum(case when operation = 'add' then quantity
+                 when operation = 'remove' then -quantity
+                 else 0 end) as total_items,
+        sum(case when operation = 'add' then quantity * unit_price
+                 when operation = 'remove' then -quantity * unit_price
+                 else 0 end) as inventory_value
+    FROM inventory
+    WHERE 1=1
+    {% if defined(warehouse_id) %}
+        AND warehouse_id = {{String(warehouse_id, '')}}
+    {% end %}
+    GROUP BY warehouse_id
+    ORDER BY warehouse_id
+
+TYPE endpoint
+        

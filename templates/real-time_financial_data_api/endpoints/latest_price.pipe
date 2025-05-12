@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Returns the latest price for a given stock symbol.
+
+NODE latest_price_node
+SQL >
+    %
+    SELECT
+        symbol,
+        argMax(price, timestamp) AS latest_price,
+        max(timestamp) AS last_updated
+    FROM stock_trades
+    WHERE symbol = {{String(stock_symbol, 'AAPL')}}
+    GROUP BY symbol
+
+TYPE endpoint
+        

@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Tracks ad impressions in real-time, including ad ID, platform, timestamp, and user information
+
+SCHEMA >
+    `impression_id` String `json:$.impression_id`,
+    `ad_id` String `json:$.ad_id`,
+    `campaign_id` String `json:$.campaign_id`,
+    `platform` String `json:$.platform`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `user_id` String `json:$.user_id`,
+    `country` String `json:$.country`,
+    `device_type` String `json:$.device_type`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, ad_id, campaign_id"
+        

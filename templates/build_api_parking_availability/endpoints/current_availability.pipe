@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Endpoint to get current availability of parking spaces
+
+NODE current_availability_node
+SQL >
+    %
+    SELECT 
+        parking_lot_id,
+        location,
+        total_spaces,
+        available_spaces,
+        occupied_spaces,
+        timestamp
+    FROM parking_spaces
+    WHERE 
+        {% if defined(parking_lot_id) %}
+        parking_lot_id = {{String(parking_lot_id, '')}}
+        {% else %}
+        1=1
+        {% end %}
+        {% if defined(location) %}
+        AND location = {{String(location, '')}}
+        {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    API endpoint that provides an overview of ad performance metrics including impressions and clicks by ad ID
+
+NODE ad_performance_overview_node
+SQL >
+    %
+    SELECT 
+        ai.ad_id,
+        ai.campaign_id,
+        count() AS impressions,
+        countIf(ac.click_id IS NOT NULL) AS clicks,
+        round(countIf(ac.click_id IS NOT NULL) / count() * 100, 2) AS ctr
+    FROM ad_impressions AS ai
+    LEFT JOIN ad_clicks AS ac ON ai.impression_id = ac.impression_id
+    WHERE ai.timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(campaign_id) %}
+        AND ai.campaign_id = {{String(campaign_id, '')}}
+    {% end %}
+    {% if defined(ad_id) %}
+        AND ai.ad_id = {{String(ad_id, '')}}
+    {% end %}
+    GROUP BY ai.ad_id, ai.campaign_id
+    ORDER BY impressions DESC
+    LIMIT {{UInt16(limit, 100)}}
+
+TYPE endpoint
+        

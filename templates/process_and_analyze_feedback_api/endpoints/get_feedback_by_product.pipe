@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Endpoint to retrieve feedback for a specific product with optional filtering by rating and date range
+
+NODE get_feedback_by_product_node
+SQL >
+    %
+    SELECT 
+        feedback_id,
+        customer_id,
+        product_id,
+        rating,
+        feedback_text,
+        sentiment,
+        tags,
+        timestamp
+    FROM feedback_events
+    WHERE product_id = {{String(product_id, '')}}
+    {% if defined(min_rating) %}
+        AND rating >= {{Int(min_rating, 1)}}
+    {% end %}
+    {% if defined(max_rating) %}
+        AND rating <= {{Int(max_rating, 5)}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

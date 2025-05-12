@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    Product catalog with product details.
+
+SCHEMA >
+    `product_id` String `json:$.product_id`,
+    `product_name` String `json:$.product_name`,
+    `category` String `json:$.category`,
+    `unit_price` Float32 `json:$.unit_price`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "category"
+ENGINE_SORTING_KEY "product_id"
+        

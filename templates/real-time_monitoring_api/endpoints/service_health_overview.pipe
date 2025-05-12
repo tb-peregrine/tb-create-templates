@@ -1,0 +1,30 @@
+DESCRIPTION >
+    API to get a high-level overview of service health
+
+NODE service_health_overview_node
+SQL >
+    %
+    SELECT 
+        service_name,
+        sum(request_count) AS total_requests,
+        sum(error_count) AS total_errors,
+        round(sum(error_count) / sum(request_count) * 100, 2) AS error_rate,
+        avg(response_time_ms) AS avg_response_time,
+        min(response_time_ms) AS min_response_time,
+        max(response_time_ms) AS max_response_time
+    FROM service_health_metrics
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 1 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-01-02 00:00:00')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    GROUP BY service_name
+    ORDER BY error_rate DESC
+
+TYPE endpoint

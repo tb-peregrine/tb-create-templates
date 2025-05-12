@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Returns search activity statistics for a specific user or session
+
+NODE user_search_activity_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        session_id,
+        min(timestamp) AS first_search,
+        max(timestamp) AS last_search,
+        count() AS search_count,
+        countIf(clicked_result = 1) AS click_count,
+        round(countIf(clicked_result = 1) / count() * 100, 2) AS click_through_rate,
+        arrayStringConcat(arrayDistinct(groupArray(query)), ', ') AS search_queries
+    FROM search_events
+    WHERE 1=1
+    {% if defined(user_id) %}
+    AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(session_id) %}
+    AND session_id = {{String(session_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY user_id, session_id
+    ORDER BY last_search DESC
+
+TYPE endpoint
+        

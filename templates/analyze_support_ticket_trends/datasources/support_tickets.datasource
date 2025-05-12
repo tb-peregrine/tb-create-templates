@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Support tickets data for trend analysis
+
+SCHEMA >
+    `ticket_id` String `json:$.ticket_id`,
+    `customer_id` String `json:$.customer_id`,
+    `category` String `json:$.category`,
+    `subject` String `json:$.subject`,
+    `description` String `json:$.description`,
+    `priority` String `json:$.priority`,
+    `status` String `json:$.status`,
+    `created_at` DateTime `json:$.created_at`,
+    `resolved_at` DateTime `json:$.resolved_at`,
+    `assigned_to` String `json:$.assigned_to`,
+    `resolution_time_mins` Int32 `json:$.resolution_time_mins`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(created_at)"
+ENGINE_SORTING_KEY "created_at, category, priority, status"
+        

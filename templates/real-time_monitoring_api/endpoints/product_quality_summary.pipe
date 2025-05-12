@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Provides quality metrics summary by product with time period filtering
+
+NODE product_quality_summary_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        count() as total_measurements,
+        countIf(is_pass = 1) as passed_measurements,
+        round(countIf(is_pass = 1) / count() * 100, 2) as pass_rate,
+        avg(value) as avg_value,
+        min(value) as min_value,
+        max(value) as max_value
+    FROM quality_metrics
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id, '')}}
+    {% end %}
+    GROUP BY product_id
+    ORDER BY pass_rate ASC
+
+TYPE endpoint
+        

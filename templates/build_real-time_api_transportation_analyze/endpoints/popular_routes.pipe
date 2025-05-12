@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Get most popular routes by passenger count
+
+NODE popular_routes_node
+SQL >
+    %
+    SELECT 
+        route_id,
+        route_name,
+        vehicle_type,
+        sum(passenger_count) as total_passengers,
+        count() as trip_count
+    FROM transportation_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(vehicle_type) %}
+        AND vehicle_type = {{String(vehicle_type, 'bus')}}
+        {% end %}
+    GROUP BY route_id, route_name, vehicle_type
+    ORDER BY total_passengers DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint
+        

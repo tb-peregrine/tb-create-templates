@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Provides time-based metrics for A/B tests to analyze performance trends
+
+NODE test_timeseries_node
+SQL >
+    %
+    SELECT 
+        test_id,
+        variant,
+        toStartOfHour(timestamp) AS hour,
+        count(DISTINCT user_id) AS users,
+        countIf(conversion = 1) AS conversions,
+        round(countIf(conversion = 1) / count(DISTINCT user_id), 4) AS conversion_rate,
+        sum(revenue) AS revenue
+    FROM ab_test_events
+    WHERE 1=1
+        {% if defined(test_id) %}
+        AND test_id = {{String(test_id, '')}}
+        {% end %}
+        {% if defined(variant) %}
+        AND variant = {{String(variant, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(interval) %}
+        GROUP BY test_id, variant, toStartOf{{String(interval, 'Hour')}}(timestamp) AS hour
+        {% else %}
+        GROUP BY test_id, variant, hour
+        {% end %}
+    ORDER BY test_id, variant, hour
+
+TYPE endpoint
+        

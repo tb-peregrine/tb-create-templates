@@ -1,0 +1,12 @@
+
+DESCRIPTION >
+    Endpoint to retrieve the number of events by campaign.
+
+NODE events_by_campaign_node
+SQL >
+    SELECT campaign, count() AS event_count
+    FROM marketing_events
+    GROUP BY campaign
+
+TYPE endpoint
+        

@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    Provides active user counts over time periods with filtering options
+
+NODE active_users_node
+SQL >
+    %
+    SELECT
+        toStartOfInterval(timestamp, INTERVAL {{String(interval, '1 day')}}) AS time_period,
+        count(DISTINCT user_id) AS active_users,
+        device_type,
+        browser,
+        os
+    FROM app_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2024-12-31 23:59:59')}}
+        {% if defined(event_type) %} AND event_type = {{String(event_type)}} {% end %}
+        {% if defined(feature) %} AND feature = {{String(feature)}} {% end %}
+    GROUP BY
+        time_period,
+        device_type,
+        browser,
+        os
+    ORDER BY time_period DESC
+
+TYPE endpoint
+        

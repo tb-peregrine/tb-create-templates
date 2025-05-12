@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Raw shipment data ingested from a source like Kafka or S3.
+
+SCHEMA >
+    `shipment_id` String `json:$.shipment_id`,
+    `product_id` String `json:$.product_id`,
+    `origin_location` String `json:$.origin_location`,
+    `destination_location` String `json:$.destination_location`,
+    `quantity` UInt32 `json:$.quantity`,
+    `shipment_timestamp` DateTime `json:$.shipment_timestamp`,
+    `estimated_delivery_timestamp` DateTime `json:$.estimated_delivery_timestamp`,
+    `actual_delivery_timestamp` DateTime `json:$.actual_delivery_timestamp`,
+    `status` String `json:$.status`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(shipment_timestamp)"
+ENGINE_SORTING_KEY "shipment_timestamp, product_id, origin_location, destination_location"
+        

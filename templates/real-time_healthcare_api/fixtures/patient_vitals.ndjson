@@ -1,0 +1,10 @@
+{"patient_id": "P42545", "timestamp": "2025-04-17 15:55:15", "heart_rate": 85, "blood_pressure_systolic": 135, "blood_pressure_diastolic": 85, "oxygen_saturation": 95, "temperature": 355962291.5}
+{"patient_id": "P42749", "timestamp": "2025-04-23 03:55:15", "heart_rate": 109, "blood_pressure_systolic": 159, "blood_pressure_diastolic": 89, "oxygen_saturation": 99, "temperature": 188859311.9}
+{"patient_id": "P85757", "timestamp": "2025-05-05 03:55:15", "heart_rate": 97, "blood_pressure_systolic": 147, "blood_pressure_diastolic": 97, "oxygen_saturation": 97, "temperature": 14137612.7}
+{"patient_id": "P73647", "timestamp": "2025-04-24 17:55:15", "heart_rate": 107, "blood_pressure_systolic": 157, "blood_pressure_diastolic": 67, "oxygen_saturation": 97, "temperature": 78882402.7}
+{"patient_id": "P56003", "timestamp": "2025-04-28 21:55:15", "heart_rate": 103, "blood_pressure_systolic": 153, "blood_pressure_diastolic": 63, "oxygen_saturation": 93, "temperature": 325174637.3}
+{"patient_id": "P54379", "timestamp": "2025-05-03 13:55:15", "heart_rate": 99, "blood_pressure_systolic": 149, "blood_pressure_diastolic": 79, "oxygen_saturation": 99, "temperature": 190804473.9}
+{"patient_id": "P57712", "timestamp": "2025-04-30 16:55:15", "heart_rate": 72, "blood_pressure_systolic": 122, "blood_pressure_diastolic": 92, "oxygen_saturation": 92, "temperature": 10300807.2}
+{"patient_id": "P44625", "timestamp": "2025-05-06 23:55:15", "heart_rate": 65, "blood_pressure_systolic": 115, "blood_pressure_diastolic": 85, "oxygen_saturation": 95, "temperature": 181389500.5}
+{"patient_id": "P68212", "timestamp": "2025-04-30 04:55:15", "heart_rate": 72, "blood_pressure_systolic": 122, "blood_pressure_diastolic": 72, "oxygen_saturation": 92, "temperature": 223970857.2}
+{"patient_id": "P10301", "timestamp": "2025-05-11 03:55:15", "heart_rate": 61, "blood_pressure_systolic": 111, "blood_pressure_diastolic": 81, "oxygen_saturation": 91, "temperature": 108711067.1}

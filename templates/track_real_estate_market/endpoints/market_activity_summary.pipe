@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    Provides a summary of market activity including listing counts and average metrics
+
+NODE market_activity_summary_node
+SQL >
+    %
+    SELECT 
+        {% if defined(group_by) and group_by == 'property_type' %}
+            property_type AS dimension,
+        {% elif defined(group_by) and group_by == 'state' %}
+            state AS dimension,
+        {% else %}
+            city AS dimension,
+        {% end %}
+        COUNT(*) AS total_listings,
+        COUNT(CASE WHEN status = 'active' THEN 1 END) AS active_listings,
+        COUNT(CASE WHEN status = 'sold' THEN 1 END) AS sold_listings,
+        AVG(price) AS avg_price,
+        AVG(days_on_market) AS avg_days_on_market,
+        AVG(sqft) AS avg_sqft,
+        AVG(price / sqft) AS avg_price_per_sqft
+    FROM property_listings
+    WHERE 1=1
+    {% if defined(state) %}
+        AND state = {{String(state, 'CA')}}
+    {% end %}
+    {% if defined(city) %}
+        AND city = {{String(city, 'San Francisco')}}
+    {% end %}
+    {% if defined(property_type) %}
+        AND property_type = {{String(property_type, 'Single Family')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND listing_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND listing_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY dimension
+    ORDER BY total_listings DESC
+
+TYPE endpoint
+        

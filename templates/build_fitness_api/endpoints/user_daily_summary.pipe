@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Summarizes fitness metrics by user and day
+
+NODE user_daily_metrics
+SQL >
+    %
+    SELECT
+        user_id,
+        toDate(timestamp) as date,
+        sum(steps) as total_steps,
+        avg(heart_rate) as avg_heart_rate,
+        sum(calories_burned) as total_calories,
+        sum(distance_meters) as total_distance,
+        sum(sleep_minutes) as total_sleep,
+        sum(active_minutes) as total_active
+    FROM fitness_data
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND date >= {{Date(start_date, '2023-01-01')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND date <= {{Date(end_date, '2023-12-31')}}
+    {% end %}
+    GROUP BY user_id, date
+    ORDER BY user_id, date DESC
+
+TYPE endpoint
+        

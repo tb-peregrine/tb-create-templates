@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Returns summary statistics for a specific auction including highest bid, total bids, and unique bidders
+
+NODE auction_summary_node
+SQL >
+    %
+    SELECT 
+        auction_id,
+        max(bid_amount) AS highest_bid,
+        count() AS total_bids,
+        uniq(bidder_id) AS unique_bidders,
+        max(timestamp) AS last_bid_time
+    FROM auction_bids
+    WHERE auction_id = {{String(auction_id, '')}}
+    {%if defined(status)%}
+        AND status = {{String(status, 'active')}}
+    {%end%}
+    GROUP BY auction_id
+
+TYPE endpoint
+        

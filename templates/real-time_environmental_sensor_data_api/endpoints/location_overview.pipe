@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Provides an overview of environmental conditions by location
+
+NODE location_overview_node
+SQL >
+    %
+    WITH latest_readings AS (
+        SELECT
+            sensor_id,
+            location,
+            reading_type,
+            reading_value,
+            timestamp,
+            battery_level,
+            row_number() OVER (PARTITION BY sensor_id, location, reading_type ORDER BY timestamp DESC) as rn
+        FROM sensor_readings
+        WHERE 
+            {% if defined(location) %}
+            location = {{String(location, '')}}
+            {% else %}
+            1=1
+            {% end %}
+            AND timestamp >= now() - interval {{Int(time_window_hours, 24)}} hour
+    )
+    SELECT
+        location,
+        countDistinct(sensor_id) AS active_sensors,
+        countIf(battery_level < {{Float32(battery_threshold, 20.0)}}) AS low_battery_sensors,
+        groupArray((reading_type, toString(reading_value))) AS latest_readings
+    FROM latest_readings
+    WHERE rn = 1
+    GROUP BY location
+    ORDER BY location
+
+TYPE endpoint
+        

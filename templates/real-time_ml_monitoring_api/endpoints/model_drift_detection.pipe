@@ -1,0 +1,64 @@
+
+DESCRIPTION >
+    Detects potential model drift by comparing recent performance metrics with historical averages
+
+NODE model_drift_detection_node
+SQL >
+    %
+    WITH 
+    recent_metrics AS (
+        SELECT 
+            model_id,
+            model_version,
+            environment,
+            avg(abs(predicted_value - actual_value)) as recent_mae,
+            count() as recent_count
+        FROM ml_model_predictions
+        WHERE timestamp >= now() - interval {{Int(recent_window_hours, 6)}} hour
+            {% if defined(model_id) %}
+            AND model_id = {{String(model_id, 'default_model')}}
+            {% end %}
+            {% if defined(environment) %}
+            AND environment = {{String(environment, 'production')}}
+            {% end %}
+        GROUP BY model_id, model_version, environment
+    ),
+    historical_metrics AS (
+        SELECT 
+            model_id,
+            model_version,
+            environment,
+            avg(abs(predicted_value - actual_value)) as historical_mae,
+            count() as historical_count
+        FROM ml_model_predictions
+        WHERE timestamp >= now() - interval {{Int(historical_window_hours, 168)}} hour
+            AND timestamp < now() - interval {{Int(recent_window_hours, 6)}} hour
+            {% if defined(model_id) %}
+            AND model_id = {{String(model_id, 'default_model')}}
+            {% end %}
+            {% if defined(environment) %}
+            AND environment = {{String(environment, 'production')}}
+            {% end %}
+        GROUP BY model_id, model_version, environment
+    )
+    
+    SELECT 
+        r.model_id,
+        r.model_version,
+        r.environment,
+        r.recent_mae,
+        h.historical_mae,
+        (r.recent_mae - h.historical_mae) / h.historical_mae as drift_percentage,
+        r.recent_count,
+        h.historical_count,
+        now() as analysis_timestamp
+    FROM recent_metrics r
+    LEFT JOIN historical_metrics h 
+    ON r.model_id = h.model_id 
+        AND r.model_version = h.model_version 
+        AND r.environment = h.environment
+    WHERE h.historical_mae > 0
+    ORDER BY abs(drift_percentage) DESC
+
+TYPE endpoint
+        

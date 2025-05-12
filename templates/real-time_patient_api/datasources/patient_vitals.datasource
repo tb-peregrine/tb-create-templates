@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Real-time patient vital signs measurements including heart rate, blood pressure, temperature, and oxygen levels
+
+SCHEMA >
+    `patient_id` String `json:$.patient_id`,
+    `device_id` String `json:$.device_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `heart_rate` Float32 `json:$.heart_rate`,
+    `systolic_bp` Float32 `json:$.systolic_bp`,
+    `diastolic_bp` Float32 `json:$.diastolic_bp`,
+    `temperature` Float32 `json:$.temperature`,
+    `oxygen_level` Float32 `json:$.oxygen_level`,
+    `department` String `json:$.department`,
+    `is_critical` UInt8 `json:$.is_critical`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "patient_id, timestamp"
+        

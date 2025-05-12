@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Endpoint to get a list of late shipments.
+
+NODE late_shipments_node
+SQL >
+    SELECT
+        shipment_id,
+        product_id,
+        origin_location,
+        destination_location,
+        estimated_delivery_timestamp,
+        actual_delivery_timestamp
+    FROM raw_shipments
+    WHERE actual_delivery_timestamp > estimated_delivery_timestamp
+
+TYPE endpoint
+        

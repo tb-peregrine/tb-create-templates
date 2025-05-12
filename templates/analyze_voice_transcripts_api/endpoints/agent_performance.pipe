@@ -1,0 +1,55 @@
+
+DESCRIPTION >
+    Analyzes agent performance based on call sentiment
+
+NODE agent_performance_node
+SQL >
+    %
+    SELECT 
+        agent_id,
+        count(*) AS total_calls,
+        countIf(multiIf(
+            position(lowerUTF8(transcript), 'happy') > 0 OR 
+            position(lowerUTF8(transcript), 'great') > 0 OR 
+            position(lowerUTF8(transcript), 'excellent') > 0 OR 
+            position(lowerUTF8(transcript), 'thank you') > 0 OR 
+            position(lowerUTF8(transcript), 'appreciate') > 0, 'positive',
+            
+            position(lowerUTF8(transcript), 'unhappy') > 0 OR 
+            position(lowerUTF8(transcript), 'angry') > 0 OR 
+            position(lowerUTF8(transcript), 'terrible') > 0 OR 
+            position(lowerUTF8(transcript), 'upset') > 0 OR 
+            position(lowerUTF8(transcript), 'frustrated') > 0, 'negative',
+            
+            'neutral'
+        ) = 'positive') AS positive_calls,
+        round(countIf(multiIf(
+            position(lowerUTF8(transcript), 'happy') > 0 OR 
+            position(lowerUTF8(transcript), 'great') > 0 OR 
+            position(lowerUTF8(transcript), 'excellent') > 0 OR 
+            position(lowerUTF8(transcript), 'thank you') > 0 OR 
+            position(lowerUTF8(transcript), 'appreciate') > 0, 'positive',
+            
+            position(lowerUTF8(transcript), 'unhappy') > 0 OR 
+            position(lowerUTF8(transcript), 'angry') > 0 OR 
+            position(lowerUTF8(transcript), 'terrible') > 0 OR 
+            position(lowerUTF8(transcript), 'upset') > 0 OR 
+            position(lowerUTF8(transcript), 'frustrated') > 0, 'negative',
+            
+            'neutral'
+        ) = 'positive') / count(*) * 100, 2) AS positive_percentage,
+        avg(duration_seconds) AS avg_call_duration
+    FROM voice_call_transcripts
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY agent_id
+    ORDER BY positive_percentage DESC
+    LIMIT {{Int32(limit, 50)}}
+
+TYPE endpoint
+        

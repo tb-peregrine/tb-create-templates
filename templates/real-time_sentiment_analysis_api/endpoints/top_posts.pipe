@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    Returns top posts based on engagement and sentiment with customizable filters
+
+NODE top_posts_node
+SQL >
+    %
+    SELECT 
+        post_id,
+        platform,
+        content,
+        user_id,
+        timestamp,
+        likes,
+        shares,
+        sentiment_score,
+        tags
+    FROM social_media_posts
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(platform_filter) %}
+        AND platform = {{String(platform_filter, 'all')}}
+    {% end %}
+    {% if defined(sentiment_min) %}
+        AND sentiment_score >= {{Float32(sentiment_min, -1.0)}}
+    {% end %}
+    {% if defined(sentiment_max) %}
+        AND sentiment_score <= {{Float32(sentiment_max, 1.0)}}
+    {% end %}
+    ORDER BY 
+    {% if defined(sort_by) and String(sort_by, 'engagement') == 'engagement' %}
+        (likes + shares) DESC
+    {% else %}
+        sentiment_score DESC
+    {% end %}
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint
+        

@@ -1,0 +1,36 @@
+
+DESCRIPTION >
+    API endpoint to compare video streaming performance across different CDNs
+
+NODE video_performance_by_cdn_node
+SQL >
+    %
+    SELECT 
+        cdn,
+        quality_level,
+        count() AS view_count,
+        round(avg(duration), 2) AS avg_duration,
+        round(avg(buffer_count), 2) AS avg_buffer_count,
+        countIf(event_type = 'error') AS error_count,
+        countIf(event_type = 'complete') / countIf(event_type = 'play') AS completion_rate
+    FROM video_streaming_events
+    WHERE 
+        timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% if defined(cdn) %}
+        AND cdn = {{String(cdn, '')}}
+        {% end %}
+        {% if defined(quality_level) %}
+        AND quality_level = {{String(quality_level, '')}}
+        {% end %}
+    GROUP BY cdn, quality_level
+    ORDER BY 
+        {% if defined(sort_by) %}
+            {{String(sort_by, 'view_count')}}
+        {% else %}
+            view_count
+        {% end %}
+        DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

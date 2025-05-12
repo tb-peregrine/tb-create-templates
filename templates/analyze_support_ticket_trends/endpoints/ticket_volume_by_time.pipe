@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Track support ticket volume over time with filtering by category, priority, and status
+
+NODE ticket_volume_node
+SQL >
+    %
+    SELECT
+        toStartOfDay(created_at) AS date,
+        category,
+        priority,
+        status,
+        count() AS ticket_count
+    FROM support_tickets
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND created_at >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND created_at >= now() - interval 30 day
+    {% end %}
+    {% if defined(end_date) %}
+        AND created_at <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND created_at <= now()
+    {% end %}
+    {% if defined(category) %}
+        AND category = {{String(category, 'all')}}
+    {% end %}
+    {% if defined(priority) %}
+        AND priority = {{String(priority, 'all')}}
+    {% end %}
+    {% if defined(status) %}
+        AND status = {{String(status, 'all')}}
+    {% end %}
+    GROUP BY date, category, priority, status
+    ORDER BY date ASC
+
+TYPE endpoint
+        

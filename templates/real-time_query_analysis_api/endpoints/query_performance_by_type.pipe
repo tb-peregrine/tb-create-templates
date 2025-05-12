@@ -1,0 +1,30 @@
+
+DESCRIPTION >
+    Analyzes query performance metrics grouped by query type
+
+NODE query_performance_by_type_node
+SQL >
+    %
+    SELECT 
+        query_type,
+        count() as query_count,
+        avg(duration_ms) as avg_duration_ms,
+        max(duration_ms) as max_duration_ms,
+        min(duration_ms) as min_duration_ms,
+        avg(rows_read) as avg_rows_read,
+        avg(bytes_read) as avg_bytes_read,
+        avg(memory_usage) as avg_memory_usage
+    FROM query_logs
+    WHERE 
+        start_time BETWEEN {{DateTime(start_time, '2023-01-01 00:00:00')}} AND {{DateTime(end_time, '2023-12-31 23:59:59')}}
+        {% if defined(database) %}
+        AND database = {{String(database, 'production')}}
+        {% end %}
+        {% if defined(status) %}
+        AND status = {{String(status, 'completed')}}
+        {% end %}
+    GROUP BY query_type
+    ORDER BY avg_duration_ms DESC
+
+TYPE endpoint
+        

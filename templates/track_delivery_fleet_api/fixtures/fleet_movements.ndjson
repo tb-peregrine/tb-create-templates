@@ -1,0 +1,10 @@
+{"event_time": "2025-05-12 15:42:38", "vehicle_id": "VEH-65", "latitude": 37.656458965, "longitude": -87.656458965, "speed": 60, "status": "driving"}
+{"event_time": "2025-05-11 22:22:02", "vehicle_id": "VEH-1", "latitude": 36.688582201, "longitude": -86.688582201, "speed": 66, "status": "driving"}
+{"event_time": "2025-05-11 16:59:10", "vehicle_id": "VEH-73", "latitude": 38.075839973, "longitude": -88.075839973, "speed": 8, "status": "driving"}
+{"event_time": "2025-05-11 18:25:45", "vehicle_id": "VEH-78", "latitude": 35.321748378, "longitude": -85.321748378, "speed": 33, "status": "delivering"}
+{"event_time": "2025-05-12 13:41:30", "vehicle_id": "VEH-33", "latitude": 38.631490233, "longitude": -88.631490233, "speed": 68, "status": "driving"}
+{"event_time": "2025-05-11 17:18:03", "vehicle_id": "VEH-40", "latitude": 35.40011724, "longitude": -85.40011724, "speed": 45, "status": "idle"}
+{"event_time": "2025-05-12 11:55:18", "vehicle_id": "VEH-5", "latitude": 37.036379805, "longitude": -87.036379805, "speed": 10, "status": "driving"}
+{"event_time": "2025-05-12 04:34:01", "vehicle_id": "VEH-82", "latitude": 39.062745482, "longitude": -89.062745482, "speed": 17, "status": "delivering"}
+{"event_time": "2025-05-12 01:02:02", "vehicle_id": "VEH-1", "latitude": 35.610387001, "longitude": -85.610387001, "speed": 26, "status": "driving"}
+{"event_time": "2025-05-11 23:12:32", "vehicle_id": "VEH-71", "latitude": 39.184329571, "longitude": -89.184329571, "speed": 56, "status": "returning"}

@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Get analytics for charging stations including usage, revenue and energy metrics
+
+NODE station_analytics_node
+SQL >
+    %
+    SELECT
+        station_id,
+        count() AS total_sessions,
+        sum(energy_consumed) AS total_energy,
+        avg(energy_consumed) AS avg_energy_per_session,
+        sum(amount_paid) AS total_revenue,
+        avg(amount_paid) AS avg_revenue_per_session,
+        avg(end_time - start_time) AS avg_session_duration_seconds
+    FROM charging_sessions
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND start_time >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND start_time <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(location) %}
+        AND location = {{String(location, '')}}
+    {% end %}
+    GROUP BY station_id
+    ORDER BY total_sessions DESC
+    LIMIT {{Int32(limit, 50)}}
+
+TYPE endpoint
+        

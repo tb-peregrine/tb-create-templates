@@ -1,0 +1,44 @@
+
+DESCRIPTION >
+    Provides session-level statistics for user behavior
+
+NODE user_session_stats_node
+SQL >
+    %
+    SELECT
+        session_id,
+        any(user_id) as user_id,
+        min(timestamp) as session_start,
+        max(timestamp) as session_end,
+        dateDiff('second', min(timestamp), max(timestamp)) as session_duration_seconds,
+        count() as event_count,
+        countIf(event_type = 'page_view') as page_view_count,
+        countIf(event_type = 'click') as click_count,
+        any(device_type) as device_type,
+        any(browser) as browser,
+        any(country) as country
+    FROM user_events
+    WHERE 
+        {% if defined(session_id) %}
+        session_id = {{String(session_id, '')}}
+        {% else %}
+        1=1
+        {% end %}
+        {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    GROUP BY session_id
+    ORDER BY session_start DESC
+    {% if defined(limit) %}
+    LIMIT {{Int32(limit, 100)}}
+    {% else %}
+    LIMIT 100
+    {% end %}
+
+TYPE endpoint

@@ -1,0 +1,10 @@
+{"user_id": "user_23", "device_id": "device_3", "timestamp": "2025-04-27 15:52:24", "steps": 522, "heart_rate": 82, "calories_burned": 172.2, "distance_meters": 552.2, "sleep_minutes": 122, "active_minutes": 2}
+{"user_id": "user_51", "device_id": "device_11", "timestamp": "2025-04-28 03:52:24", "steps": 1150, "heart_rate": 110, "calories_burned": 135, "distance_meters": 1115, "sleep_minutes": 110, "active_minutes": 110}
+{"user_id": "user_57", "device_id": "device_17", "timestamp": "2025-05-11 05:52:24", "steps": 9556, "heart_rate": 116, "calories_burned": 175.6, "distance_meters": 1455.6, "sleep_minutes": 276, "active_minutes": 36}
+{"user_id": "user_79", "device_id": "device_19", "timestamp": "2025-05-11 23:52:24", "steps": 9378, "heart_rate": 138, "calories_burned": 137.8, "distance_meters": 937.8, "sleep_minutes": 18, "active_minutes": 18}
+{"user_id": "user_83", "device_id": "device_3", "timestamp": "2025-05-03 11:52:24", "steps": 9582, "heart_rate": 142, "calories_burned": 158.2, "distance_meters": 958.2, "sleep_minutes": 462, "active_minutes": 102}
+{"user_id": "user_52", "device_id": "device_12", "timestamp": "2025-04-24 18:52:24", "steps": 2751, "heart_rate": 111, "calories_burned": 125.1, "distance_meters": 775.1, "sleep_minutes": 431, "active_minutes": 71}
+{"user_id": "user_69", "device_id": "device_9", "timestamp": "2025-05-08 05:52:24", "steps": 1068, "heart_rate": 128, "calories_burned": 146.8, "distance_meters": 106.8, "sleep_minutes": 108, "active_minutes": 108}
+{"user_id": "user_52", "device_id": "device_12", "timestamp": "2025-04-27 06:52:24", "steps": 4451, "heart_rate": 111, "calories_burned": 155.1, "distance_meters": 445.1, "sleep_minutes": 131, "active_minutes": 11}
+{"user_id": "user_6", "device_id": "device_6", "timestamp": "2025-05-04 04:52:24", "steps": 5005, "heart_rate": 65, "calories_burned": 120.5, "distance_meters": 500.5, "sleep_minutes": 205, "active_minutes": 85}
+{"user_id": "user_71", "device_id": "device_11", "timestamp": "2025-05-03 03:52:24", "steps": 5670, "heart_rate": 130, "calories_burned": 177, "distance_meters": 1067, "sleep_minutes": 470, "active_minutes": 110}

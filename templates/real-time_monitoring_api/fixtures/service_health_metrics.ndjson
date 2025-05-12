@@ -1,0 +1,10 @@
+{"timestamp": "2025-05-12 08:23:24", "service_name": "user-service", "endpoint": "/register", "response_time_ms": 407, "status_code": 500, "error_count": 7, "request_count": 67}
+{"timestamp": "2025-05-12 11:50:22", "service_name": "notification-service", "endpoint": "/settings", "response_time_ms": 189, "status_code": 503, "error_count": 9, "request_count": 49}
+{"timestamp": "2025-05-12 12:19:18", "service_name": "payment-service", "endpoint": "/notifications", "response_time_ms": 53, "status_code": 400, "error_count": 3, "request_count": 13}
+{"timestamp": "2025-05-11 22:36:37", "service_name": "notification-service", "endpoint": "/health", "response_time_ms": 414, "status_code": 401, "error_count": 4, "request_count": 74}
+{"timestamp": "2025-05-12 09:38:13", "service_name": "payment-service", "endpoint": "/profile", "response_time_ms": 318, "status_code": 502, "error_count": 8, "request_count": 78}
+{"timestamp": "2025-05-11 21:34:26", "service_name": "api-gateway", "endpoint": "/metrics", "response_time_ms": 245, "status_code": 403, "error_count": 5, "request_count": 105}
+{"timestamp": "2025-05-12 10:01:59", "service_name": "user-service", "endpoint": "/payments", "response_time_ms": 292, "status_code": 204, "error_count": 2, "request_count": 52}
+{"timestamp": "2025-05-11 21:04:34", "service_name": "user-service", "endpoint": "/register", "response_time_ms": 237, "status_code": 500, "error_count": 7, "request_count": 97}
+{"timestamp": "2025-05-11 23:22:42", "service_name": "notification-service", "endpoint": "/settings", "response_time_ms": 149, "status_code": 503, "error_count": 9, "request_count": 109}
+{"timestamp": "2025-05-11 19:32:16", "service_name": "api-gateway", "endpoint": "/metrics", "response_time_ms": 175, "status_code": 403, "error_count": 5, "request_count": 35}

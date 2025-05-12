@@ -1,0 +1,10 @@
+{"device_id": "device_51", "sensor_type": "humidity", "reading": 300519135100, "reading_unit": "%", "battery_level": 300519135100, "location": "bedroom", "timestamp": "2025-05-12 09:13:07"}
+{"device_id": "device_38", "sensor_type": "light", "reading": 278437973800, "reading_unit": "lux", "battery_level": 278437973800, "location": "bathroom", "timestamp": "2025-05-12 01:46:40"}
+{"device_id": "device_86", "sensor_type": "humidity", "reading": 185849638600, "reading_unit": "%", "battery_level": 185849638600, "location": "bedroom", "timestamp": "2025-05-12 07:35:52"}
+{"device_id": "device_83", "sensor_type": "light", "reading": 396161368300, "reading_unit": "lux", "battery_level": 396161368300, "location": "bathroom", "timestamp": "2025-05-12 16:20:55"}
+{"device_id": "device_1", "sensor_type": "humidity", "reading": 245269290100, "reading_unit": "%", "battery_level": 245269290100, "location": "bedroom", "timestamp": "2025-05-12 01:00:37"}
+{"device_id": "device_54", "sensor_type": "motion", "reading": 337014005400, "reading_unit": "boolean", "battery_level": 337014005400, "location": "garage", "timestamp": "2025-05-12 10:34:44"}
+{"device_id": "device_92", "sensor_type": "pressure", "reading": 216176639200, "reading_unit": "hPa", "battery_level": 216176639200, "location": "kitchen", "timestamp": "2025-05-12 05:55:46"}
+{"device_id": "device_77", "sensor_type": "pressure", "reading": 212900357700, "reading_unit": "hPa", "battery_level": 212900357700, "location": "kitchen", "timestamp": "2025-05-12 10:42:41"}
+{"device_id": "device_43", "sensor_type": "light", "reading": 209743484300, "reading_unit": "lux", "battery_level": 209743484300, "location": "bathroom", "timestamp": "2025-05-11 19:48:15"}
+{"device_id": "device_86", "sensor_type": "humidity", "reading": 199136968600, "reading_unit": "%", "battery_level": 199136968600, "location": "bedroom", "timestamp": "2025-05-12 10:20:52"}

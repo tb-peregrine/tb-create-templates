@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Get messaging activity patterns broken down by hour of day to analyze peak usage times
+
+NODE hourly_activity_node
+SQL >
+    %
+    SELECT 
+        toHour(timestamp) as hour_of_day,
+        count() as message_count,
+        countIf(message_type = 'text') as text_messages,
+        countIf(message_type = 'image') as image_messages,
+        countIf(message_type = 'video') as video_messages,
+        countIf(message_type = 'audio') as audio_messages,
+        countIf(message_type = 'file') as file_messages,
+        countIf(length(attachments) > 0) as messages_with_attachments
+    FROM messages
+    {% if defined(user_id) %}
+    WHERE sender_id = {{String(user_id, '')}} OR recipient_id = {{String(user_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY hour_of_day
+    ORDER BY hour_of_day
+
+TYPE endpoint
+        

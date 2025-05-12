@@ -1,0 +1,25 @@
+DESCRIPTION >
+    API endpoint that returns the top tracks by number of streams within a given time period
+
+NODE top_tracks_node
+SQL >
+    %
+    SELECT 
+        track_id,
+        count() as stream_count,
+        sum(stream_duration_seconds) as total_duration,
+        avg(stream_duration_seconds) as avg_duration,
+        countIf(completed = 1) as completed_streams
+    FROM music_streams
+    WHERE stream_start_time BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(genre) %}
+    AND genre = {{String(genre, 'pop')}}
+    {% end %}
+    {% if defined(country) %}
+    AND country = {{String(country, 'US')}}
+    {% end %}
+    GROUP BY track_id
+    ORDER BY stream_count DESC
+    LIMIT {{Int32(limit, 10)}}
+
+TYPE endpoint

@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Returns the total volume traded for a given stock symbol today.
+
+NODE volume_today_node
+SQL >
+    %
+    SELECT
+        symbol,
+        sum(volume) AS total_volume
+    FROM stock_trades
+    WHERE symbol = {{String(stock_symbol, 'AAPL')}}
+    AND toDate(timestamp) = toDate(now())
+    GROUP BY symbol
+
+TYPE endpoint
+        

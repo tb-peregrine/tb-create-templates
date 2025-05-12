@@ -1,0 +1,49 @@
+
+DESCRIPTION >
+    Returns key search metrics grouped by time period and optional dimensions
+
+NODE search_metrics_node
+SQL >
+    %
+    SELECT 
+        {% if String(time_bucket, 'day') == 'hour' %}
+            toStartOfHour(timestamp) AS time_bucket,
+        {% elif String(time_bucket, 'day') == 'day' %}
+            toStartOfDay(timestamp) AS time_bucket,
+        {% elif String(time_bucket, 'day') == 'week' %}
+            toStartOfWeek(timestamp) AS time_bucket,
+        {% elif String(time_bucket, 'day') == 'month' %}
+            toStartOfMonth(timestamp) AS time_bucket,
+        {% else %}
+            toStartOfDay(timestamp) AS time_bucket,
+        {% end %}
+        {% if defined(group_by) and String(group_by, '') == 'country' %}
+            country,
+        {% elif defined(group_by) and String(group_by, '') == 'device_type' %}
+            device_type,
+        {% end %}
+        count() AS search_count,
+        countIf(clicked_result = 1) AS click_count,
+        round(countIf(clicked_result = 1) / count() * 100, 2) AS click_through_rate,
+        avg(results_count) AS avg_results_count,
+        count(distinct user_id) AS unique_users,
+        count(distinct session_id) AS unique_sessions
+    FROM search_events
+    WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    GROUP BY 
+        time_bucket
+        {% if defined(group_by) and String(group_by, '') == 'country' %}
+            , country
+        {% elif defined(group_by) and String(group_by, '') == 'device_type' %}
+            , device_type
+        {% end %}
+    ORDER BY 
+        time_bucket
+        {% if defined(group_by) and String(group_by, '') == 'country' %}
+            , country
+        {% elif defined(group_by) and String(group_by, '') == 'device_type' %}
+            , device_type
+        {% end %}
+
+TYPE endpoint
+        

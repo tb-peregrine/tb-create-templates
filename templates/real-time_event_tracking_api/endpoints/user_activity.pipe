@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    Provides user activity data including session and event details
+
+NODE user_activity_node
+SQL >
+    %
+    SELECT
+        user_id,
+        countDistinct(session_id) as session_count,
+        count() as event_count,
+        min(timestamp) as first_seen,
+        max(timestamp) as last_seen,
+        groupArray(10)(event_type) as recent_events,
+        countDistinct(platform) as platforms_used
+    FROM events
+    WHERE user_id = {{String(user_id, '')}}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY user_id
+
+TYPE endpoint
+        

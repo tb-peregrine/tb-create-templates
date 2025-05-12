@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Analyze user activity by looking at interaction patterns and engagement levels
+
+NODE user_activity_query
+SQL >
+    %
+    SELECT 
+        user_id,
+        count() AS total_interactions,
+        countDistinct(interaction_type) AS interaction_diversity,
+        sum(engagement_count) AS total_engagement,
+        max(timestamp) AS last_interaction
+    FROM social_interactions
+    WHERE 
+        timestamp >= {{DateTime(since, '2023-01-01 00:00:00')}}
+        {% if defined(min_engagement) %}
+        AND engagement_count >= {{Int32(min_engagement, 5)}}
+        {% end %}
+    GROUP BY user_id
+    ORDER BY total_interactions DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

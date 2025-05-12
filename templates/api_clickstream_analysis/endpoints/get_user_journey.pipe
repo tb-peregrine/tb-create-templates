@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Retrieve the journey of a specific user across sessions
+
+NODE get_user_journey_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        session_id,
+        timestamp,
+        event_type,
+        page_url,
+        page_title,
+        referrer,
+        device_type,
+        browser
+    FROM clickstream_events
+    WHERE user_id = {{String(user_id, '')}}
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY timestamp ASC
+
+TYPE endpoint
+        

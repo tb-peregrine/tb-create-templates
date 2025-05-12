@@ -1,0 +1,10 @@
+{"bid_id": "bid_9115", "auction_id": "auction_16", "bidder_id": "bidder_16", "bid_amount": 4715, "timestamp": "2025-05-12 09:41:32", "status": "outbid", "item_id": "item_16"}
+{"bid_id": "bid_8568", "auction_id": "auction_9", "bidder_id": "bidder_69", "bid_amount": 1968, "timestamp": "2025-05-11 21:57:19", "status": "pending", "item_id": "item_19"}
+{"bid_id": "bid_6192", "auction_id": "auction_13", "bidder_id": "bidder_93", "bid_amount": 8292, "timestamp": "2025-05-12 16:56:55", "status": "pending", "item_id": "item_43"}
+{"bid_id": "bid_4566", "auction_id": "auction_7", "bidder_id": "bidder_67", "bid_amount": 6266, "timestamp": "2025-05-12 13:30:41", "status": "rejected", "item_id": "item_17"}
+{"bid_id": "bid_3081", "auction_id": "auction_2", "bidder_id": "bidder_82", "bid_amount": 2881, "timestamp": "2025-05-12 11:42:06", "status": "accepted", "item_id": "item_32"}
+{"bid_id": "bid_9841", "auction_id": "auction_2", "bidder_id": "bidder_42", "bid_amount": 3741, "timestamp": "2025-05-12 07:42:46", "status": "accepted", "item_id": "item_42"}
+{"bid_id": "bid_9592", "auction_id": "auction_13", "bidder_id": "bidder_93", "bid_amount": 8492, "timestamp": "2025-05-12 07:53:35", "status": "pending", "item_id": "item_43"}
+{"bid_id": "bid_6943", "auction_id": "auction_4", "bidder_id": "bidder_44", "bid_amount": 6643, "timestamp": "2025-05-12 10:24:24", "status": "outbid", "item_id": "item_44"}
+{"bid_id": "bid_3050", "auction_id": "auction_11", "bidder_id": "bidder_51", "bid_amount": 4950, "timestamp": "2025-05-12 10:22:37", "status": "rejected", "item_id": "item_1"}
+{"bid_id": "bid_3501", "auction_id": "auction_2", "bidder_id": "bidder_2", "bid_amount": 9101, "timestamp": "2025-05-12 03:28:26", "status": "accepted", "item_id": "item_2"}

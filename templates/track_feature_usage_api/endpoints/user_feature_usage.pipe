@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Feature usage details for a specific user
+
+NODE user_feature_usage_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        feature_id,
+        product_version,
+        count() as usage_count,
+        min(timestamp) as first_usage,
+        max(timestamp) as last_usage
+    FROM feature_events
+    WHERE 1=1
+    {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+    {% else %}
+        AND 0=1
+    {% end %}
+    {% if defined(feature_id) %}
+        AND feature_id = {{String(feature_id, '')}}
+    {% end %}
+    {% if defined(product_version) %}
+        AND product_version = {{String(product_version, '')}}
+    {% end %}
+    GROUP BY user_id, feature_id, product_version
+    ORDER BY usage_count DESC
+
+TYPE endpoint
+        

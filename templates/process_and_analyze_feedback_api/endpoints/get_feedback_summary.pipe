@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Endpoint to get aggregated feedback statistics with optional filtering by date range
+
+NODE get_feedback_summary_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        count() AS feedback_count,
+        avg(rating) AS average_rating,
+        countIf(sentiment = 'positive') AS positive_count,
+        countIf(sentiment = 'neutral') AS neutral_count,
+        countIf(sentiment = 'negative') AS negative_count
+    FROM feedback_events
+    WHERE 1=1
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY product_id
+    ORDER BY feedback_count DESC
+    LIMIT {{Int(limit, 100)}}
+
+TYPE endpoint
+        

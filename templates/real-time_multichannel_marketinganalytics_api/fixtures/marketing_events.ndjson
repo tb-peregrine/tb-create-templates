@@ -1,0 +1,10 @@
+{"event_time": "2025-05-12 06:18:15", "channel": "search", "campaign": "holiday_special", "user_id": "user_312", "event_type": "conversion"}
+{"event_time": "2025-05-12 00:09:31", "channel": "social", "campaign": "black_friday", "user_id": "user_236", "event_type": "click"}
+{"event_time": "2025-05-11 17:53:24", "channel": "display", "campaign": "new_product", "user_id": "user_603", "event_type": "purchase"}
+{"event_time": "2025-05-12 14:49:05", "channel": "search", "campaign": "holiday_special", "user_id": "user_462", "event_type": "conversion"}
+{"event_time": "2025-05-11 18:40:18", "channel": "direct", "campaign": "loyalty_program", "user_id": "user_989", "event_type": "signup"}
+{"event_time": "2025-05-12 03:19:49", "channel": "display", "campaign": "new_product", "user_id": "user_618", "event_type": "purchase"}
+{"event_time": "2025-05-12 00:20:48", "channel": "direct", "campaign": "loyalty_program", "user_id": "user_159", "event_type": "signup"}
+{"event_time": "2025-05-11 21:01:25", "channel": "search", "campaign": "holiday_special", "user_id": "user_722", "event_type": "conversion"}
+{"event_time": "2025-05-12 03:31:27", "channel": "email", "campaign": "summer_sale", "user_id": "user_920", "event_type": "impression"}
+{"event_time": "2025-05-11 22:33:22", "channel": "email", "campaign": "summer_sale", "user_id": "user_805", "event_type": "impression"}

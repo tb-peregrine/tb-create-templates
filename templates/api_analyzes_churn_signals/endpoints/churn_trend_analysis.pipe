@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Shows churn trends over time with customizable time granularity
+
+NODE churn_trend_node
+SQL >
+    %
+    SELECT 
+        CASE 
+            WHEN {{String(time_granularity, 'month')}} = 'day' THEN toDate(timestamp)
+            WHEN {{String(time_granularity, 'month')}} = 'week' THEN toMonday(timestamp)
+            WHEN {{String(time_granularity, 'month')}} = 'month' THEN toStartOfMonth(timestamp)
+            WHEN {{String(time_granularity, 'month')}} = 'quarter' THEN toStartOfQuarter(timestamp)
+            ELSE toStartOfMonth(timestamp)
+        END as time_period,
+        count() as total_customers,
+        countIf(churn = 1) as new_churns,
+        round(countIf(churn = 1) / count() * 100, 2) as churn_rate,
+        avg(datediff('day', last_login_date, timestamp)) as avg_days_since_login,
+        countIf(payment_status = 'failed') as payment_failures,
+        sum(customer_service_tickets) as total_tickets
+    FROM customer_data
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(segment_filter) and defined(segment_value) %}
+        AND {{String(segment_filter, 'subscription_plan')}} = {{String(segment_value, '')}}
+    {% end %}
+    GROUP BY time_period
+    ORDER BY time_period
+
+TYPE endpoint
+        

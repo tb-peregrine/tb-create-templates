@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Records all book checkout events at the library
+
+SCHEMA >
+    `checkout_id` String `json:$.checkout_id`,
+    `book_id` String `json:$.book_id`,
+    `book_title` String `json:$.book_title`,
+    `author` String `json:$.author`,
+    `genre` String `json:$.genre`,
+    `user_id` String `json:$.user_id`,
+    `checkout_date` DateTime `json:$.checkout_date`,
+    `due_date` DateTime `json:$.due_date`,
+    `return_date` DateTime `json:$.return_date`,
+    `is_returned` UInt8 `json:$.is_returned`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(checkout_date)"
+ENGINE_SORTING_KEY "checkout_date, book_id, user_id"
+        

@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    This datasource stores energy consumption data for various devices.
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `device_id` String `json:$.device_id`,
+    `energy_consumed` Float64 `json:$.energy_consumed`,
+    `location` String `json:$.location`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, device_id"
+        

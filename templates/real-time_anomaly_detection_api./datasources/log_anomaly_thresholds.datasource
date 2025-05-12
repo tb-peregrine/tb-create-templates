@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    Configurable thresholds for anomaly detection in system logs
+
+SCHEMA >
+    `service` String `json:$.service`,
+    `severity` String `json:$.severity`,
+    `threshold_per_minute` Float64 `json:$.threshold_per_minute`,
+    `active` UInt8 `json:$.active`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "service, severity"
+        

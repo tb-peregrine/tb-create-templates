@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Returns the current location of a specific vehicle.
+
+NODE current_location_node
+SQL >
+    %
+    SELECT
+        vehicle_id,
+        latitude,
+        longitude,
+        event_time,
+        status
+    FROM fleet_movements
+    WHERE vehicle_id = {{String(vehicle_id, 'vehicle_123')}}
+    ORDER BY event_time DESC
+    LIMIT 1
+
+TYPE endpoint
+        

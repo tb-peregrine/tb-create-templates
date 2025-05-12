@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    Provides a chronological timeline of events for a specific user
+
+NODE user_event_timeline_node
+SQL >
+    %
+    SELECT
+        event_id,
+        user_id,
+        session_id,
+        event_type,
+        page_url,
+        referrer,
+        device_type,
+        browser,
+        country,
+        timestamp
+    FROM user_events
+    WHERE user_id = {{String(user_id, '')}}
+        {% if defined(session_id) %}
+        AND session_id = {{String(session_id, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(event_type) %}
+        AND event_type = {{String(event_type, '')}}
+        {% end %}
+    ORDER BY timestamp DESC
+    {% if defined(limit) %}
+    LIMIT {{Int32(limit, 100)}}
+    {% else %}
+    LIMIT 100
+    {% end %}
+
+TYPE endpoint

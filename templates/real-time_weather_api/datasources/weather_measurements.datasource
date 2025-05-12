@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Raw weather measurements from various stations
+
+SCHEMA >
+    `station_id` String `json:$.station_id`,
+    `location` String `json:$.location`,
+    `latitude` Float64 `json:$.latitude`,
+    `longitude` Float64 `json:$.longitude`,
+    `temperature` Float64 `json:$.temperature`,
+    `humidity` Float64 `json:$.humidity`,
+    `pressure` Float64 `json:$.pressure`,
+    `wind_speed` Float64 `json:$.wind_speed`,
+    `wind_direction` Float64 `json:$.wind_direction`,
+    `precipitation` Float64 `json:$.precipitation`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `country` String `json:$.country`,
+    `region` String `json:$.region`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, station_id, region, country"
+        

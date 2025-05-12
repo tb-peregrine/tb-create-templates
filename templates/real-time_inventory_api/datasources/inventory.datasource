@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Real-time inventory data from multiple warehouses
+
+SCHEMA >
+    `product_id` String `json:$.product_id`,
+    `warehouse_id` String `json:$.warehouse_id`,
+    `quantity` Int32 `json:$.quantity`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `operation` String `json:$.operation`,
+    `batch_id` String `json:$.batch_id`,
+    `unit_price` Float32 `json:$.unit_price`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "warehouse_id, product_id, timestamp"
+        

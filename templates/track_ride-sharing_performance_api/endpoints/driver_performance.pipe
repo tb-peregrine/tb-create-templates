@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Track individual driver performance metrics with filtering options
+
+NODE driver_performance_node
+SQL >
+    %
+    SELECT 
+        driver_id,
+        city,
+        COUNT(*) as total_rides,
+        AVG(rating) as avg_rating,
+        AVG(duration_minutes) as avg_duration,
+        SUM(fare_amount) as total_earnings,
+        AVG(distance_km) as avg_distance
+    FROM rides
+    WHERE 1=1
+    {% if defined(driver_id) %}
+        AND driver_id = {{String(driver_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(city) %}
+        AND city = {{String(city, 'New York')}}
+    {% end %}
+    GROUP BY driver_id, city
+    ORDER BY total_rides DESC
+    {% if defined(limit) %}
+        LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint
+        

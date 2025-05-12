@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Provides distribution of errors by service and severity for a specified time range
+
+NODE error_distribution_node
+SQL >
+    %
+    SELECT
+        service,
+        severity,
+        error_code,
+        count() as error_count,
+        min(timestamp) as first_occurrence,
+        max(timestamp) as last_occurrence,
+        uniqExact(server_id) as affected_servers
+    FROM system_logs
+    WHERE 1=1
+    {% if defined(start_time) %}
+        AND timestamp >= {{DateTime(start_time, '2023-01-01 00:00:00')}}
+    {% else %}
+        AND timestamp >= now() - interval 24 hour
+    {% end %}
+    {% if defined(end_time) %}
+        AND timestamp <= {{DateTime(end_time, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    {% if defined(severity) %}
+        AND severity = {{String(severity, 'ERROR')}}
+    {% end %}
+    {% if defined(service) %}
+        AND service = {{String(service, '')}}
+    {% end %}
+    GROUP BY service, severity, error_code
+    ORDER BY error_count DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

@@ -1,0 +1,38 @@
+
+DESCRIPTION >
+    Endpoint to get summary statistics for parking lots
+
+NODE parking_lot_stats_node
+SQL >
+    %
+    SELECT 
+        parking_lot_id,
+        location,
+        max(total_spaces) as total_spaces,
+        avg(available_spaces) as avg_available_spaces,
+        min(available_spaces) as min_available_spaces,
+        max(available_spaces) as max_available_spaces,
+        count() as data_points,
+        min(timestamp) as first_record,
+        max(timestamp) as last_record
+    FROM parking_spaces
+    WHERE 
+        {% if defined(parking_lot_id) %}
+        parking_lot_id = {{String(parking_lot_id, '')}}
+        {% else %}
+        1=1
+        {% end %}
+        {% if defined(location) %}
+        AND location = {{String(location, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    GROUP BY parking_lot_id, location
+    ORDER BY location, parking_lot_id
+
+TYPE endpoint
+        

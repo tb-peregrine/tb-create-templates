@@ -1,0 +1,25 @@
+
+DESCRIPTION >
+    Analyzes tourist movements by their country of origin
+
+NODE tourist_origin_node
+SQL >
+    %
+    SELECT 
+        tourist_origin,
+        count() AS visit_count,
+        uniq(tourist_id) AS tourist_count,
+        uniq(location_id) AS locations_visited,
+        avg(duration_minutes) AS avg_duration,
+        count() / uniq(tourist_id) AS avg_visits_per_tourist
+    FROM tourist_movements
+    WHERE timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(destination_country) %}
+    AND country = {{String(destination_country, 'Spain')}}
+    {% end %}
+    GROUP BY tourist_origin
+    ORDER BY tourist_count DESC
+    LIMIT {{Int32(limit, 20)}}
+
+TYPE endpoint
+        

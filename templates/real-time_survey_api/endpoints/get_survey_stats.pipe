@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    Endpoint to get statistics about survey responses
+
+NODE get_survey_stats_node
+SQL >
+    %
+    SELECT
+        survey_id,
+        count() AS total_responses,
+        avg(rating) AS avg_rating,
+        min(rating) AS min_rating,
+        max(rating) AS max_rating,
+        countIf(rating >= 4) AS positive_responses,
+        countIf(rating <= 2) AS negative_responses
+    FROM survey_responses
+    WHERE 1=1
+    {% if defined(survey_id) %}
+    AND survey_id = {{String(survey_id, '')}}
+    {% end %}
+    {% if defined(from_date) %}
+    AND timestamp >= {{DateTime(from_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(to_date) %}
+    AND timestamp <= {{DateTime(to_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY survey_id
+    ORDER BY total_responses DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Analyze check-in patterns by hour of day for a specific event
+
+NODE hourly_check_ins_node
+SQL >
+    %
+    SELECT 
+        event_id,
+        toHour(check_in_time) AS hour_of_day,
+        count() AS check_ins
+    FROM event_attendance
+    WHERE 
+        event_id = {{String(event_id, 'event_001')}}
+        AND attendance_status = 'checked_in'
+    GROUP BY event_id, hour_of_day
+    ORDER BY hour_of_day ASC
+
+TYPE endpoint
+        

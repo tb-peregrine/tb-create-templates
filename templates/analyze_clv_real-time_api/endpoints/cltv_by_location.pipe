@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    This endpoint calculates the average CLTV for each location.
+
+NODE cltv_by_location_node
+SQL >
+    SELECT
+        d.location,
+        avg(t.cltv) AS average_cltv
+    FROM customer_demographics d
+    JOIN (
+        SELECT
+            customer_id,
+            sum(transaction_amount) AS cltv
+        FROM customer_transactions
+        GROUP BY customer_id
+    ) t ON d.customer_id = t.customer_id
+    GROUP BY d.location
+
+TYPE endpoint
+        

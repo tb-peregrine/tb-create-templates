@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    Trades of stocks with timestamp, symbol, price and volume.
+
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `symbol` String `json:$.symbol`,
+    `price` Float64 `json:$.price`,
+    `volume` UInt32 `json:$.volume`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, symbol"
+        

@@ -1,0 +1,73 @@
+
+DESCRIPTION >
+    Provides a summary of sentiment across calls, grouped by time period
+
+NODE sentiment_summary_node
+SQL >
+    %
+    SELECT 
+        toStartOfDay(timestamp) AS day,
+        count(*) AS total_calls,
+        countIf(multiIf(
+            position(lowerUTF8(transcript), 'happy') > 0 OR 
+            position(lowerUTF8(transcript), 'great') > 0 OR 
+            position(lowerUTF8(transcript), 'excellent') > 0 OR 
+            position(lowerUTF8(transcript), 'thank you') > 0 OR 
+            position(lowerUTF8(transcript), 'appreciate') > 0, 'positive',
+            
+            position(lowerUTF8(transcript), 'unhappy') > 0 OR 
+            position(lowerUTF8(transcript), 'angry') > 0 OR 
+            position(lowerUTF8(transcript), 'terrible') > 0 OR 
+            position(lowerUTF8(transcript), 'upset') > 0 OR 
+            position(lowerUTF8(transcript), 'frustrated') > 0, 'negative',
+            
+            'neutral'
+        ) = 'positive') AS positive_calls,
+        countIf(multiIf(
+            position(lowerUTF8(transcript), 'happy') > 0 OR 
+            position(lowerUTF8(transcript), 'great') > 0 OR 
+            position(lowerUTF8(transcript), 'excellent') > 0 OR 
+            position(lowerUTF8(transcript), 'thank you') > 0 OR 
+            position(lowerUTF8(transcript), 'appreciate') > 0, 'positive',
+            
+            position(lowerUTF8(transcript), 'unhappy') > 0 OR 
+            position(lowerUTF8(transcript), 'angry') > 0 OR 
+            position(lowerUTF8(transcript), 'terrible') > 0 OR 
+            position(lowerUTF8(transcript), 'upset') > 0 OR 
+            position(lowerUTF8(transcript), 'frustrated') > 0, 'negative',
+            
+            'neutral'
+        ) = 'negative') AS negative_calls,
+        countIf(multiIf(
+            position(lowerUTF8(transcript), 'happy') > 0 OR 
+            position(lowerUTF8(transcript), 'great') > 0 OR 
+            position(lowerUTF8(transcript), 'excellent') > 0 OR 
+            position(lowerUTF8(transcript), 'thank you') > 0 OR 
+            position(lowerUTF8(transcript), 'appreciate') > 0, 'positive',
+            
+            position(lowerUTF8(transcript), 'unhappy') > 0 OR 
+            position(lowerUTF8(transcript), 'angry') > 0 OR 
+            position(lowerUTF8(transcript), 'terrible') > 0 OR 
+            position(lowerUTF8(transcript), 'upset') > 0 OR 
+            position(lowerUTF8(transcript), 'frustrated') > 0, 'negative',
+            
+            'neutral'
+        ) = 'neutral') AS neutral_calls,
+        avg(duration_seconds) AS avg_duration
+    FROM voice_call_transcripts
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(agent_id) %}
+        AND agent_id = {{String(agent_id, '')}}
+    {% end %}
+    GROUP BY day
+    ORDER BY day DESC
+    LIMIT {{Int32(limit, 30)}}
+
+TYPE endpoint
+        

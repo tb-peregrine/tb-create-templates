@@ -1,0 +1,43 @@
+
+DESCRIPTION >
+    Provides time series data of spending patterns over time with customizable time granularity
+
+NODE spending_time_series_node
+SQL >
+    %
+    SELECT 
+        {% if defined(granularity) and granularity == 'day' %}
+        toDate(timestamp) as time_bucket,
+        {% elif defined(granularity) and granularity == 'month' %}
+        toStartOfMonth(timestamp) as time_bucket,
+        {% elif defined(granularity) and granularity == 'hour' %}
+        toStartOfHour(timestamp) as time_bucket,
+        {% else %}
+        toStartOfDay(timestamp) as time_bucket,
+        {% end %}
+        count() as transaction_count,
+        sum(amount) as total_spent,
+        avg(amount) as average_transaction
+    FROM transactions
+    WHERE 
+        {% if defined(start_date) %}
+        timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% else %}
+        timestamp >= '2023-01-01 00:00:00'
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% else %}
+        AND timestamp <= '2023-12-31 23:59:59'
+        {% end %}
+        {% if defined(category) %}
+        AND category = {{String(category, '')}}
+        {% end %}
+        {% if defined(user_id) %}
+        AND user_id = {{String(user_id, '')}}
+        {% end %}
+    GROUP BY time_bucket
+    ORDER BY time_bucket ASC
+
+TYPE endpoint
+        

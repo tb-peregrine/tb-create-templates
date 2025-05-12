@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Returns bidding activity for a specific bidder across all auctions or for a specific auction
+
+NODE bidder_activity_node
+SQL >
+    %
+    SELECT 
+        bidder_id,
+        auction_id,
+        item_id,
+        max(bid_amount) AS highest_bid,
+        count() AS total_bids,
+        min(timestamp) AS first_bid_time,
+        max(timestamp) AS last_bid_time
+    FROM auction_bids
+    WHERE bidder_id = {{String(bidder_id, '')}}
+    {%if defined(auction_id)%}
+        AND auction_id = {{String(auction_id, '')}}
+    {%end%}
+    {%if defined(status)%}
+        AND status = {{String(status, 'active')}}
+    {%end%}
+    GROUP BY bidder_id, auction_id, item_id
+    ORDER BY last_bid_time DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Shows daily occupancy patterns for a restaurant, with the total reservations and guests by day
+
+NODE restaurant_daily_occupancy_node
+SQL >
+    %
+    SELECT 
+        restaurant_id,
+        toDate(reservation_time) AS date,
+        count() AS total_reservations,
+        sum(party_size) AS total_guests,
+        max(party_size) AS largest_party
+    FROM reservations
+    WHERE 
+        restaurant_id = {{String(restaurant_id, 'rest123')}}
+        {% if defined(start_date) %}
+        AND toDate(reservation_time) >= {{Date(start_date, '2023-01-01')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND toDate(reservation_time) <= {{Date(end_date, '2023-12-31')}}
+        {% end %}
+        AND status = 'confirmed'
+    GROUP BY restaurant_id, date
+    ORDER BY date DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,39 @@
+
+DESCRIPTION >
+    Get weather statistics for a specific time period and region
+
+NODE weather_statistics
+SQL >
+    %
+    SELECT
+        station_id,
+        location,
+        region,
+        country,
+        avg(temperature) AS avg_temperature,
+        min(temperature) AS min_temperature,
+        max(temperature) AS max_temperature,
+        avg(humidity) AS avg_humidity,
+        avg(pressure) AS avg_pressure,
+        avg(wind_speed) AS avg_wind_speed,
+        sum(precipitation) AS total_precipitation
+    FROM weather_measurements
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% else %}
+        AND timestamp <= now()
+    {% end %}
+    {% if defined(region) %}
+        AND region = {{String(region, '')}}
+    {% end %}
+    {% if defined(country) %}
+        AND country = {{String(country, '')}}
+    {% end %}
+    GROUP BY station_id, location, region, country
+
+TYPE endpoint
+        

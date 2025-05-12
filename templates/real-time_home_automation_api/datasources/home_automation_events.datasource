@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Stores all events from home automation devices such as thermostats, lights, motion sensors, and door sensors.
+
+SCHEMA >
+    `device_id` String `json:$.device_id`,
+    `device_type` String `json:$.device_type`,
+    `room` String `json:$.room`,
+    `event_type` String `json:$.event_type`,
+    `status` String `json:$.status`,
+    `value` Float64 `json:$.value`,
+    `battery_level` Float64 `json:$.battery_level`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "device_id, timestamp"

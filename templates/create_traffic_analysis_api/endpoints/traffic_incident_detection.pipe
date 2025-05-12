@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Detects potential traffic incidents based on sudden changes in speed or congestion
+
+NODE incident_detection_node
+SQL >
+    %
+    SELECT
+        e.timestamp,
+        e.location_name,
+        e.device_id,
+        e.vehicle_count,
+        e.average_speed_kph,
+        e.congestion_level,
+        e.weather_condition,
+        e.event_type
+    FROM traffic_events e
+    WHERE 
+        e.timestamp >= now() - interval {{Int32(time_window_minutes, 60)}} minute
+        AND e.congestion_level >= {{Int8(min_congestion_level, 7)}}
+        AND e.average_speed_kph <= {{Float32(max_speed_kph, 20.0)}}
+    {% if defined(location_filter) %}
+        AND e.location_name = {{String(location_filter, '')}}
+    {% end %}
+    ORDER BY e.timestamp DESC, e.congestion_level DESC
+
+TYPE endpoint
+        

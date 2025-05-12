@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    Returns historical data for a specific device over a time period
+
+NODE device_history_node
+SQL >
+    %
+    SELECT
+        device_id,
+        device_type,
+        room,
+        status,
+        value,
+        battery_level,
+        timestamp
+    FROM home_automation_events
+    WHERE device_id = {{String(device_id, '1')}}
+    {% if defined(start_date) %}
+    AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY timestamp DESC
+    {% if defined(limit) %}
+    LIMIT {{Int32(limit, 100)}}
+    {% end %}
+
+TYPE endpoint

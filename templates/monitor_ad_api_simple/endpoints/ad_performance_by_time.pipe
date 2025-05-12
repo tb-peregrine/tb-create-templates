@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    API endpoint that shows ad performance metrics over time with configurable time granularity
+
+NODE ad_performance_by_time_node
+SQL >
+    %
+    SELECT 
+        date_trunc({{String(time_granularity, 'hour')}}, ai.timestamp) as time_period,
+        ai.ad_id,
+        count() AS impressions,
+        countIf(ac.click_id IS NOT NULL) AS clicks,
+        round(countIf(ac.click_id IS NOT NULL) / count() * 100, 2) AS ctr
+    FROM ad_impressions AS ai
+    LEFT JOIN ad_clicks AS ac ON ai.impression_id = ac.impression_id
+    WHERE ai.timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% if defined(ad_id) %}
+        AND ai.ad_id = {{String(ad_id, '')}}
+    {% end %}
+    {% if defined(campaign_id) %}
+        AND ai.campaign_id = {{String(campaign_id, '')}}
+    {% end %}
+    GROUP BY time_period, ai.ad_id
+    ORDER BY time_period, impressions DESC
+
+TYPE endpoint
+        

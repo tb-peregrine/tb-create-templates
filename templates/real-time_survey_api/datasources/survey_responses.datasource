@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Raw survey responses data
+
+SCHEMA >
+    `response_id` String `json:$.response_id`,
+    `survey_id` String `json:$.survey_id`,
+    `user_id` String `json:$.user_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `questions` Array(String) `json:$.questions[:]`,
+    `answers` Array(String) `json:$.answers[:]`,
+    `rating` Int32 `json:$.rating`,
+    `feedback` String `json:$.feedback`,
+    `tags` Array(String) `json:$.tags[:]`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "survey_id, timestamp, user_id"
+        

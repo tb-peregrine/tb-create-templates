@@ -1,0 +1,37 @@
+
+DESCRIPTION >
+    Calculates average property prices by location with filtering options
+
+NODE avg_price_by_location_node
+SQL >
+    %
+    SELECT 
+        city,
+        state,
+        property_type,
+        AVG(price) AS avg_price,
+        COUNT(*) AS listing_count,
+        AVG(sqft) AS avg_sqft,
+        AVG(price / sqft) AS avg_price_per_sqft
+    FROM property_listings
+    WHERE 1=1
+    {% if defined(state) %}
+        AND state = {{String(state, 'CA')}}
+    {% end %}
+    {% if defined(city) %}
+        AND city = {{String(city, 'San Francisco')}}
+    {% end %}
+    {% if defined(property_type) %}
+        AND property_type = {{String(property_type, 'Single Family')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND listing_date >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND listing_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY city, state, property_type
+    ORDER BY avg_price DESC
+
+TYPE endpoint
+        

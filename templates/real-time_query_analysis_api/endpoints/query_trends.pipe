@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Analyzes trends in query performance over time
+
+NODE query_trends_node
+SQL >
+    %
+    SELECT 
+        toStartOfHour(start_time) as hour,
+        count() as query_count,
+        avg(duration_ms) as avg_duration_ms,
+        sum(rows_read) as total_rows_read,
+        sum(bytes_read) as total_bytes_read,
+        countIf(status = 'error') as error_count
+    FROM query_logs
+    WHERE 
+        start_time BETWEEN {{DateTime(start_time, '2023-01-01 00:00:00')}} AND {{DateTime(end_time, '2023-12-31 23:59:59')}}
+        {% if defined(database) %}
+        AND database = {{String(database, 'production')}}
+        {% end %}
+        {% if defined(query_type) %}
+        AND query_type = {{String(query_type, 'SELECT')}}
+        {% end %}
+    GROUP BY hour
+    ORDER BY hour DESC
+
+TYPE endpoint
+        

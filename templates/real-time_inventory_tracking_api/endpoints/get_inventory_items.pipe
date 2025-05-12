@@ -1,0 +1,42 @@
+
+DESCRIPTION >
+    API endpoint to get inventory items, with optional filtering by category, location, and low stock items
+
+NODE get_inventory_items_node
+SQL >
+    %
+    SELECT
+        item_id,
+        item_name,
+        category,
+        quantity,
+        location,
+        last_updated,
+        low_stock_threshold,
+        unit_price,
+        quantity <= low_stock_threshold AS is_low_stock
+    FROM inventory_items
+    WHERE 1=1
+    {% if defined(category) %}
+        AND category = {{String(category, '')}}
+    {% end %}
+    {% if defined(location) %}
+        AND location = {{String(location, '')}}
+    {% end %}
+    {% if defined(low_stock_only) %}
+        AND quantity <= low_stock_threshold
+    {% end %}
+    ORDER BY 
+    {% if defined(sort_by) %}
+        {{String(sort_by, 'item_name')}}
+    {% else %}
+        item_name
+    {% end %}
+    {% if defined(limit) %}
+    LIMIT {{Int32(limit, 100)}}
+    {% else %}
+    LIMIT 100
+    {% end %}
+
+TYPE endpoint
+        

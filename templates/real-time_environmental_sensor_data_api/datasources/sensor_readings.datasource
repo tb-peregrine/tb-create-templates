@@ -1,0 +1,17 @@
+
+DESCRIPTION >
+    Raw sensor data readings from environmental sensors including temperature, humidity, air quality, and location
+
+SCHEMA >
+    `sensor_id` String `json:$.sensor_id`,
+    `location` String `json:$.location`,
+    `reading_type` String `json:$.reading_type`,
+    `reading_value` Float64 `json:$.reading_value`,
+    `unit` String `json:$.unit`,
+    `timestamp` DateTime64(3) `json:$.timestamp`,
+    `battery_level` Float32 `json:$.battery_level`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "sensor_id, timestamp, reading_type"
+        

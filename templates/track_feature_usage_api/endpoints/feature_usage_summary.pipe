@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Summary of feature usage by feature_id and product_version
+
+NODE feature_usage_summary_node
+SQL >
+    %
+    SELECT 
+        feature_id,
+        product_version,
+        count() as usage_count,
+        count(DISTINCT user_id) as unique_users,
+        min(timestamp) as first_usage,
+        max(timestamp) as last_usage
+    FROM feature_events
+    WHERE 1=1
+    {% if defined(feature_id) %}
+        AND feature_id = {{String(feature_id, '')}}
+    {% end %}
+    {% if defined(product_version) %}
+        AND product_version = {{String(product_version, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY feature_id, product_version
+    ORDER BY usage_count DESC
+
+TYPE endpoint
+        

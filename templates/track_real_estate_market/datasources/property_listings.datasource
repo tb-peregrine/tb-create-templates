@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Contains property listing data with price, location, and property details
+
+SCHEMA >
+    `listing_id` String `json:$.listing_id`,
+    `price` Float64 `json:$.price`,
+    `bedrooms` Int32 `json:$.bedrooms`,
+    `bathrooms` Float32 `json:$.bathrooms`,
+    `sqft` Int32 `json:$.sqft`,
+    `property_type` String `json:$.property_type`,
+    `city` String `json:$.city`,
+    `state` String `json:$.state`,
+    `zip_code` String `json:$.zip_code`,
+    `listing_date` DateTime `json:$.listing_date`,
+    `status` String `json:$.status`,
+    `days_on_market` Int32 `json:$.days_on_market`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(listing_date)"
+ENGINE_SORTING_KEY "listing_date, city, state, property_type"
+        

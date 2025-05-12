@@ -1,0 +1,35 @@
+
+DESCRIPTION >
+    Endpoint to analyze parking space availability over time
+
+NODE availability_by_time_node
+SQL >
+    %
+    SELECT 
+        parking_lot_id,
+        location,
+        toStartOfHour(timestamp) as hour,
+        avg(available_spaces) as avg_available_spaces,
+        avg(occupied_spaces) as avg_occupied_spaces,
+        max(total_spaces) as total_spaces
+    FROM parking_spaces
+    WHERE 
+        {% if defined(parking_lot_id) %}
+        parking_lot_id = {{String(parking_lot_id, '')}}
+        {% else %}
+        1=1
+        {% end %}
+        {% if defined(location) %}
+        AND location = {{String(location, '')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+    GROUP BY parking_lot_id, location, hour
+    ORDER BY hour DESC
+
+TYPE endpoint
+        

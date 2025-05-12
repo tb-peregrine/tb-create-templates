@@ -1,0 +1,21 @@
+
+DESCRIPTION >
+    Captures price changes for products in e-commerce
+
+SCHEMA >
+    `product_id` String `json:$.product_id`,
+    `product_name` String `json:$.product_name`,
+    `category` String `json:$.category`,
+    `merchant_id` String `json:$.merchant_id`,
+    `old_price` Float64 `json:$.old_price`,
+    `new_price` Float64 `json:$.new_price`,
+    `price_change` Float64 `json:$.price_change`,
+    `price_change_percentage` Float64 `json:$.price_change_percentage`,
+    `currency` String `json:$.currency`,
+    `change_timestamp` DateTime `json:$.change_timestamp`,
+    `event_timestamp` DateTime `json:$.event_timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(change_timestamp)"
+ENGINE_SORTING_KEY "category, merchant_id, product_id, change_timestamp"
+        

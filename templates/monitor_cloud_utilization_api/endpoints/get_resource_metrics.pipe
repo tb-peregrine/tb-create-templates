@@ -1,0 +1,45 @@
+
+DESCRIPTION >
+    API endpoint to get resource metrics with various filtering options
+
+NODE get_resource_metrics_node
+SQL >
+    %
+    SELECT
+        timestamp,
+        resource_id,
+        resource_type,
+        resource_name,
+        metric_name,
+        metric_value,
+        region,
+        account_id,
+        environment
+    FROM cloud_resource_metrics
+    WHERE 1=1
+    {% if defined(resource_id) %}
+        AND resource_id = {{String(resource_id, '')}}
+    {% end %}
+    {% if defined(resource_type) %}
+        AND resource_type = {{String(resource_type, '')}}
+    {% end %}
+    {% if defined(metric_name) %}
+        AND metric_name = {{String(metric_name, '')}}
+    {% end %}
+    {% if defined(region) %}
+        AND region = {{String(region, '')}}
+    {% end %}
+    {% if defined(environment) %}
+        AND environment = {{String(environment, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT {{Int32(limit, 1000)}}
+
+TYPE endpoint
+        

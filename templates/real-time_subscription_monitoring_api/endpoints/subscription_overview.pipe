@@ -1,0 +1,31 @@
+DESCRIPTION >
+    API endpoint providing overview of subscription metrics
+
+NODE subscription_overview_node
+SQL >
+    %
+    SELECT 
+        count() AS total_subscriptions,
+        countIf(event_type = 'new') AS new_subscriptions,
+        countIf(event_type = 'renewal') AS renewals,
+        countIf(event_type = 'cancellation') AS cancellations,
+        round(countIf(event_type = 'renewal') / countIf(event_type = 'new') * 100, 2) AS renewal_rate,
+        round(countIf(event_type = 'cancellation') / (countIf(event_type = 'new') + countIf(event_type = 'renewal')) * 100, 2) AS churn_rate
+    FROM subscription_events
+    WHERE 
+        {%if defined(start_date)%}
+        timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {%else%}
+        timestamp >= '2023-01-01 00:00:00'
+        {%end%}
+        AND
+        {%if defined(end_date)%}
+        timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {%else%}
+        timestamp <= '2023-12-31 23:59:59'
+        {%end%}
+        {%if defined(plan_id)%}
+        AND plan_id = {{String(plan_id, 'all')}}
+        {%end%}
+
+TYPE endpoint

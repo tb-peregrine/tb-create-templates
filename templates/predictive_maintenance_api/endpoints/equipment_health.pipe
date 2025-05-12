@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Endpoint that provides equipment health metrics and maintenance predictions
+
+NODE equipment_health_node
+SQL >
+    %
+    SELECT 
+        equipment_id,
+        avg(temperature) as avg_temperature,
+        avg(vibration) as avg_vibration,
+        avg(pressure) as avg_pressure,
+        avg(noise_level) as avg_noise_level,
+        countIf(status != 'normal') / count() as abnormal_readings_ratio,
+        max(maintenance_due) as maintenance_recommended
+    FROM equipment_logs
+    WHERE 
+        {% if defined(equipment_id) %}
+        equipment_id = {{String(equipment_id, '')}}
+        {% else %}
+        1=1
+        {% end %}
+        AND timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    GROUP BY equipment_id
+    ORDER BY abnormal_readings_ratio DESC
+
+TYPE endpoint
+        

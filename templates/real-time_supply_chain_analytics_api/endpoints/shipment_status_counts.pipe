@@ -1,0 +1,14 @@
+
+DESCRIPTION >
+    Endpoint to get the count of shipments by status.
+
+NODE shipment_status_counts_node
+SQL >
+    SELECT
+        status,
+        count() AS shipment_count
+    FROM raw_shipments
+    GROUP BY status
+
+TYPE endpoint
+        

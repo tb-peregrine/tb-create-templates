@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Analyzes reservation patterns by hour for a specific restaurant
+
+NODE restaurant_hourly_reservations_node
+SQL >
+    %
+    SELECT 
+        restaurant_id,
+        toStartOfHour(reservation_time) AS hour,
+        count() AS reservation_count,
+        sum(party_size) AS total_guests,
+        avg(party_size) AS avg_party_size
+    FROM reservations
+    WHERE 
+        restaurant_id = {{String(restaurant_id, 'rest123')}}
+        {% if defined(date_from) %}
+        AND reservation_time >= {{DateTime(date_from, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(date_to) %}
+        AND reservation_time <= {{DateTime(date_to, '2023-12-31 23:59:59')}}
+        {% end %}
+        AND status != 'cancelled'
+    GROUP BY restaurant_id, hour
+    ORDER BY hour DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,23 @@
+
+DESCRIPTION >
+    Data source for food delivery orders
+
+SCHEMA >
+    `order_id` String `json:$.order_id`,
+    `customer_id` String `json:$.customer_id`,
+    `restaurant_id` String `json:$.restaurant_id`,
+    `driver_id` String `json:$.driver_id`,
+    `timestamp` DateTime `json:$.timestamp`,
+    `status` String `json:$.status`,
+    `total_amount` Float64 `json:$.total_amount`,
+    `delivery_fee` Float64 `json:$.delivery_fee`,
+    `tip_amount` Float64 `json:$.tip_amount`,
+    `delivery_time_minutes` Int32 `json:$.delivery_time_minutes`,
+    `items` Array(String) `json:$.items[:]`,
+    `city` String `json:$.city`,
+    `payment_method` String `json:$.payment_method`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, city, restaurant_id"
+        

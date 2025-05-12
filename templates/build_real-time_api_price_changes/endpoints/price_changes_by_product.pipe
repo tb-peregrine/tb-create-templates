@@ -1,0 +1,24 @@
+
+DESCRIPTION >
+    Get price change history for a specific product
+
+NODE price_changes_by_product_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        product_name,
+        category,
+        old_price,
+        new_price,
+        price_change,
+        price_change_percentage,
+        currency,
+        change_timestamp
+    FROM product_price_changes
+    WHERE product_id = {{String(product_id, "ABC123")}}
+    ORDER BY change_timestamp DESC
+    LIMIT {{UInt16(limit, 10)}}
+
+TYPE endpoint
+        

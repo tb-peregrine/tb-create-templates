@@ -1,0 +1,48 @@
+
+DESCRIPTION >
+    Detects anomalies in system logs based on frequency thresholds over time intervals
+
+NODE log_anomalies_node
+SQL >
+    %
+    WITH 
+    log_counts AS (
+        SELECT
+            service,
+            severity,
+            toStartOfMinute(timestamp) as minute,
+            count() as log_count
+        FROM system_logs
+        WHERE timestamp >= now() - interval {{Int32(time_window_minutes, 60)}} minute
+        {% if defined(service) %}
+            AND service = {{String(service, '')}}
+        {% end %}
+        {% if defined(severity) %}
+            AND severity = {{String(severity, '')}}
+        {% end %}
+        GROUP BY service, severity, minute
+    ),
+    thresholds AS (
+        SELECT
+            service,
+            severity,
+            threshold_per_minute
+        FROM log_anomaly_thresholds
+        WHERE active = 1
+    )
+    SELECT
+        lc.service,
+        lc.severity,
+        lc.minute as timestamp,
+        lc.log_count,
+        t.threshold_per_minute,
+        lc.log_count > t.threshold_per_minute as is_anomaly
+    FROM log_counts lc
+    LEFT JOIN thresholds t ON lc.service = t.service AND lc.severity = t.severity
+    WHERE t.threshold_per_minute IS NOT NULL
+      AND lc.log_count > t.threshold_per_minute
+    ORDER BY timestamp DESC, log_count DESC
+    LIMIT {{Int32(limit, 100)}}
+
+TYPE endpoint
+        

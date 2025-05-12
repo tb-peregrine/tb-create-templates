@@ -1,0 +1,28 @@
+
+DESCRIPTION >
+    Get current inventory levels by product and warehouse
+
+NODE inventory_current_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        warehouse_id,
+        sum(case when operation = 'add' then quantity
+                 when operation = 'remove' then -quantity
+                 else 0 end) as current_stock,
+        max(timestamp) as last_updated
+    FROM inventory
+    WHERE 1=1
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id, '')}}
+    {% end %}
+    {% if defined(warehouse_id) %}
+        AND warehouse_id = {{String(warehouse_id, '')}}
+    {% end %}
+    GROUP BY product_id, warehouse_id
+    HAVING current_stock > 0
+    ORDER BY warehouse_id, product_id
+
+TYPE endpoint
+        

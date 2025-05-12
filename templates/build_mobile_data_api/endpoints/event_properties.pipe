@@ -1,0 +1,29 @@
+
+DESCRIPTION >
+    API endpoint to explore event properties for specific event types
+
+NODE event_properties_node
+SQL >
+    %
+    SELECT 
+        event_type,
+        JSONExtractString(properties, 'key') as property_key,
+        JSONExtractString(properties, 'value') as property_value,
+        count() as count
+    FROM app_events
+    WHERE 1=1
+    {% if defined(event_type) %}
+    AND event_type = {{String(event_type, 'app_open')}}
+    {% end %}
+    {% if defined(start_date) %}
+    AND event_time >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND event_time <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY event_type, property_key, property_value
+    ORDER BY count DESC
+    LIMIT 100
+
+TYPE endpoint
+        

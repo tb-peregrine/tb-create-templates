@@ -99,6 +99,105 @@ def get_pipes_content(template_dir):
     
     return pipes_content
 
+def fix_term_casing(content):
+    """Fix the casing of specific terms based on their position in sentences"""
+    # Split into sentences (simple split on period followed by space or newline)
+    sentences = re.split(r'\.(?:\s|\n)', content)
+    processed_sentences = []
+    
+    for sentence in sentences:
+        # Skip empty sentences
+        if not sentence.strip():
+            processed_sentences.append(sentence)
+            continue
+            
+        # Fix casing for specific terms
+        sentence = sentence.strip()
+        
+        # Fix "data sources" casing
+        if re.search(r'(?i)^data sources', sentence):
+            sentence = re.sub(r'(?i)^data sources', 'Data sources', sentence)
+        elif re.search(r'(?i) data sources', sentence):
+            sentence = re.sub(r'(?i) data sources', ' data sources', sentence)
+            
+        # Fix "pipes" casing
+        if re.search(r'(?i)^pipes', sentence):
+            sentence = re.sub(r'(?i)^pipes', 'Pipes', sentence)
+        elif re.search(r'(?i) pipes', sentence):
+            sentence = re.sub(r'(?i) pipes', ' pipes', sentence)
+            
+        processed_sentences.append(sentence)
+    
+    # Rejoin sentences with periods and preserve newlines
+    result = []
+    for i, sentence in enumerate(processed_sentences):
+        if i < len(processed_sentences) - 1:
+            # Check if the original content had a newline after this sentence
+            next_sentence = processed_sentences[i + 1]
+            if next_sentence.startswith('\n'):
+                result.append(sentence + '.\n')
+            else:
+                result.append(sentence + '. ')
+        else:
+            result.append(sentence)
+    
+    return ''.join(result)
+
+def add_tinybird_links(content):
+    """Add Tinybird documentation links to the content"""
+    # First fix the casing of specific terms
+    content = fix_term_casing(content)
+    
+    # Order matters - more specific terms first
+    link_mappings = [
+        (r'(?i)Data Sources API', '[Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api)'),
+        (r'(?i)Events API', '[Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api)'),
+        (r'(?i)S3 connector', '[S3 connector](https://www.tinybird.co/docs/forward/get-data-in/connectors/s3)'),
+        (r'(?i)Kafka connector', '[Kafka connector](https://www.tinybird.co/docs/forward/get-data-in/connectors/kafka)'),
+        (r'(?i)Materialized views', '[Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views)'),
+        (r'(?i)Endpoints', '[Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints)'),
+        (r'(?i)Pipes', '[Pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes)'),
+        (r'(?i)Data sources', '[Data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources)')
+    ]
+    
+    # Split content into lines while preserving newlines
+    lines = content.split('\n')
+    processed_lines = []
+    found_terms = set()
+    
+    for i, line in enumerate(lines):
+        # Skip if line is a header (starts with #)
+        if line.strip().startswith('#'):
+            # Preserve newline before header if it exists
+            if i > 0 and not lines[i-1].strip():
+                processed_lines.append('')
+            processed_lines.append(line)
+            continue
+            
+        # Process the line
+        processed_line = line
+        for pattern, replacement in link_mappings:
+            # Only replace if we haven't found this term before
+            if pattern.lower() not in found_terms:
+                # Check if pattern exists in this line
+                if re.search(pattern, processed_line, re.IGNORECASE):
+                    # For "Data sources" and "Pipes", preserve the original casing
+                    if pattern.lower() in [r'(?i)data sources', r'(?i)pipes']:
+                        # Extract the original term with its casing
+                        match = re.search(pattern, processed_line, re.IGNORECASE)
+                        original_term = match.group(0)
+                        # Create replacement with original casing
+                        replacement = f'[{original_term}]({replacement.split("](")[1]}'
+                    
+                    # Replace only the first occurrence in this line
+                    processed_line = re.sub(pattern, replacement, processed_line, count=1, flags=re.IGNORECASE)
+                    found_terms.add(pattern.lower())
+                    break  # Move to next line after first replacement
+        
+        processed_lines.append(processed_line)
+    
+    return '\n'.join(processed_lines)
+
 def generate_blog_post(readme_content, template_dir):
     """Generate a blog post from README.md content using OpenAI"""
     system_prompt = get_system_prompt()
@@ -139,12 +238,21 @@ Please transform this README.md into a tutorial-style blog post according to the
         )
         
         blog_content = response.choices[0].message.content
+        
+        # Add Tinybird documentation links
+        blog_content = add_tinybird_links(blog_content)
+        
         return blog_content
     except Exception as e:
         print(f"Error generating blog post: {e}")
         return None
 
-def process_template(template_dir, force=False, rewrite=False):
+def format_blog_post(blog_content):
+    """Apply formatting rules to an existing blog post"""
+    # Apply Tinybird documentation links
+    return add_tinybird_links(blog_content)
+
+def process_template(template_dir, force=False, rewrite=False, formatting_only=False):
     """Process a single template directory to create a BLOG.md file"""
     readme_path = Path(template_dir) / 'README.md'
     blog_path = Path(template_dir) / 'BLOG.md'
@@ -157,26 +265,41 @@ def process_template(template_dir, force=False, rewrite=False):
     # Check if BLOG.md already exists
     blog_exists = blog_path.exists()
     
+    # Skip if BLOG.md doesn't exist and we're only formatting
+    if not blog_exists and formatting_only:
+        print(f"No BLOG.md found in {template_dir} to format. Skipping.")
+        return False
+    
     # Skip if BLOG.md already exists and neither force nor rewrite flags are set
-    if blog_exists and not (force or rewrite):
+    if blog_exists and not (force or rewrite or formatting_only):
         print(f"BLOG.md already exists in {template_dir}. Use --force or --rewrite to regenerate.")
         return False
     
-    # Read README.md content
-    readme_content = read_file(readme_path)
-    
-    # Generate blog post
-    print(f"{'Regenerating' if blog_exists else 'Generating'} blog post for {template_dir}...")
-    blog_content = generate_blog_post(readme_content, template_dir)
-    
-    if blog_content:
-        # Write BLOG.md file
-        write_file(blog_path, blog_content)
-        print(f"Successfully {'rewrote' if blog_exists else 'created'} BLOG.md in {template_dir}")
+    if formatting_only:
+        # Read existing BLOG.md content
+        blog_content = read_file(blog_path)
+        # Apply formatting
+        formatted_content = format_blog_post(blog_content)
+        # Write back to file
+        write_file(blog_path, formatted_content)
+        print(f"Successfully formatted BLOG.md in {template_dir}")
         return True
     else:
-        print(f"Failed to {'rewrite' if blog_exists else 'create'} BLOG.md in {template_dir}")
-        return False
+        # Read README.md content
+        readme_content = read_file(readme_path)
+        
+        # Generate blog post
+        print(f"{'Regenerating' if blog_exists else 'Generating'} blog post for {template_dir}...")
+        blog_content = generate_blog_post(readme_content, template_dir)
+        
+        if blog_content:
+            # Write BLOG.md file
+            write_file(blog_path, blog_content)
+            print(f"Successfully {'rewrote' if blog_exists else 'created'} BLOG.md in {template_dir}")
+            return True
+        else:
+            print(f"Failed to {'rewrite' if blog_exists else 'create'} BLOG.md in {template_dir}")
+            return False
 
 def main():
     # Parse command line arguments
@@ -185,6 +308,7 @@ def main():
     parser.add_argument('--rewrite', action='store_true', help='Rewrite all BLOG.md files for all templates')
     parser.add_argument('--template', type=str, help='Process a specific template directory')
     parser.add_argument('--limit', type=int, help='Limit the number of templates to process')
+    parser.add_argument('--formatting', action='store_true', help='Only apply formatting rules to existing BLOG.md files')
     args = parser.parse_args()
     
     # Find all template directories
@@ -213,17 +337,18 @@ def main():
     
     # Use tqdm for a progress bar
     for template_dir in tqdm(template_dirs, desc="Processing templates"):
-        if process_template(template_dir, args.force, args.rewrite):
+        if process_template(template_dir, args.force, args.rewrite, args.formatting):
             success_count += 1
         elif (Path(template_dir) / 'BLOG.md').exists():
             skipped_count += 1
         # Add a small delay to avoid rate limiting
         time.sleep(1)
     
-    print(f"\nCompleted: {success_count}/{total_count} blog posts generated successfully.")
+    print(f"\nCompleted: {success_count}/{total_count} blog posts {'formatted' if args.formatting else 'generated'} successfully.")
     if skipped_count > 0:
         print(f"Skipped: {skipped_count} templates that already had BLOG.md files.")
-        print(f"Use --rewrite to regenerate all blog posts or --force with --template to regenerate specific ones.")
+        if not args.formatting:
+            print(f"Use --rewrite to regenerate all blog posts or --force with --template to regenerate specific ones.")
 
 if __name__ == "__main__":
     main() 

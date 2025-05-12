@@ -1,0 +1,26 @@
+
+DESCRIPTION >
+    API endpoint to get event counts by type with filtering options
+
+NODE events_by_type_node
+SQL >
+    %
+    SELECT 
+        event_type,
+        count() as event_count
+    FROM app_events
+    WHERE 1=1
+    {% if defined(start_date) %}
+    AND event_time >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND event_time <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(app_version) %}
+    AND app_version = {{String(app_version, 'all')}}
+    {% end %}
+    GROUP BY event_type
+    ORDER BY event_count DESC
+
+TYPE endpoint
+        

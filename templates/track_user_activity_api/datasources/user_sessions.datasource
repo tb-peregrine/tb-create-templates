@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Stores user session activity data for multi-tenant applications
+
+SCHEMA >
+    `session_id` String `json:$.session_id`,
+    `user_id` String `json:$.user_id`,
+    `tenant_id` String `json:$.tenant_id`,
+    `event_type` String `json:$.event_type`,
+    `event_data` String `json:$.event_data`,
+    `page_url` String `json:$.page_url`,
+    `referrer` String `json:$.referrer`,
+    `device_type` String `json:$.device_type`,
+    `browser` String `json:$.browser`,
+    `ip_address` String `json:$.ip_address`,
+    `created_at` DateTime `json:$.created_at`,
+    `updated_at` DateTime `json:$.updated_at`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(created_at)"
+ENGINE_SORTING_KEY "tenant_id, session_id, created_at"
+        

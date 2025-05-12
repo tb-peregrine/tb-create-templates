@@ -1,0 +1,10 @@
+{"parking_lot_id": "lot_9", "location": "Sports Arena", "total_spaces": 328, "available_spaces": 78, "occupied_spaces": 78, "timestamp": "2025-05-12 07:00:59"}
+{"parking_lot_id": "lot_6", "location": "University", "total_spaces": 425, "available_spaces": 25, "occupied_spaces": 225, "timestamp": "2025-05-11 23:19:22"}
+{"parking_lot_id": "lot_11", "location": "Downtown", "total_spaces": 470, "available_spaces": 20, "occupied_spaces": 20, "timestamp": "2025-05-12 16:51:57"}
+{"parking_lot_id": "lot_10", "location": "Convention Center", "total_spaces": 349, "available_spaces": 49, "occupied_spaces": 249, "timestamp": "2025-05-12 06:33:58"}
+{"parking_lot_id": "lot_1", "location": "Downtown", "total_spaces": 260, "available_spaces": 60, "occupied_spaces": 210, "timestamp": "2025-05-12 09:28:47"}
+{"parking_lot_id": "lot_14", "location": "Hospital", "total_spaces": 473, "available_spaces": 123, "occupied_spaces": 223, "timestamp": "2025-05-11 23:25:14"}
+{"parking_lot_id": "lot_1", "location": "Downtown", "total_spaces": 160, "available_spaces": 10, "occupied_spaces": 10, "timestamp": "2025-05-11 22:37:07"}
+{"parking_lot_id": "lot_18", "location": "City Center", "total_spaces": 117, "available_spaces": 17, "occupied_spaces": 217, "timestamp": "2025-05-12 11:24:30"}
+{"parking_lot_id": "lot_9", "location": "Sports Arena", "total_spaces": 308, "available_spaces": 8, "occupied_spaces": 208, "timestamp": "2025-05-12 13:14:39"}
+{"parking_lot_id": "lot_8", "location": "City Center", "total_spaces": 247, "available_spaces": 147, "occupied_spaces": 47, "timestamp": "2025-05-12 05:02:20"}

@@ -1,0 +1,20 @@
+
+DESCRIPTION >
+    Retrieve attendance statistics for a specific event, including total attendees, check-in rates, and attendance by status
+
+NODE event_attendance_stats_node
+SQL >
+    %
+    SELECT 
+        event_id,
+        count() AS total_registered,
+        countIf(attendance_status = 'checked_in') AS checked_in,
+        countIf(attendance_status = 'no_show') AS no_show,
+        countIf(attendance_status = 'registered') AS registered_only,
+        round(countIf(attendance_status = 'checked_in') / count() * 100, 2) AS check_in_rate
+    FROM event_attendance
+    WHERE event_id = {{String(event_id, 'event_001')}}
+    GROUP BY event_id
+
+TYPE endpoint
+        

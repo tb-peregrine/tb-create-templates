@@ -1,0 +1,49 @@
+
+DESCRIPTION >
+    Endpoint that detects anomalies in equipment readings based on statistical thresholds
+
+NODE equipment_anomalies_node
+SQL >
+    %
+    WITH 
+        stats AS (
+            SELECT
+                equipment_id,
+                avg(temperature) as avg_temp,
+                stddevSamp(temperature) as std_temp,
+                avg(vibration) as avg_vibration,
+                stddevSamp(vibration) as std_vibration,
+                avg(pressure) as avg_pressure,
+                stddevSamp(pressure) as std_pressure,
+                avg(noise_level) as avg_noise,
+                stddevSamp(noise_level) as std_noise
+            FROM equipment_logs
+            GROUP BY equipment_id
+        )
+    
+    SELECT 
+        e.equipment_id,
+        e.timestamp,
+        e.temperature,
+        e.vibration,
+        e.pressure,
+        e.noise_level,
+        e.status,
+        (abs(e.temperature - s.avg_temp) > 3 * s.std_temp) OR 
+        (abs(e.vibration - s.avg_vibration) > 3 * s.std_vibration) OR 
+        (abs(e.pressure - s.avg_pressure) > 3 * s.std_pressure) OR 
+        (abs(e.noise_level - s.avg_noise) > 3 * s.std_noise) as is_anomaly
+    FROM equipment_logs e
+    JOIN stats s ON e.equipment_id = s.equipment_id
+    WHERE 
+        {% if defined(equipment_id) %}
+        e.equipment_id = {{String(equipment_id, '')}}
+        {% else %}
+        1=1
+        {% end %}
+        AND e.timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    ORDER BY e.timestamp DESC
+    LIMIT {{Int32(limit, 1000)}}
+
+TYPE endpoint
+        

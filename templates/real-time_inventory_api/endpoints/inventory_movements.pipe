@@ -1,0 +1,41 @@
+
+DESCRIPTION >
+    Get inventory movements within a date range
+
+NODE inventory_movements_node
+SQL >
+    %
+    SELECT 
+        product_id,
+        warehouse_id,
+        operation,
+        quantity,
+        timestamp,
+        batch_id
+    FROM inventory
+    WHERE 1=1
+    {% if defined(product_id) %}
+        AND product_id = {{String(product_id, '')}}
+    {% end %}
+    {% if defined(warehouse_id) %}
+        AND warehouse_id = {{String(warehouse_id, '')}}
+    {% end %}
+    {%if not defined(start_date)%}
+    AND timestamp >= now() - interval 7 day
+    {%else%}
+    AND timestamp >= {{DateTime(start_date)}}
+    {%end%}
+    {%if not defined(end_date)%}
+    AND timestamp <= now()
+    {%else%}
+    AND timestamp <= {{DateTime(end_date)}}
+    {%end%}
+    ORDER BY timestamp DESC
+    {% if defined(limit) %}
+    LIMIT {{Int32(limit, 100)}}
+    {% else %}
+    LIMIT 100
+    {% end %}
+
+TYPE endpoint
+        

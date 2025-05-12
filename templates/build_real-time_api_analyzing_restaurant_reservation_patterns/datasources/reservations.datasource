@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    Stores restaurant reservation data including customer information, reservation time, and party size
+
+SCHEMA >
+    `reservation_id` String `json:$.reservation_id`,
+    `restaurant_id` String `json:$.restaurant_id`,
+    `customer_id` String `json:$.customer_id`,
+    `reservation_time` DateTime `json:$.reservation_time`,
+    `party_size` UInt8 `json:$.party_size`,
+    `status` String `json:$.status`,
+    `created_at` DateTime `json:$.created_at`,
+    `special_requests` String `json:$.special_requests`,
+    `table_number` String `json:$.table_number`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(reservation_time)"
+ENGINE_SORTING_KEY "restaurant_id, reservation_time"
+        

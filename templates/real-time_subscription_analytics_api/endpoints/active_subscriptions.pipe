@@ -1,0 +1,32 @@
+
+DESCRIPTION >
+    Returns active subscriptions with optional filtering by plan and date range
+
+NODE active_subscriptions_node
+SQL >
+    %
+    SELECT 
+        plan_name,
+        plan_id,
+        billing_period,
+        count() as active_count,
+        sum(amount) as total_revenue,
+        min(amount) as min_amount,
+        max(amount) as max_amount,
+        avg(amount) as avg_amount
+    FROM subscriptions
+    WHERE status = 'active'
+    {% if defined(plan_id) %}
+    AND plan_id = {{String(plan_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+    AND start_date >= {{DateTime(start_date, '2020-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND start_date <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY plan_name, plan_id, billing_period
+    ORDER BY total_revenue DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,10 @@
+{"service": "service_2", "severity": "info", "threshold_per_minute": 373261016100, "active": 1, "updated_at": "2025-05-12 04:54:22"}
+{"service": "service_3", "severity": "warning", "threshold_per_minute": 399268339200, "active": 0, "updated_at": "2025-05-12 02:20:31"}
+{"service": "service_8", "severity": "warning", "threshold_per_minute": 25071747700, "active": 1, "updated_at": "2025-05-11 21:19:06"}
+{"service": "service_3", "severity": "warning", "threshold_per_minute": 325413211200, "active": 0, "updated_at": "2025-05-12 03:28:31"}
+{"service": "service_10", "severity": "critical", "threshold_per_minute": 395016616900, "active": 1, "updated_at": "2025-05-12 04:40:54"}
+{"service": "service_5", "severity": "critical", "threshold_per_minute": 373253093400, "active": 0, "updated_at": "2025-05-12 02:54:49"}
+{"service": "service_7", "severity": "info", "threshold_per_minute": 22000295600, "active": 0, "updated_at": "2025-05-12 09:07:47"}
+{"service": "service_4", "severity": "error", "threshold_per_minute": 80650343300, "active": 1, "updated_at": "2025-05-12 04:19:50"}
+{"service": "service_6", "severity": "debug", "threshold_per_minute": 110004205500, "active": 1, "updated_at": "2025-05-11 17:49:28"}
+{"service": "service_7", "severity": "info", "threshold_per_minute": 294500118600, "active": 0, "updated_at": "2025-05-12 01:10:37"}

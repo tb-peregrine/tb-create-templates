@@ -1,0 +1,33 @@
+
+DESCRIPTION >
+    Returns historical vital signs for a patient over a specified time range
+
+NODE patient_vitals_history_node
+SQL >
+    %
+    SELECT 
+        patient_id,
+        timestamp,
+        heart_rate,
+        systolic_bp,
+        diastolic_bp,
+        temperature,
+        oxygen_level,
+        is_critical
+    FROM patient_vitals
+    WHERE 
+        patient_id = {{String(patient_id, '')}}
+        {% if defined(start_time) %}
+        AND timestamp >= {{DateTime(start_time)}}
+        {% else %}
+        AND timestamp >= now() - interval 24 hour
+        {% end %}
+        {% if defined(end_time) %}
+        AND timestamp <= {{DateTime(end_time)}}
+        {% else %}
+        AND timestamp <= now()
+        {% end %}
+    ORDER BY timestamp DESC
+
+TYPE endpoint
+        

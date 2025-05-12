@@ -1,0 +1,23 @@
+DESCRIPTION >
+    API endpoint to get detailed analytics for a specific content item
+
+NODE content_details_node
+SQL >
+    %
+    SELECT 
+        content_id,
+        content_type,
+        content_category,
+        count() AS total_events,
+        countIf(event_type = 'view') AS view_count,
+        countIf(event_type = 'like') AS like_count,
+        countIf(event_type = 'share') AS share_count,
+        countIf(event_type = 'comment') AS comment_count,
+        avg(time_spent) AS avg_time_spent,
+        count(DISTINCT user_id) AS unique_users,
+        count(DISTINCT session_id) AS unique_sessions
+    FROM content_events
+    WHERE content_id = {{String(content_id, '12345')}}
+    GROUP BY content_id, content_type, content_category
+
+TYPE endpoint

@@ -1,0 +1,19 @@
+
+DESCRIPTION >
+    LLM usage and performance metrics
+
+SCHEMA >
+    `event_time` DateTime `json:$.event_time`,
+    `model_name` String `json:$.model_name`,
+    `prompt_tokens` UInt32 `json:$.prompt_tokens`,
+    `completion_tokens` UInt32 `json:$.completion_tokens`,
+    `total_tokens` UInt32 `json:$.total_tokens`,
+    `cost` Float32 `json:$.cost`,
+    `latency` Float32 `json:$.latency`,
+    `success` UInt8 `json:$.success`,
+    `error_message` String `json:$.error_message`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(event_time)"
+ENGINE_SORTING_KEY "event_time, model_name"
+        

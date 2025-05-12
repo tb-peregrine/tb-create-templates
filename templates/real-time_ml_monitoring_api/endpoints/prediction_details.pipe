@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    Retrieves detailed prediction information for a specific model and time period
+
+NODE prediction_details_node
+SQL >
+    %
+    SELECT 
+        timestamp,
+        prediction_id,
+        features,
+        predicted_value,
+        actual_value,
+        abs(predicted_value - actual_value) as absolute_error,
+        (predicted_value - actual_value) / actual_value as relative_error
+    FROM ml_model_predictions
+    WHERE 1=1
+        {% if defined(model_id) %}
+        AND model_id = {{String(model_id, 'default_model')}}
+        {% end %}
+        {% if defined(model_version) %}
+        AND model_version = {{String(model_version, 'latest')}}
+        {% end %}
+        {% if defined(environment) %}
+        AND environment = {{String(environment, 'production')}}
+        {% end %}
+        {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+        {% end %}
+        {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+        {% end %}
+        {% if defined(limit) %}
+        LIMIT {{Int(limit, 100)}}
+        {% else %}
+        LIMIT 100
+        {% end %}
+
+TYPE endpoint
+        

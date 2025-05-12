@@ -1,0 +1,22 @@
+
+DESCRIPTION >
+    Get activity summary for a specific user over a time period
+
+NODE user_activity_summary_node
+SQL >
+    %
+    SELECT 
+        user_id,
+        countIf(event_type = 'workout_completed') as total_workouts,
+        sum(duration_seconds) as total_duration_seconds,
+        sum(calories_burned) as total_calories_burned,
+        sum(distance_km) as total_distance_km,
+        avg(heart_rate) as avg_heart_rate,
+        COUNT(DISTINCT activity_type) as unique_activities
+    FROM app_events
+    WHERE user_id = {{String(user_id, '12345')}}
+    AND timestamp BETWEEN {{DateTime(start_date, '2023-01-01 00:00:00')}} AND {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    GROUP BY user_id
+
+TYPE endpoint
+        

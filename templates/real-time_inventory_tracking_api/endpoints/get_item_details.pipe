@@ -1,0 +1,52 @@
+
+DESCRIPTION >
+    API endpoint to get detailed information about a specific inventory item, including recent transactions
+
+NODE get_item_details_node
+SQL >
+    %
+    WITH recent_transactions AS (
+        SELECT
+            transaction_id,
+            transaction_type,
+            quantity,
+            timestamp,
+            location,
+            user_id,
+            notes
+        FROM inventory_transactions
+        WHERE item_id = {{String(item_id, '')}}
+        ORDER BY timestamp DESC
+        LIMIT {{Int32(transaction_limit, 10)}}
+    )
+    
+    SELECT
+        i.item_id,
+        i.item_name,
+        i.category,
+        i.quantity,
+        i.location,
+        i.last_updated,
+        i.low_stock_threshold,
+        i.unit_price,
+        i.quantity <= i.low_stock_threshold AS is_low_stock,
+        groupArray(recent_transactions.transaction_id) AS transaction_ids,
+        groupArray(recent_transactions.transaction_type) AS transaction_types,
+        groupArray(recent_transactions.quantity) AS transaction_quantities,
+        groupArray(recent_transactions.timestamp) AS transaction_timestamps,
+        groupArray(recent_transactions.user_id) AS transaction_users
+    FROM inventory_items AS i
+    LEFT JOIN recent_transactions ON 1=1
+    WHERE i.item_id = {{String(item_id, '')}}
+    GROUP BY
+        i.item_id,
+        i.item_name,
+        i.category,
+        i.quantity,
+        i.location,
+        i.last_updated,
+        i.low_stock_threshold,
+        i.unit_price
+
+TYPE endpoint
+        

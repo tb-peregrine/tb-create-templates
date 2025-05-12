@@ -1,0 +1,58 @@
+
+DESCRIPTION >
+    Calculates a churn risk score for each customer based on various signals
+
+NODE churn_risk_score_node
+SQL >
+    %
+    SELECT 
+        customer_id,
+        subscription_plan,
+        subscription_amount,
+        billing_cycle,
+        region,
+        datediff('day', last_login_date, now()) as days_since_last_login,
+        number_of_logins,
+        CASE 
+            WHEN payment_status = 'failed' THEN 1
+            ELSE 0
+        END as has_payment_issue,
+        customer_service_tickets,
+        ticket_satisfaction_score,
+        -- Calculate risk score based on signals
+        (
+            datediff('day', last_login_date, now()) * 0.2 +
+            (5 - LEAST(number_of_logins, 5)) * 0.15 +
+            (CASE WHEN payment_status = 'failed' THEN 30 ELSE 0 END) +
+            (customer_service_tickets * 5) +
+            (CASE WHEN ticket_satisfaction_score < 3 THEN 20 ELSE 0 END) +
+            (CASE WHEN datediff('day', last_login_date, now()) > 30 THEN 25 ELSE 0 END)
+        ) as churn_risk_score,
+        CASE
+            WHEN datediff('day', last_login_date, now()) > 30 THEN 'Inactive'
+            WHEN payment_status = 'failed' THEN 'Payment Issue'
+            WHEN ticket_satisfaction_score < 3 AND customer_service_tickets > 0 THEN 'Unsatisfied'
+            WHEN datediff('day', last_login_date, now()) BETWEEN 14 AND 30 THEN 'Disengaging'
+            ELSE 'Engaged'
+        END as customer_status
+    FROM customer_data
+    WHERE customer_id = {{String(customer_id, '')}}
+    {% if defined(customer_id) %}
+    ORDER BY timestamp DESC
+    LIMIT 1
+    {% else %}
+    GROUP BY 
+        customer_id,
+        subscription_plan,
+        subscription_amount, 
+        billing_cycle,
+        region,
+        last_login_date,
+        number_of_logins,
+        payment_status,
+        customer_service_tickets,
+        ticket_satisfaction_score
+    {% end %}
+
+TYPE endpoint
+        

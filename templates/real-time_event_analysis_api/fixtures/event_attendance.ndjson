@@ -1,0 +1,10 @@
+{"event_id": "evt_179", "user_id": "usr_179", "attendance_status": "no-show", "check_in_time": "2025-05-12 03:21:13", "event_type": "concert", "venue": "Studio 5", "timestamp": "2025-05-11 03:21:13"}
+{"event_id": "evt_447", "user_id": "usr_447", "attendance_status": "no-show", "check_in_time": "2025-05-12 03:33:25", "event_type": "webinar", "venue": "Zoom", "timestamp": "2025-05-11 03:33:25"}
+{"event_id": "evt_390", "user_id": "usr_390", "attendance_status": "canceled", "check_in_time": "2025-05-11 20:04:22", "event_type": "conference", "venue": "Grand Hall", "timestamp": "2025-05-11 20:04:22"}
+{"event_id": "evt_241", "user_id": "usr_241", "attendance_status": "attended", "check_in_time": "2025-05-11 20:23:31", "event_type": "workshop", "venue": "Conference Room A", "timestamp": "2025-05-10 20:23:31"}
+{"event_id": "evt_55", "user_id": "usr_55", "attendance_status": "no-show", "check_in_time": "2025-05-12 02:36:37", "event_type": "conference", "venue": "Grand Hall", "timestamp": "2025-05-12 02:36:37"}
+{"event_id": "evt_578", "user_id": "usr_78", "attendance_status": "canceled", "check_in_time": "2025-05-12 01:37:54", "event_type": "meetup", "venue": "Main Auditorium", "timestamp": "2025-05-12 01:37:54"}
+{"event_id": "evt_895", "user_id": "usr_395", "attendance_status": "no-show", "check_in_time": "2025-05-11 17:52:37", "event_type": "conference", "venue": "Grand Hall", "timestamp": "2025-05-11 17:52:37"}
+{"event_id": "evt_742", "user_id": "usr_242", "attendance_status": "canceled", "check_in_time": "2025-05-12 17:35:10", "event_type": "webinar", "venue": "Zoom", "timestamp": "2025-05-12 17:35:10"}
+{"event_id": "evt_267", "user_id": "usr_267", "attendance_status": "no-show", "check_in_time": "2025-05-11 17:49:45", "event_type": "webinar", "venue": "Zoom", "timestamp": "2025-05-11 17:49:45"}
+{"event_id": "evt_82", "user_id": "usr_82", "attendance_status": "canceled", "check_in_time": "2025-05-12 13:22:50", "event_type": "webinar", "venue": "Zoom", "timestamp": "2025-05-12 13:22:50"}

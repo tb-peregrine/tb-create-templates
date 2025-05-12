@@ -1,0 +1,27 @@
+
+DESCRIPTION >
+    Identify trending content based on recent engagement and interaction patterns
+
+NODE trending_content_query
+SQL >
+    %
+    SELECT 
+        content_id,
+        any(text_content) AS sample_text,
+        count() AS interaction_count,
+        sum(engagement_count) AS total_engagement,
+        max(timestamp) AS latest_interaction,
+        groupArray(10)(distinct tags) AS common_tags
+    FROM social_interactions
+    WHERE 
+        timestamp >= now() - interval {{Int32(hours_back, 24)}} hour
+        {% if defined(platform_filter) %}
+        AND platform = {{String(platform_filter, 'all')}}
+        {% end %}
+    GROUP BY content_id
+    HAVING interaction_count >= {{Int32(min_interactions, 10)}}
+    ORDER BY total_engagement DESC
+    LIMIT {{Int32(limit, 50)}}
+
+TYPE endpoint
+        

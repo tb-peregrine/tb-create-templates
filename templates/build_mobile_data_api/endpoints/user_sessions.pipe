@@ -1,0 +1,31 @@
+
+DESCRIPTION >
+    API endpoint to analyze user session metrics
+
+NODE user_sessions_node
+SQL >
+    %
+    SELECT 
+        date(event_time) as day,
+        count(distinct session_id) as total_sessions,
+        count(distinct user_id) as total_users,
+        count(distinct session_id) / count(distinct user_id) as sessions_per_user
+    FROM app_events
+    WHERE 1=1
+    {% if defined(start_date) %}
+    AND event_time >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND event_time <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    {% if defined(country) %}
+    AND country = {{String(country, 'US')}}
+    {% end %}
+    {% if defined(device_type) %}
+    AND device_type = {{String(device_type, 'all')}}
+    {% end %}
+    GROUP BY day
+    ORDER BY day DESC
+
+TYPE endpoint
+        

@@ -1,0 +1,16 @@
+
+DESCRIPTION >
+    Total revenue over time
+
+NODE total_revenue_node
+SQL >
+    SELECT
+        toStartOfInterval(event_time, INTERVAL 15 MINUTE) AS time_bin,
+        sum(price * quantity) AS total_revenue
+    FROM ecommerce_events
+    WHERE event_type = 'purchase'
+    GROUP BY time_bin
+    ORDER BY time_bin
+
+TYPE endpoint
+        

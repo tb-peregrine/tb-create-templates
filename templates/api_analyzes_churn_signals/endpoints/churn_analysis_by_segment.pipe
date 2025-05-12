@@ -1,0 +1,40 @@
+
+DESCRIPTION >
+    Provides churn statistics aggregated by different segments
+
+NODE churn_analysis_node
+SQL >
+    %
+    SELECT 
+        {% if defined(segment_by) %}
+            CASE 
+                WHEN {{String(segment_by, 'subscription_plan')}} = 'subscription_plan' THEN subscription_plan
+                WHEN {{String(segment_by, 'subscription_plan')}} = 'region' THEN region
+                WHEN {{String(segment_by, 'subscription_plan')}} = 'billing_cycle' THEN billing_cycle
+                WHEN {{String(segment_by, 'subscription_plan')}} = 'platform' THEN platform
+                ELSE subscription_plan
+            END as segment,
+        {% else %}
+            subscription_plan as segment,
+        {% end %}
+        count() as total_customers,
+        countIf(churn = 1) as churned_customers,
+        round(countIf(churn = 1) / count() * 100, 2) as churn_percentage,
+        avg(datediff('day', join_date, churn_date)) as avg_days_before_churn,
+        avg(total_spend) as avg_customer_spend,
+        avg(number_of_logins) as avg_logins,
+        avg(customer_service_tickets) as avg_support_tickets,
+        avg(ticket_satisfaction_score) as avg_satisfaction
+    FROM customer_data
+    WHERE 1=1
+    {% if defined(start_date) %}
+        AND timestamp >= {{DateTime(start_date, '2023-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+        AND timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    GROUP BY segment
+    ORDER BY churn_percentage DESC
+
+TYPE endpoint
+        

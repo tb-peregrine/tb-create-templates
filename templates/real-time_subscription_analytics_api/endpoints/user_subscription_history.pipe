@@ -1,0 +1,34 @@
+
+DESCRIPTION >
+    Retrieves subscription history for a specific user
+
+NODE user_subscription_history_node
+SQL >
+    %
+    SELECT 
+        se.event_id,
+        se.user_id,
+        se.subscription_id,
+        se.event_type,
+        se.plan_id,
+        se.plan_name,
+        se.amount,
+        se.currency,
+        se.billing_period,
+        se.timestamp,
+        se.metadata
+    FROM subscription_events se
+    WHERE se.user_id = {{String(user_id, '')}}
+    {% if defined(subscription_id) %}
+    AND se.subscription_id = {{String(subscription_id, '')}}
+    {% end %}
+    {% if defined(start_date) %}
+    AND se.timestamp >= {{DateTime(start_date, '2020-01-01 00:00:00')}}
+    {% end %}
+    {% if defined(end_date) %}
+    AND se.timestamp <= {{DateTime(end_date, '2023-12-31 23:59:59')}}
+    {% end %}
+    ORDER BY se.timestamp DESC
+
+TYPE endpoint
+        

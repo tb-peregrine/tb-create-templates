@@ -1,0 +1,18 @@
+
+DESCRIPTION >
+    Get the current status of a package by its ID
+
+NODE package_status_node
+SQL >
+    %
+    SELECT 
+        package_id,
+        argMax(status, event_timestamp) as current_status,
+        argMax(location, event_timestamp) as current_location,
+        argMax(event_timestamp, event_timestamp) as last_updated,
+        carrier
+    FROM package_events
+    WHERE package_id = {{String(package_id, '')}}
+    GROUP BY package_id, carrier
+
+TYPE endpoint
