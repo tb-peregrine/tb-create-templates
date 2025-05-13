@@ -1,0 +1,12 @@
+{
+    "bg_color": "#0a0a0a",
+    "bg_gradient_colors": null,
+    "bg_gradient_angle": 0,
+    "title_font_color": "#ffffff",
+    "title_font": "/Library/Fonts/Lato-Regular.ttf",
+    "outline_color": "#27f795",
+    "code_font": "/Library/Fonts/iawriterduos-regular-webfont.ttf",
+    "code_font_color": "#dcdcdc",
+    "code_bg": "#151515",
+    "code_browser_bar_color": "#262626"
+}
