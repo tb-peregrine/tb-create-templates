@@ -1,6 +1,8 @@
 # Build a Real-Time Ad Performance Monitoring API with Tinybird
 
-Monitoring the performance of digital advertising campaigns in real-time can significantly enhance the decision-making process for marketers, enabling them to adjust strategies on the fly for optimal performance. This tutorial will walk you through building a real-time ad performance monitoring API using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and pipes, you'll learn how to ingest, transform, and expose your advertising data as API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints) for real-time monitoring and analysis. ## Understanding the data
+Monitoring the performance of digital advertising campaigns in real-time can significantly enhance the decision-making process for marketers, enabling them to adjust strategies on the fly for optimal performance. This tutorial will walk you through building a real-time ad performance monitoring API using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and pipes, you'll learn how to ingest, transform, and expose your advertising data as API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) for real-time monitoring and analysis. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -20,7 +22,7 @@ Imagine your data looks like this:
 ]
 ```
 
-These samples represent the kind of data you might collect from an advertising platform, including impressions and clicks with metadata like IDs, platform, timestamp, and user information. To store this data in Tinybird, you'll create two [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources): `ad_impressions` and `ad_clicks`. Here's what the `.datasource` file for `ad_impressions` might look like:
+These samples represent the kind of data you might collect from an advertising platform, including impressions and clicks with metadata like IDs, platform, timestamp, and user information. To store this data in Tinybird, you'll create two [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV): `ad_impressions` and `ad_clicks`. Here's what the `.datasource` file for `ad_impressions` might look like:
 
 ```json
 DESCRIPTION >
@@ -41,10 +43,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "timestamp, ad_id, campaign_id"
 ```
 
-This schema defines the structure of your data source, including types and keys for optimizing query performance. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This method is ideal for real-time advertising data:
+This schema defines the structure of your data source, including types and keys for optimizing query performance. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This method is ideal for real-time advertising data:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=ad_impressions" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=ad_impressions&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{
        "impression_id": "imp-123456",
@@ -58,9 +60,11 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=ad_impress
      }'
 ```
 
-Additionally, Tinybird supports other ingestion methods like Kafka for event/streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) or S3 connector for batch/file data. ## Transforming data and publishing APIs
+Additionally, Tinybird supports other ingestion methods like Kafka for event/streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) or S3 connector for batch/file data. 
 
-Tinybird's [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes) transform and publish your data as API endpoints. Pipes support batch transformations, real-time transformations, and the creation of API endpoints. For instance, the `campaign_performance_by_platform` pipe aggregates data to show campaign performance by platform:
+## Transforming data and publishing APIs
+
+Tinybird's [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) transform and publish your data as API endpoints. Pipes support batch transformations, real-time transformations, and the creation of API endpoints. For instance, the `campaign_performance_by_platform` pipe aggregates data to show campaign performance by platform:
 
 ```sql
 DESCRIPTION >
@@ -86,15 +90,17 @@ SQL >
 TYPE endpoint
 ```
 
-This pipe creates an endpoint that allows querying campaign performance by platform, leveraging SQL logic and query parameters for flexible analysis. ## Deploying to production
+This pipe creates an endpoint that allows querying campaign performance by platform, leveraging SQL logic and query parameters for flexible analysis. 
+
+## Deploying to production
 
 Deploy your project to Tinybird Cloud with the `tb --cloud deploy` command. This command creates production-ready, scalable API endpoints. Tinybird manages resources as code, enabling integration with CI/CD pipelines and ensuring secure access through token-based authentication. Example API call:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/campaign_performance_by_platform.json?token=$TB_ADMIN_TOKEN&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59&campaign_id=camp-456"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/campaign_performance_by_platform.json?token=%24TB_ADMIN_TOKEN&start_date=2023-01-01+00%3A00%3A00&end_date=2023-12-31+23%3A59%3A59&campaign_id=camp-456&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-In this tutorial, you've learned how to build a real-time ad performance monitoring API with Tinybird, from ingesting data to transforming it and publishing API endpoints. Tinybird simplifies the complexities of real-time data analytics, allowing developers to focus on creating value from their data. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+In this tutorial, you've learned how to build a real-time ad performance monitoring API with Tinybird, from ingesting data to transforming it and publishing API endpoints. Tinybird simplifies the complexities of real-time data analytics, allowing developers to focus on creating value from their data. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

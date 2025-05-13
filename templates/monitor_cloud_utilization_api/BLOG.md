@@ -1,6 +1,8 @@
 # Build a Real-Time Cloud Resource Monitoring API with Tinybird
 
-In this tutorial, you'll learn how to create a real-time API for monitoring cloud resource metrics and detecting anomalies. As cloud infrastructure becomes increasingly dynamic and complex, having instant access to your cloud resources' performance metrics is crucial. By the end of this tutorial, you'll have an API that collects metrics data from various cloud resources, provides [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints) for querying this data, and includes anomaly detection to identify unusual resource behavior. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. With Tinybird's data sources and pipes, you can efficiently store, transform, and query large volumes of data in real-time, making it an ideal platform for implementing a cloud resource monitoring solution. ## Understanding the data
+In this tutorial, you'll learn how to create a real-time API for monitoring cloud resource metrics and detecting anomalies. As cloud infrastructure becomes increasingly dynamic and complex, having instant access to your cloud resources' performance metrics is crucial. By the end of this tutorial, you'll have an API that collects metrics data from various cloud resources, provides [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) for querying this data, and includes anomaly detection to identify unusual resource behavior. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. With Tinybird's data sources and pipes, you can efficiently store, transform, and query large volumes of data in real-time, making it an ideal platform for implementing a cloud resource monitoring solution. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -31,10 +33,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "timestamp, resource_id, metric_name"
 ```
 
-The schema design choices, such as the ENGINE_SORTING_KEY, are made to optimize query performance, especially for time-series data. To ingest data into this data source, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This API is designed for low-latency, real-time data ingestion:
+The schema design choices, such as the ENGINE_SORTING_KEY, are made to optimize query performance, especially for time-series data. To ingest data into this data source, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This API is designed for low-latency, real-time data ingestion:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=cloud_resource_metrics" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=cloud_resource_metrics&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
   -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
   -d '{
     "timestamp": "2023-11-15 12:30:45",
@@ -50,9 +52,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=cloud_reso
 ```
 
 In addition to the Events API, Tinybird provides other methods for data ingestion:
-- For event or streaming data, the Kafka connector can be used for efficient, scalable ingestion. - For batch or file-based data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector offer straightforward options for bulk data upload. ## Transforming data and publishing APIs
+- For event or streaming data, the Kafka connector can be used for efficient, scalable ingestion. - For batch or file-based data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector offer straightforward options for bulk data upload. 
 
-Tinybird's pipes are used for transforming data and publishing APIs. Pipes allow for batch transformations (copies), real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views)), and creating API endpoints. ### Anomaly Detection Endpoint
+## Transforming data and publishing APIs
+
+Tinybird's pipes are used for transforming data and publishing APIs. Pipes allow for batch transformations (copies), real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV)), and creating API endpoints. 
+
+### Anomaly Detection Endpoint
 
 For example, to detect anomalies in resource metrics, we use the following SQL query in a Tinybird pipe:
 
@@ -77,7 +83,9 @@ SQL >
     ... TYPE endpoint
 ```
 
-This query calculates the average and standard deviation of metric values for each resource and identifies records where the metric value deviates significantly from the average, indicating a potential anomaly. ### Querying Resource Metrics
+This query calculates the average and standard deviation of metric values for each resource and identifies records where the metric value deviates significantly from the average, indicating a potential anomaly. 
+
+### Querying Resource Metrics
 
 To create an endpoint for querying resource metrics with flexible filtering options, the following pipe is defined:
 
@@ -102,7 +110,9 @@ SQL >
 ```
 
 
-### Resource Summary Statistics
+#
+
+## Resource Summary Statistics
 
 To summarize statistics (avg, min, max) for resource metrics over a specified time period:
 
@@ -127,13 +137,13 @@ SQL >
 
 ## Deploying to production
 
-Deploying your project to production in Tinybird involves using the `tb --cloud deploy` command. This command deploys your data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes) to Tinybird Cloud, creating scalable, production-ready API endpoints. Tinybird manages resources as code, which facilitates integration with CI/CD pipelines and ensures that your data infrastructure is version controlled and easily deployable. For securing your APIs, Tinybird uses token-based authentication. Here's how you can call a deployed endpoint:
+Deploying your project to production in Tinybird involves using the `tb --cloud deploy` command. This command deploys your data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to Tinybird Cloud, creating scalable, production-ready API endpoints. Tinybird manages resources as code, which facilitates integration with CI/CD pipelines and ensures that your data infrastructure is version controlled and easily deployable. For securing your APIs, Tinybird uses token-based authentication. Here's how you can call a deployed endpoint:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/get_resource_metrics.json?token=$TB_ADMIN_TOKEN&..."
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/get_resource_metrics.json?token=%24TB_ADMIN_TOKEN&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-In this tutorial, you've learned how to build a real-time API for monitoring cloud resource metrics, including how to ingest data, transform it, and expose it through scalable API endpoints using Tinybird. This solution enables you to monitor your cloud resources efficiently, detect anomalies, and make data-driven decisions in real-time. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes. Tinybird is free to start, with no time limit and no credit card required, allowing you to experience the power of real-time data processing and analytics firsthand.
+In this tutorial, you've learned how to build a real-time API for monitoring cloud resource metrics, including how to ingest data, transform it, and expose it through scalable API endpoints using Tinybird. This solution enables you to monitor your cloud resources efficiently, detect anomalies, and make data-driven decisions in real-time. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes. Tinybird is free to start, with no time limit and no credit card required, allowing you to experience the power of real-time data processing and analytics firsthand.

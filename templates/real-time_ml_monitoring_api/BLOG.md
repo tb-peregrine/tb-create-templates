@@ -1,6 +1,8 @@
 # Build a Real-Time API for Monitoring Machine Learning Model Performance with Tinybird
 
-Machine learning models are at the heart of many modern applications, driving everything from recommendation systems to price prediction engines. However, ensuring these models perform as expected in production environments is a constant challenge. Model drift, inaccurate predictions, and changing data distributions can all degrade model performance over time. To address these challenges, we'll walk through building a real-time API for monitoring machine learning model performance using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), we can efficiently track model predictions, calculate performance metrics, and detect model drift to ensure optimal model performance. ## Understanding the data
+Machine learning models are at the heart of many modern applications, driving everything from recommendation systems to price prediction engines. However, ensuring these models perform as expected in production environments is a constant challenge. Model drift, inaccurate predictions, and changing data distributions can all degrade model performance over time. To address these challenges, we'll walk through building a real-time API for monitoring machine learning model performance using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), we can efficiently track model predictions, calculate performance metrics, and detect model drift to ensure optimal model performance. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -30,10 +32,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "timestamp, model_id, prediction_id"
 ```
 
-This schema design, with a sorting key on `timestamp`, `model_id`, and `prediction_id`, optimizes query performance for time-based analyses and model-specific investigations. To ingest data into this source, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. Here's an example of how to use it:
+This schema design, with a sorting key on `timestamp`, `model_id`, and `prediction_id`, optimizes query performance for time-based analyses and model-specific investigations. To ingest data into this source, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. Here's an example of how to use it:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=ml_model_predictions" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=ml_model_predictions&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{
        "timestamp": "2023-05-15 14:30:00",
@@ -47,9 +49,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=ml_model_p
      }'
 ```
 
-Other ingestion methods include the Kafka connector for streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) or S3 connector for batch/file data. ## Transforming data and publishing APIs
+Other ingestion methods include the Kafka connector for streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) or S3 connector for batch/file data. 
 
-Tinybird facilitates data transformation and API publication through the concept of pipes. Pipes can perform batch transformations, real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views)), and create API endpoints. Let's dive into the endpoints we are going to build. ### Model Performance Metrics
+## Transforming data and publishing APIs
+
+Tinybird facilitates data transformation and API publication through the concept of pipes. Pipes can perform batch transformations, real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV)), and create API endpoints. Let's dive into the endpoints we are going to build. 
+
+### Model Performance Metrics
 
 This endpoint calculates key performance metrics such as RMSE (Root Mean Square Error), MAE (Mean Absolute Error), and prediction count over a specified time period. ```sql
 DESCRIPTION >
@@ -80,11 +86,13 @@ TYPE endpoint
 This SQL logic groups predictions by `model_id`, `model_version`, and `environment` to compute the performance metrics. Query parameters like `model_id` and `time_window` make the API flexible, allowing users to filter the results based on their needs. Example API call:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/model_performance_metrics.json?token=$TB_ADMIN_TOKEN&model_id=price_prediction_model&model_version=v1.2.3&environment=production&time_window=48"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/model_performance_metrics.json?token=%24TB_ADMIN_TOKEN&model_id=price_prediction_model&model_version=v1.2.3&environment=production&time_window=48&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
-### Model Drift Detection
+#
+
+## Model Drift Detection
 
 This endpoint detects potential model drift by comparing recent performance metrics with historical averages. ```sql
 DESCRIPTION >
@@ -145,7 +153,7 @@ TYPE endpoint
 This pipe uses Common Table Expressions (CTEs) to calculate recent and historical MAE, facilitating drift detection by comparing these metrics. Example API call:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/model_drift_detection.json?token=$TB_ADMIN_TOKEN&model_id=price_prediction_model&environment=production&recent_window_hours=6&historical_window_hours=168"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/model_drift_detection.json?token=%24TB_ADMIN_TOKEN&model_id=price_prediction_model&environment=production&recent_window_hours=6&historical_window_hours=168&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
@@ -157,13 +165,13 @@ To deploy these resources to the Tinybird Cloud, use:
 tb --cloud deploy
 ```
 
-This command creates production-ready, scalable API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). Tinybird manages resources as code, making it easy to integrate with CI/CD pipelines. Secure your APIs with token-based authentication. Example call to the deployed endpoint:
+This command creates production-ready, scalable API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). Tinybird manages resources as code, making it easy to integrate with CI/CD pipelines. Secure your APIs with token-based authentication. Example call to the deployed endpoint:
 
 ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/model_performance_metrics.json?token=<YOUR_TOKEN>&model_id=price_prediction_model&model_version=v1.2.3&environment=production&time_window=48"
+curl -X GET "https://api.tinybird.co/v0/pipes/model_performance_metrics.json?token=%3CYOUR_TOKEN&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV>&model_id=price_prediction_model&model_version=v1.2.3&environment=production&time_window=48"
 ```
 
 
 ## Conclusion
 
-In this tutorial, we've built a real-time API for monitoring machine learning model performance using Tinybird. We covered how to ingest model prediction data, calculate performance metrics, detect model drift, and securely deploy APIs. Tinybird simplifies the process of building and managing real-time data APIs, making it an excellent tool for monitoring machine learning models in production. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+In this tutorial, we've built a real-time API for monitoring machine learning model performance using Tinybird. We covered how to ingest model prediction data, calculate performance metrics, detect model drift, and securely deploy APIs. Tinybird simplifies the process of building and managing real-time data APIs, making it an excellent tool for monitoring machine learning models in production. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

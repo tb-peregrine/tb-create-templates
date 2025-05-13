@@ -1,6 +1,8 @@
 # Build a Real-Time Inventory Tracking API with Tinybird
 
-Keeping accurate track of inventory levels across multiple warehouses in real-time can be a daunting task for any organization. Traditional approaches often involve batch processing which can lead to data latency, impacting decision-making and operational efficiency. In this tutorial, we'll walk through how to build a real-time inventory tracking API using Tinybird. This API will enable you to query current stock levels, view recent inventory movements, and get summary statistics for each warehouse in real-time. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), you can ingest, transform, and expose your inventory data through high-performance APIs in a matter of minutes. Let's dive into the technical steps to implement this solution. ## Understanding the data
+Keeping accurate track of inventory levels across multiple warehouses in real-time can be a daunting task for any organization. Traditional approaches often involve batch processing which can lead to data latency, impacting decision-making and operational efficiency. In this tutorial, we'll walk through how to build a real-time inventory tracking API using Tinybird. This API will enable you to query current stock levels, view recent inventory movements, and get summary statistics for each warehouse in real-time. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), you can ingest, transform, and expose your inventory data through high-performance APIs in a matter of minutes. Let's dive into the technical steps to implement this solution. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -29,17 +31,21 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "warehouse_id, product_id, timestamp"
 ```
 
-This schema is designed to optimize query performance by sorting data by `warehouse_id`, `product_id`, and `timestamp`. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. It provides low latency and real-time ingestion capabilities. Here's how you can send data to your `inventory` data source:
+This schema is designed to optimize query performance by sorting data by `warehouse_id`, `product_id`, and `timestamp`. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. It provides low latency and real-time ingestion capabilities. Here's how you can send data to your `inventory` data source:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=inventory" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=inventory&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{"product_id":"product123","warehouse_id":"warehouseA","quantity":10,"timestamp":"2024-01-01 12:00:00","operation":"add","batch_id":"batch001","unit_price":25.50}'
 ```
 
-Other ingestion methods include the Kafka connector for event/streaming data, which offers built-in scalability and fault tolerance, and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector for batch/file data, allowing for efficient bulk data uploads. ## Transforming data and publishing APIs
+Other ingestion methods include the Kafka connector for event/streaming data, which offers built-in scalability and fault tolerance, and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector for batch/file data, allowing for efficient bulk data uploads. 
 
-With Tinybird, transforming data and publishing APIs is done through pipes. Pipes allow for batch transformations, real-time transformations, and the creation of API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). ### Endpoint: warehouse_summary
+## Transforming data and publishing APIs
+
+With Tinybird, transforming data and publishing APIs is done through pipes. Pipes allow for batch transformations, real-time transformations, and the creation of API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). 
+
+### Endpoint: warehouse_summary
 
 This endpoint provides a summary of inventory by warehouse. It includes the number of unique products, total items, and the total inventory value. Here's the complete pipe code:
 
@@ -69,7 +75,9 @@ SQL >
 TYPE endpoint
 ```
 
-This SQL leverages Tinybird's templating logic to make the API flexible, allowing optional filtering by `warehouse_id`. ### Endpoint: inventory_current
+This SQL leverages Tinybird's templating logic to make the API flexible, allowing optional filtering by `warehouse_id`. 
+
+### Endpoint: inventory_current
 
 This endpoint returns the current stock level for a specific product in a specific warehouse. Notice how the SQL logic aggregates quantities by operation type:
 
@@ -102,7 +110,9 @@ TYPE endpoint
 ```
 
 
-### Endpoint: inventory_movements
+#
+
+## Endpoint: inventory_movements
 
 This pipe provides a detailed log of inventory movements within a specified date range, demonstrating the use of date parameters and a limit to control the output:
 
@@ -150,12 +160,14 @@ TYPE endpoint
 
 ## Deploying to production
 
-Deploying your project to Tinybird Cloud is straightforward with the `tb --cloud deploy` command. This command deploys your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources) and pipes, creating production-ready, scalable API endpoints. Tinybird manages resources as code, enabling integration with CI/CD pipelines for seamless deployment workflows. Here's an example of how to call a deployed endpoint:
+Deploying your project to Tinybird Cloud is straightforward with the `tb --cloud deploy` command. This command deploys your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and pipes, creating production-ready, scalable API endpoints. Tinybird manages resources as code, enabling integration with CI/CD pipelines for seamless deployment workflows. Here's an example of how to call a deployed endpoint:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/inventory_current.json?token=$TB_ADMIN_TOKEN&product_id=product123&warehouse_id=warehouseA"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/inventory_current.json?token=%24TB_ADMIN_TOKEN&product_id=product123&warehouse_id=warehouseA&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
-Token-based authentication ensures your APIs are secure and only accessible to authorized users. ## Conclusion
+Token-based authentication ensures your APIs are secure and only accessible to authorized users. 
 
-In this tutorial, we've covered how to build a real-time inventory tracking API using Tinybird. By following these steps, you've seen how to ingest data in real-time, transform it through pipes, and publish flexible, scalable APIs. Using Tinybird for this use case brings significant technical benefits, including the ability to process and analyze large volumes of data in real-time, the flexibility to create dynamic APIs, and the ease of deploying and managing your data infrastructure as code. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+## Conclusion
+
+In this tutorial, we've covered how to build a real-time inventory tracking API using Tinybird. By following these steps, you've seen how to ingest data in real-time, transform it through pipes, and publish flexible, scalable APIs. Using Tinybird for this use case brings significant technical benefits, including the ability to process and analyze large volumes of data in real-time, the flexibility to create dynamic APIs, and the ease of deploying and managing your data infrastructure as code. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

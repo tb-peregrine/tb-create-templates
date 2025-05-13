@@ -1,6 +1,8 @@
 # Build a Real-Time Fitness Wearable Data Analysis API with Tinybird
 
-In the realm of health and fitness technology, the ability to analyze wearable device data in real-time can offer users immediate insights into their physical activities, heart rate patterns, and overall health metrics. Crafting an API to process this data efficiently requires a robust backend capable of handling high-velocity data ingestion and complex analytical queries. This tutorial guides you through building an API using Tinybird, which ingests raw fitness metrics like steps, heart rate, and calories burned, and provides [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints) for retrieving daily summaries, recent activity, and heart rate analysis. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. It leverages data sources and pipes to ingest, transform, and serve large volumes of data through high-performance APIs. In this tutorial, we'll use Tinybird to implement a solution that allows for real-time analysis of fitness wearable data, providing valuable insights into individual user activities and health trends. ## Understanding the data
+In the realm of health and fitness technology, the ability to analyze wearable device data in real-time can offer users immediate insights into their physical activities, heart rate patterns, and overall health metrics. Crafting an API to process this data efficiently requires a robust backend capable of handling high-velocity data ingestion and complex analytical queries. This tutorial guides you through building an API using Tinybird, which ingests raw fitness metrics like steps, heart rate, and calories burned, and provides [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) for retrieving daily summaries, recent activity, and heart rate analysis. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. It leverages data sources and pipes to ingest, transform, and serve large volumes of data through high-performance APIs. In this tutorial, we'll use Tinybird to implement a solution that allows for real-time analysis of fitness wearable data, providing valuable insights into individual user activities and health trends. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -29,10 +31,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "user_id, timestamp"
 ```
 
-This schema includes types and keys that ensure efficient data storage and querying. For instance, sorting by `user_id` and `timestamp` improves the performance of time-series queries. Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request:
+This schema includes types and keys that ensure efficient data storage and querying. For instance, sorting by `user_id` and `timestamp` improves the performance of time-series queries. Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=fitness_data" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=fitness_data&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
     -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
     -d '{
       "user_id": "user123",
@@ -47,9 +49,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=fitness_da
     }'
 ```
 
-This ingestion method is particularly suited for real-time data with low latency. Other ingestion options include a Kafka connector for event/streaming data, which allows for reliable, scalable ingestion, and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector for batch/file data. ## Transforming data and publishing APIs
+This ingestion method is particularly suited for real-time data with low latency. Other ingestion options include a Kafka connector for event/streaming data, which allows for reliable, scalable ingestion, and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector for batch/file data. 
 
-Tinybird's [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes) enable batch and real-time data transformations and the creation of API endpoints. Let's explore how to use pipes to build our fitness data analysis API. ### Daily User Summary
+## Transforming data and publishing APIs
+
+Tinybird's [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) enable batch and real-time data transformations and the creation of API endpoints. Let's explore how to use pipes to build our fitness data analysis API. 
+
+### Daily User Summary
 
 The `user_daily_summary` pipe summarizes fitness metrics by user and day:
 
@@ -79,7 +85,9 @@ SQL >
 TYPE endpoint
 ```
 
-This pipe creates an endpoint that aggregates daily fitness data for a user, allowing for flexible date range queries. The SQL logic demonstrates how to efficiently summarize time-series data. ### Recent Activity
+This pipe creates an endpoint that aggregates daily fitness data for a user, allowing for flexible date range queries. The SQL logic demonstrates how to efficiently summarize time-series data. 
+
+### Recent Activity
 
 The `recent_activity` pipe retrieves the most recent fitness data entries for a specific user:
 
@@ -108,7 +116,9 @@ SQL >
 TYPE endpoint
 ```
 
-This endpoint enables querying of the latest activities by user, showcasing the real-time capabilities of Tinybird APIs. ### Heart Rate Analysis
+This endpoint enables querying of the latest activities by user, showcasing the real-time capabilities of Tinybird APIs. 
+
+### Heart Rate Analysis
 
 The `heart_rate_analysis` pipe provides heart rate statistics for users over a specified period:
 
@@ -136,7 +146,9 @@ SQL >
 TYPE endpoint
 ```
 
-This analysis is critical for monitoring cardiovascular health and exercise intensity over time. ## Deploying to production
+This analysis is critical for monitoring cardiovascular health and exercise intensity over time. 
+
+## Deploying to production
 
 Deploy your Tinybird project to the cloud with the following command:
 
@@ -147,9 +159,11 @@ tb --cloud deploy
 This command makes your data APIs production-ready and scalable. Tinybird manages resources as code, facilitating integration with CI/CD pipelines and ensuring that your APIs are secure and performant. Here's an example of how to call one of the deployed endpoints:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/user_daily_summary.json?token=$TB_ADMIN_TOKEN&user_id=user123&start_date=2023-01-01&end_date=2023-12-31"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/user_daily_summary.json?token=%24TB_ADMIN_TOKEN&user_id=user123&start_date=2023-01-01&end_date=2023-12-31&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
-Token-based authentication secures your endpoints, ensuring data privacy and integrity. ## Conclusion
+Token-based authentication secures your endpoints, ensuring data privacy and integrity. 
 
-In this tutorial, we've built a real-time API for analyzing fitness wearable data using Tinybird. We've covered data ingestion, transformation, and the creation of API endpoints tailored for real-time fitness data analysis, including daily summaries, recent activity, and heart rate analysis. The benefits of using Tinybird for this use case include efficient data management, real-time analytics, and scalable, secure API endpoints. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes. Start for free, with no time limit and no credit card required, and leverage the power of real-time data analytics for your projects.
+## Conclusion
+
+In this tutorial, we've built a real-time API for analyzing fitness wearable data using Tinybird. We've covered data ingestion, transformation, and the creation of API endpoints tailored for real-time fitness data analysis, including daily summaries, recent activity, and heart rate analysis. The benefits of using Tinybird for this use case include efficient data management, real-time analytics, and scalable, secure API endpoints. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes. Start for free, with no time limit and no credit card required, and leverage the power of real-time data analytics for your projects.

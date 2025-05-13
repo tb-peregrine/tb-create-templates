@@ -1,6 +1,8 @@
 # Build a Real-time Package Tracking API with Tinybird
 
-Tracking packages across different carriers and understanding their delivery statuses in real-time can be a complex data engineering challenge. This tutorial will guide you through creating a real-time package tracking API that provides current status information, full delivery history, and carrier performance analytics. We'll use Tinybird, a data analytics backend for software developers. Tinybird helps you build real-time analytics APIs without the hassle of setting up or managing the underlying infrastructure. It leverages data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes) to ingest, transform, and serve your data through fast, scalable APIs. By the end of this tutorial, you'll know how to ingest package tracking data, transform this data to derive meaningful insights, and publish APIs that allow real-time tracking of packages. Let's get started. ## Understanding the data
+Tracking packages across different carriers and understanding their delivery statuses in real-time can be a complex data engineering challenge. This tutorial will guide you through creating a real-time package tracking API that provides current status information, full delivery history, and carrier performance analytics. We'll use Tinybird, a data analytics backend for software developers. Tinybird helps you build real-time analytics APIs without the hassle of setting up or managing the underlying infrastructure. It leverages data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to ingest, transform, and serve your data through fast, scalable APIs. By the end of this tutorial, you'll know how to ingest package tracking data, transform this data to derive meaningful insights, and publish APIs that allow real-time tracking of packages. Let's get started. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -29,10 +31,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(event_timestamp)"
 ENGINE_SORTING_KEY "package_id, event_timestamp"
 ```
 
-In this schema, we've chosen types and keys to optimize query performance. The `ENGINE_SORTING_KEY` on `package_id` and `event_timestamp` allows for efficient filtering and ordering of package events. To ingest data into this data source, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) enables streaming of JSON/NDJSON events from your application frontend or backend with a simple HTTP request. It's designed for real-time, low latency ingestion. Here's how you can ingest data into the `package_events` data source:
+In this schema, we've chosen types and keys to optimize query performance. The `ENGINE_SORTING_KEY` on `package_id` and `event_timestamp` allows for efficient filtering and ordering of package events. To ingest data into this data source, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) enables streaming of JSON/NDJSON events from your application frontend or backend with a simple HTTP request. It's designed for real-time, low latency ingestion. Here's how you can ingest data into the `package_events` data source:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=package_events" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=package_events&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
     -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
     -d '{
         "package_id": "PKG12345678", 
@@ -45,9 +47,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=package_ev
     }'
 ```
 
-For event/streaming data, the Kafka connector is also an option that offers benefits like robust integration with existing Kafka pipelines. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector facilitate bulk ingestion. ## Transforming data and publishing APIs
+For event/streaming data, the Kafka connector is also an option that offers benefits like robust integration with existing Kafka pipelines. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector facilitate bulk ingestion. 
 
-Tinybird transforms data through pipes, which can perform batch transformations or real-time transformations, and even publish these transformations as API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). ### Real-time status and history APIs
+## Transforming data and publishing APIs
+
+Tinybird transforms data through pipes, which can perform batch transformations or real-time transformations, and even publish these transformations as API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). 
+
+### Real-time status and history APIs
 
 Let's start with the `package_status` endpoint, which retrieves the most recent status of a package:
 
@@ -93,7 +99,9 @@ SQL >
 TYPE endpoint
 ```
 
-The SQL query simply orders the events by `event_timestamp` in descending order, providing a complete timeline of the package's journey. ### Carrier performance summary
+The SQL query simply orders the events by `event_timestamp` in descending order, providing a complete timeline of the package's journey. 
+
+### Carrier performance summary
 
 The `carrier_status_summary` endpoint aggregates delivery statuses by carrier:
 
@@ -127,7 +135,7 @@ TYPE endpoint
 This pipe demonstrates the use of conditional templating (`{% if defined(carrier) %}`) to optionally filter results by a specific carrier. To call these APIs, you can use the `curl` command with the appropriate parameters:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/package_status.json?token=$TB_ADMIN_TOKEN&package_id=PKG12345678"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/package_status.json?token=%24TB_ADMIN_TOKEN&package_id=PKG12345678&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
@@ -142,10 +150,10 @@ tb --cloud deploy
 Tinybird manages resources as code, making it easy to integrate with CI/CD pipelines for automated deployments. Furthermore, token-based authentication secures your APIs. Here's how you might call a deployed endpoint:
 
 ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/package_status.json?token=YOUR_PRODUCTION_TOKEN&package_id=PKG12345678"
+curl -X GET "https://api.tinybird.co/v0/pipes/package_status.json?token=YOUR_PRODUCTION_TOKEN&package_id=PKG12345678&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-This tutorial walked you through setting up a real-time package tracking API using Tinybird. We covered how to ingest event data, transform it through pipes, and publish APIs for tracking package status, history, and carrier performance. Tinybird enables developers to build and deploy real-time data APIs at scale, without worrying about infrastructure. Whether you're handling package tracking or any other real-time data use case, Tinybird provides the tools you need to deliver fast, reliable insights. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+This tutorial walked you through setting up a real-time package tracking API using Tinybird. We covered how to ingest event data, transform it through pipes, and publish APIs for tracking package status, history, and carrier performance. Tinybird enables developers to build and deploy real-time data APIs at scale, without worrying about infrastructure. Whether you're handling package tracking or any other real-time data use case, Tinybird provides the tools you need to deliver fast, reliable insights. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

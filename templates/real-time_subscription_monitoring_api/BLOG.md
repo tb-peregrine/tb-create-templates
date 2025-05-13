@@ -1,6 +1,8 @@
 # Build a Real-Time Subscription Analytics API with Tinybird
 
-In the digital age, where subscription-based models are prevalent across industries, monitoring and analyzing subscription data in real-time can be a game-changer for businesses. Tracking subscription renewals, churn rates, and overall patterns requires a robust solution that can handle streaming data and provide immediate insights through APIs. This is where Tinybird steps in. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. It offers a local-first development workflow, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), developers can efficiently ingest, transform, and expose subscription data through high-performance APIs. This tutorial guides you through building a real-time Subscription Analytics API using Tinybird, focusing on tracking subscription events and analyzing metrics such as renewal rates, churn patterns, and more. ## Understanding the data
+In the digital age, where subscription-based models are prevalent across industries, monitoring and analyzing subscription data in real-time can be a game-changer for businesses. Tracking subscription renewals, churn rates, and overall patterns requires a robust solution that can handle streaming data and provide immediate insights through APIs. This is where Tinybird steps in. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. It offers a local-first development workflow, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), developers can efficiently ingest, transform, and expose subscription data through high-performance APIs. This tutorial guides you through building a real-time Subscription Analytics API using Tinybird, focusing on tracking subscription events and analyzing metrics such as renewal rates, churn patterns, and more. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -31,10 +33,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "customer_id, subscription_id, timestamp"
 ```
 
-For ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) enables you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This approach ensures low latency and real-time data availability. Here's how you can ingest data into your `subscription_events` datasource:
+For ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) enables you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This approach ensures low latency and real-time data availability. Here's how you can ingest data into your `subscription_events` datasource:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=subscription_events" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=subscription_events&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{
         "subscription_id": "sub_12345",
@@ -49,9 +51,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=subscripti
      }'
 ```
 
-Additionally, for event/streaming data, the Kafka connector provides a robust method for ingesting data in real-time. For batch/file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector facilitate efficient data uploads. ## Transforming data and publishing APIs
+Additionally, for event/streaming data, the Kafka connector provides a robust method for ingesting data in real-time. For batch/file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector facilitate efficient data uploads. 
 
-Tinybird's pipes enable you to perform batch transformations, create [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views) for optimized data querying, and publish API endpoints directly from your SQL queries. ### Subscription Overview API
+## Transforming data and publishing APIs
+
+Tinybird's pipes enable you to perform batch transformations, create [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) for optimized data querying, and publish API endpoints directly from your SQL queries. 
+
+### Subscription Overview API
 
 This endpoint provides a comprehensive overview of subscription metrics:
 
@@ -73,7 +79,9 @@ SQL >
 ... TYPE endpoint
 ```
 
-This SQL query calculates total subscriptions, new subscriptions, renewals, cancellations, renewal rate, and churn rate. The query parameters allow for filtering based on time range and subscription plan. ### Churn Analysis API
+This SQL query calculates total subscriptions, new subscriptions, renewals, cancellations, renewal rate, and churn rate. The query parameters allow for filtering based on time range and subscription plan. 
+
+### Churn Analysis API
 
 Analyzing subscription churn patterns is crucial for understanding customer retention:
 
@@ -93,7 +101,9 @@ SQL >
 ... TYPE endpoint
 ```
 
-This query groups cancellations by month and plan, providing insights into churn patterns and potential revenue loss. ### Renewal Rates API
+This query groups cancellations by month and plan, providing insights into churn patterns and potential revenue loss. 
+
+### Renewal Rates API
 
 Tracking renewal rates over time helps assess the effectiveness of retention strategies:
 
@@ -107,7 +117,9 @@ SQL >
 ... TYPE endpoint
 ```
 
-The query calculates the renewal rate by comparing eligible renewals against actual renewals, grouped by month and plan. ## Deploying to production
+The query calculates the renewal rate by comparing eligible renewals against actual renewals, grouped by month and plan. 
+
+## Deploying to production
 
 Deploy your project to Tinybird Cloud with the following command:
 
@@ -115,13 +127,13 @@ Deploy your project to Tinybird Cloud with the following command:
 tb --cloud deploy
 ```
 
-This command prepares your data sources and pipes for production, creating scalable, high-performance API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). Tinybird manages your resources as code, making it straightforward to integrate with CI/CD pipelines. Secure your APIs with token-based authentication. To call your deployed endpoints, use:
+This command prepares your data sources and pipes for production, creating scalable, high-performance API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). Tinybird manages your resources as code, making it straightforward to integrate with CI/CD pipelines. Secure your APIs with token-based authentication. To call your deployed endpoints, use:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/your_endpoint.json?token=$TB_ADMIN_TOKEN&parameters"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/your_endpoint.json?token=%24TB_ADMIN_TOKEN&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-In this tutorial, you've learned how to build a Subscription Analytics API using Tinybird, from ingesting streaming data to transforming it and publishing real-time APIs. Tinybird simplifies complex data engineering tasks, enabling you to focus on delivering value from your data. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+In this tutorial, you've learned how to build a Subscription Analytics API using Tinybird, from ingesting streaming data to transforming it and publishing real-time APIs. Tinybird simplifies complex data engineering tasks, enabling you to focus on delivering value from your data. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

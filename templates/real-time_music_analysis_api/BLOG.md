@@ -1,6 +1,8 @@
 # Build a Music Streaming Analytics API with Tinybird
 
-Tracking and analyzing music streaming behavior offers valuable insights into user preferences, popular tracks, and emerging genre trends. However, processing and querying large volumes of streaming data in real-time can be challenging. This is where Tinybird comes in. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), developers can efficiently implement real-time analytics APIs that handle streaming data at scale. This tutorial will walk you through creating a music streaming analytics API using Tinybird, focusing on tracking user listening patterns, identifying popular tracks, analyzing user activity, and monitoring genre trends over time. We'll start by setting up the data sources, then transform the data and publish the APIs, and finally, deploy to production. ## Understanding the data
+Tracking and analyzing music streaming behavior offers valuable insights into user preferences, popular tracks, and emerging genre trends. However, processing and querying large volumes of streaming data in real-time can be challenging. This is where Tinybird comes in. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), developers can efficiently implement real-time analytics APIs that handle streaming data at scale. This tutorial will walk you through creating a music streaming analytics API using Tinybird, focusing on tracking user listening patterns, identifying popular tracks, analyzing user activity, and monitoring genre trends over time. We'll start by setting up the data sources, then transform the data and publish the APIs, and finally, deploy to production. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -33,10 +35,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(stream_start_time)"
 ENGINE_SORTING_KEY "stream_start_time, country, user_id"
 ```
 
-The schema design choices, such as sorting keys, significantly impact query performance. Sorting by `stream_start_time`, `country`, and `user_id` optimizes queries that filter by these attributes. Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request, enabling real-time data ingestion with low latency. Here's how you can ingest the sample data:
+The schema design choices, such as sorting keys, significantly impact query performance. Sorting by `stream_start_time`, `country`, and `user_id` optimizes queries that filter by these attributes. Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request, enabling real-time data ingestion with low latency. Here's how you can ingest the sample data:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=music_streams" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=music_streams&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
     -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
     -d '{
     "stream_id": "s123456",
@@ -53,9 +55,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=music_stre
 }'
 ```
 
-Other ingestion methods include the Kafka connector for streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) for batch/file data, offering flexibility based on your data pipeline needs. ## Transforming data and publishing APIs
+Other ingestion methods include the Kafka connector for streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) for batch/file data, offering flexibility based on your data pipeline needs. 
 
-Tinybird transforms data through pipes, which can perform batch transformations, real-time transformations, and even publish API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints) directly from SQL queries. ### Top Tracks API
+## Transforming data and publishing APIs
+
+Tinybird transforms data through pipes, which can perform batch transformations, real-time transformations, and even publish API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) directly from SQL queries. 
+
+### Top Tracks API
 
 Let's start with an API endpoint that returns the top tracks within a given time period, which can be filtered by genre and country:
 
@@ -85,18 +91,20 @@ TYPE endpoint
 This SQL query demonstrates the use of query parameters (`start_date`, `end_date`, `genre`, `country`, and `limit`) to make the API flexible and cater to different user requests. Here's how to call this API with specific parameters:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/top_tracks.json?token=$TB_ADMIN_TOKEN&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59&genre=rock&country=US&limit=5"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/top_tracks.json?token=%24TB_ADMIN_TOKEN&start_date=2023-01-01+00%3A00%3A00&end_date=2023-12-31+23%3A59%3A59&genre=rock&country=US&limit=5&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
-The other endpoints, `user_activity` and `genre_trends`, follow similar patterns, creating APIs for analyzing user activity and genre popularity trends over time. ## Deploying to production
+The other endpoints, `user_activity` and `genre_trends`, follow similar patterns, creating APIs for analyzing user activity and genre popularity trends over time. 
+
+## Deploying to production
 
 Deploying your project to Tinybird Cloud is straightforward with the `tb --cloud deploy` command. This action creates production-ready, scalable API endpoints. Tinybird's approach to resource management as code enables seamless integration with CI/CD pipelines, ensuring your data APIs are always up-to-date and secure. For example, to call a deployed endpoint securely, you use a token-based authentication:
 
 ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/top_tracks.json?token=$TB_ADMIN_TOKEN&..."
+curl -X GET "https://api.tinybird.co/v0/pipes/top_tracks.json?token=%24TB_ADMIN_TOKEN&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-In this tutorial, you've learned how to build a music streaming analytics API using Tinybird, from ingesting streaming data to transforming this data and publishing real-time APIs. Tinybird's capabilities enable developers to handle large volumes of data efficiently, offering scalability and flexibility in data analytics projects. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+In this tutorial, you've learned how to build a music streaming analytics API using Tinybird, from ingesting streaming data to transforming this data and publishing real-time APIs. Tinybird's capabilities enable developers to handle large volumes of data efficiently, offering scalability and flexibility in data analytics projects. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

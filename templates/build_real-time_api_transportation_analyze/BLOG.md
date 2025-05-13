@@ -1,6 +1,8 @@
 # Build a Real-Time Public Transportation Usage Analytics API with Tinybird
 
-In the realm of urban planning and public transportation, having access to real-time data can significantly improve decision-making processes. For instance, understanding how passengers use different transportation modes, identifying the most popular routes, and analyzing hourly usage trends are crucial for optimizing routes, schedules, and vehicle allocations. This tutorial will guide you through creating a real-time API for analyzing public transportation usage patterns using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), you can ingest, transform, and serve large-scale data in real-time, making it an ideal solution for creating efficient and scalable transportation analytics APIs. ## Understanding the data
+In the realm of urban planning and public transportation, having access to real-time data can significantly improve decision-making processes. For instance, understanding how passengers use different transportation modes, identifying the most popular routes, and analyzing hourly usage trends are crucial for optimizing routes, schedules, and vehicle allocations. This tutorial will guide you through creating a real-time API for analyzing public transportation usage patterns using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), you can ingest, transform, and serve large-scale data in real-time, making it an ideal solution for creating efficient and scalable transportation analytics APIs. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -42,10 +44,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "timestamp, vehicle_type, route_id"
 ```
 
-In the schema design, we chose types that best represent the nature of each field, ensuring efficient storage and query performance. Sorting keys are structured to optimize the query performance for common queries, like filtering by timestamp, vehicle type, and route id. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This feature is vital for real-time analytics, offering low latency and immediate data availability. Here's how to ingest an event:
+In the schema design, we chose types that best represent the nature of each field, ensuring efficient storage and query performance. Sorting keys are structured to optimize the query performance for common queries, like filtering by timestamp, vehicle type, and route id. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This feature is vital for real-time analytics, offering low latency and immediate data availability. Here's how to ingest an event:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=transportation_events" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=transportation_events&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{
        "event_id": "evt_12345",
@@ -61,9 +63,11 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=transporta
      }'
 ```
 
-Other ingestion methods include using the Kafka connector for event or streaming data, which provides benefits like fault tolerance and scalability, and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) or S3 connector for batch or file data, allowing for the ingestion of large datasets. ## Transforming data and publishing APIs
+Other ingestion methods include using the Kafka connector for event or streaming data, which provides benefits like fault tolerance and scalability, and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) or S3 connector for batch or file data, allowing for the ingestion of large datasets. 
 
-Tinybird transforms data and publishes APIs through *pipes*. Pipes allow for batch transformations (copies), real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views)), and the creation of API endpoints. For example, to create an endpoint that returns the most popular routes based on total passenger count within a specified date range, your pipe might look like this:
+## Transforming data and publishing APIs
+
+Tinybird transforms data and publishes APIs through *pipes*. Pipes allow for batch transformations (copies), real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV)), and the creation of API endpoints. For example, to create an endpoint that returns the most popular routes based on total passenger count within a specified date range, your pipe might look like this:
 
 ```sql
 DESCRIPTION >
@@ -93,7 +97,7 @@ TYPE endpoint
 This SQL logic aggregates passenger counts and trip counts per route, filtered by an optional vehicle type and within a date range. The query parameters make the API flexible and capable of serving diverse client needs. To call this API, you might use:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/popular_routes.json?token=$TB_ADMIN_TOKEN&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59&vehicle_type=bus&limit=10"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/popular_routes.json?token=%24TB_ADMIN_TOKEN&start_date=2023-01-01+00%3A00%3A00&end_date=2023-12-31+23%3A59%3A59&vehicle_type=bus&limit=10&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
@@ -105,13 +109,13 @@ To deploy your project to Tinybird Cloud, use the following command:
 tb --cloud deploy
 ```
 
-This command creates production-ready, scalable API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). Tinybird's approach to managing resources as code simplifies integration with CI/CD pipelines, ensuring your data analytics backend is always up-to-date with your latest codebase. To secure your APIs, Tinybird uses token-based authentication. An example call to your deployed endpoint might look like:
+This command creates production-ready, scalable API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). Tinybird's approach to managing resources as code simplifies integration with CI/CD pipelines, ensuring your data analytics backend is always up-to-date with your latest codebase. To secure your APIs, Tinybird uses token-based authentication. An example call to your deployed endpoint might look like:
 
 ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/your_endpoint_name.json?token=your_token&param=value"
+curl -X GET "https://api.tinybird.co/v0/pipes/your_endpoint_name.json?token=your_token&param=value&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-Throughout this tutorial, we've built a real-time API for analyzing public transportation usage, leveraging Tinybird's [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources) and pipes for efficient data ingestion, transformation, and API publication. This solution enables transportation authorities to make data-driven decisions to optimize their services. The technical benefits of using Tinybird for this use case include real-time data processing, scalability, and the ability to deploy and manage your analytics backend as code. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes. With Tinybird, you can start for free, with no time limit and no credit card required, bringing your data analytics capabilities to the next level.
+Throughout this tutorial, we've built a real-time API for analyzing public transportation usage, leveraging Tinybird's [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and pipes for efficient data ingestion, transformation, and API publication. This solution enables transportation authorities to make data-driven decisions to optimize their services. The technical benefits of using Tinybird for this use case include real-time data processing, scalability, and the ability to deploy and manage your analytics backend as code. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes. With Tinybird, you can start for free, with no time limit and no credit card required, bringing your data analytics capabilities to the next level.

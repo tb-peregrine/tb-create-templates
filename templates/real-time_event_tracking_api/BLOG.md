@@ -1,6 +1,8 @@
 # Build a Real-Time Event Tracking API with Tinybird
 
-Tracking and analyzing user events in real-time is crucial for understanding user behavior across web and mobile applications. Whether you're monitoring page views, sign-ups, or purchases, the ability to query and analyze this data instantly can provide a competitive edge. This tutorial will guide you through creating a real-time analytics solution using Tinybird, a data analytics backend for software developers. With Tinybird, you can build real-time analytics APIs without the hassle of setting up or managing the underlying infrastructure. This tutorial leverages Tinybird's data sources and pipes to ingest, transform, and expose user event data through API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). ## Understanding the data
+Tracking and analyzing user events in real-time is crucial for understanding user behavior across web and mobile applications. Whether you're monitoring page views, sign-ups, or purchases, the ability to query and analyze this data instantly can provide a competitive edge. This tutorial will guide you through creating a real-time analytics solution using Tinybird, a data analytics backend for software developers. With Tinybird, you can build real-time analytics APIs without the hassle of setting up or managing the underlying infrastructure. This tutorial leverages Tinybird's data sources and pipes to ingest, transform, and expose user event data through API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -32,10 +34,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "timestamp, event_type, user_id"
 ```
 
-The schema reflects the structure of our JSON events, with considerations for optimizing query performance through sorting keys. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. It's designed for real-time data streaming with low latency, perfect for event tracking applications:
+The schema reflects the structure of our JSON events, with considerations for optimizing query performance through sorting keys. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. It's designed for real-time data streaming with low latency, perfect for event tracking applications:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=events" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=events&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
     -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
     -d '{
       "event_id": "e123456",
@@ -52,16 +54,24 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=events" \
     }'
 ```
 
-Additionally, Tinybird provides other ingestion methods such as the Kafka connector for event or streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) or S3 connector for batch or file data. ## Transforming data and publishing APIs
+Additionally, Tinybird provides other ingestion methods such as the Kafka connector for event or streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) or S3 connector for batch or file data. 
 
-With data ingestion set up, let's move on to transforming this data and publishing real-time APIs using Tinybird [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes). ### Batch transformations and real-time transformations
+## Transforming data and publishing APIs
 
-Tinybird pipes allow for both batch and real-time data transformations. While this tutorial does not include [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views), they are a powerful feature for optimizing data pipelines by pre-aggregating data for faster query performance. ### Creating API endpoints
+With data ingestion set up, let's move on to transforming this data and publishing real-time APIs using Tinybird [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). 
+
+### Batch transformations and real-time transformations
+
+Tinybird pipes allow for both batch and real-time data transformations. While this tutorial does not include [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), they are a powerful feature for optimizing data pipelines by pre-aggregating data for faster query performance. 
+
+### Creating API endpoints
 
 Let's create API endpoints to expose our transformed data. Here are three examples:
 
 
-#### get_events
+#
+
+### get_events
 
 ```sql
 DESCRIPTION >
@@ -94,7 +104,9 @@ SQL >
 TYPE endpoint
 ```
 
-This endpoint queries raw events with various filtering options, such as event type and platform. The SQL logic demonstrates how to use query parameters to make the API flexible. #### user_activity
+This endpoint queries raw events with various filtering options, such as event type and platform. The SQL logic demonstrates how to use query parameters to make the API flexible. 
+
+#### user_activity
 
 ```sql
 DESCRIPTION >
@@ -117,7 +129,9 @@ SQL >
 TYPE endpoint
 ```
 
-This endpoint provides detailed information about specific user activities, leveraging SQL's aggregate functions to compute session counts and event details. #### event_stats
+This endpoint provides detailed information about specific user activities, leveraging SQL's aggregate functions to compute session counts and event details. 
+
+#### event_stats
 
 ```sql
 DESCRIPTION >
@@ -140,7 +154,9 @@ SQL >
 TYPE endpoint
 ```
 
-This endpoint aggregates event data to provide statistics, such as event counts and unique user counts, showing the power of SQL for data analytics. ## Deploying to production
+This endpoint aggregates event data to provide statistics, such as event counts and unique user counts, showing the power of SQL for data analytics. 
+
+## Deploying to production
 
 To deploy your project to Tinybird Cloud, use the following command:
 
@@ -151,10 +167,10 @@ tb --cloud deploy
 This command creates production-ready, scalable API endpoints. Tinybird manages resources as code, integrating smoothly with CI/CD pipelines. For securing your APIs, Tinybird uses token-based authentication:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/get_events.json?token=$TB_ADMIN_TOKEN&event_type=page_view&platform=web"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/get_events.json?token=%24TB_ADMIN_TOKEN&event_type=page_view&platform=web&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-In this tutorial, you've learned how to build a real-time event tracking API using Tinybird. From ingesting data with the Events API to transforming this data and publishing API endpoints, Tinybird offers a comprehensive solution for real-time data analytics. By leveraging Tinybird's capabilities, you can focus on analyzing and understanding user behavior without worrying about the underlying infrastructure. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+In this tutorial, you've learned how to build a real-time event tracking API using Tinybird. From ingesting data with the Events API to transforming this data and publishing API endpoints, Tinybird offers a comprehensive solution for real-time data analytics. By leveraging Tinybird's capabilities, you can focus on analyzing and understanding user behavior without worrying about the underlying infrastructure. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

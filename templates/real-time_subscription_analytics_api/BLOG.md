@@ -1,6 +1,8 @@
 # Build a Real-Time Subscription Analytics API with Tinybird
 
-Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. In this tutorial, we'll leverage Tinybird to create a real-time API that provides powerful insights into subscription data, helping you analyze user behavior, revenue trends, and churn rates effectively. Understanding how your subscription model performs is crucial for any business that relies on recurring revenue. Tracking subscription events and statuses in real time enables you to make informed decisions quickly. We'll use Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes) to ingest, transform, and expose our subscription data through APIs. By the end of this tutorial, you'll know how to deploy a production-ready API for subscription analytics. ## Understanding the data
+Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. In this tutorial, we'll leverage Tinybird to create a real-time API that provides powerful insights into subscription data, helping you analyze user behavior, revenue trends, and churn rates effectively. Understanding how your subscription model performs is crucial for any business that relies on recurring revenue. Tracking subscription events and statuses in real time enables you to make informed decisions quickly. We'll use Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to ingest, transform, and expose our subscription data through APIs. By the end of this tutorial, you'll know how to deploy a production-ready API for subscription analytics. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -14,7 +16,7 @@ Imagine your data looks like this:
 {"subscription_id": "sub_89a9478b4edd5d7b", "user_id": "user_324", "plan_id": "plan_5", "plan_name": "Custom", "status": "unpaid", "amount": 43.99, "currency": "AUD", "billing_period": "quarterly", "start_date": "2025-01-08 17:08:03", "end_date": "2025-09-13 17:08:03", "trial_end_date": "2025-05-16 17:08:03", "cancel_at_period_end": 0, "created_at": "2025-01-08 17:08:03", "updated_at": "2025-05-08 17:08:03"}
 ```
 
-This data represents subscription events and current statuses, essential for analyzing user subscriptions' lifecycle. To store this data, we create two Tinybird [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources):
+This data represents subscription events and current statuses, essential for analyzing user subscriptions' lifecycle. To store this data, we create two Tinybird [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV):
 
 **`subscriptions.datasource`:**
 ```json
@@ -65,18 +67,24 @@ This data represents subscription events and current statuses, essential for ana
 }
 ```
 
-Schema design choices and column types are selected to optimize query performance and storage efficiency. For example, using `MergeTree` as the engine with appropriate partition and sorting keys ensures fast data retrieval and query execution. ### Data Ingestion
+Schema design choices and column types are selected to optimize query performance and storage efficiency. For example, using `MergeTree` as the engine with appropriate partition and sorting keys ensures fast data retrieval and query execution. 
 
-Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This feature enables low-latency, real-time data ingestion. **Sample ingestion code:**
+### Data Ingestion
+
+Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This feature enables low-latency, real-time data ingestion. **Sample ingestion code:**
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=subscriptions" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=subscriptions&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{"subscription_id":"sub_123","user_id":"user_456",...}'
 ```
 
-For event/streaming data, Tinybird's Kafka connector can be beneficial, providing a robust method for ingesting high-volume data streams. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector offer efficient ways to ingest and manage large datasets. ## Transforming data and publishing APIs
+For event/streaming data, Tinybird's Kafka connector can be beneficial, providing a robust method for ingesting high-volume data streams. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector offer efficient ways to ingest and manage large datasets. 
 
-Tinybird transforms data and publishes APIs through pipes. Pipes allow for batch transformations, real-time transformations, and API endpoint creation. ### `user_subscription_history.pipe`
+## Transforming data and publishing APIs
+
+Tinybird transforms data and publishes APIs through pipes. Pipes allow for batch transformations, real-time transformations, and API endpoint creation. 
+
+### `user_subscription_history.pipe`
 
 This pipe retrieves subscription history for a specific user. It demonstrates how to filter data using query parameters, making the API flexible and dynamic. ```sql
 SELECT 
@@ -91,11 +99,13 @@ ORDER BY se.timestamp DESC
 
 **Example API call:**
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/user_subscription_history.json?token=$TB_ADMIN_TOKEN&user_id=user_456"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/user_subscription_history.json?token=%24TB_ADMIN_TOKEN&user_id=user_456&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
-### `active_subscriptions.pipe`
+#
+
+## `active_subscriptions.pipe`
 
 This pipe returns active subscriptions, optionally filtered by plan and date range, illustrating group by and aggregation operations. ```sql
 SELECT 
@@ -109,7 +119,9 @@ ORDER BY total_revenue DESC
 ```
 
 
-### `subscription_metrics.pipe`
+#
+
+## `subscription_metrics.pipe`
 
 Provides key subscription metrics, showcasing complex SQL operations like window functions and conditional aggregations. ```sql
 WITH 
@@ -132,12 +144,12 @@ ORDER BY a.month
 
 ## Deploying to production
 
-Deploy your project to Tinybird Cloud with `tb --cloud deploy`. This command uploads your data sources and pipes, creating scalable, production-ready API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). Tinybird manages resources as code, facilitating integration with CI/CD pipelines and ensuring reproducibility. Token-based authentication secures your APIs, ensuring only authorized access. **Example call to a deployed endpoint:**
+Deploy your project to Tinybird Cloud with `tb --cloud deploy`. This command uploads your data sources and pipes, creating scalable, production-ready API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). Tinybird manages resources as code, facilitating integration with CI/CD pipelines and ensuring reproducibility. Token-based authentication secures your APIs, ensuring only authorized access. **Example call to a deployed endpoint:**
 ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/active_subscriptions.json?token=$TB_PUBLIC_TOKEN&plan_id=plan_A"
+curl -X GET "https://api.tinybird.co/v0/pipes/active_subscriptions.json?token=%24TB_PUBLIC_TOKEN&plan_id=plan_A&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-In this tutorial, we've built a real-time subscription analytics API using Tinybird. We covered data ingestion, transformation, and API deployment, showcasing Tinybird's capabilities for real-time data analytics. By following these steps, you can analyze subscription data effectively, gaining valuable insights into user behavior and revenue trends. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes. Tinybird is free to start, with no time limit and no credit card required.
+In this tutorial, we've built a real-time subscription analytics API using Tinybird. We covered data ingestion, transformation, and API deployment, showcasing Tinybird's capabilities for real-time data analytics. By following these steps, you can analyze subscription data effectively, gaining valuable insights into user behavior and revenue trends. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes. Tinybird is free to start, with no time limit and no credit card required.

@@ -1,6 +1,8 @@
 # Build a Real-Time IoT Sensor Data Analytics API with Tinybird
 
-In the realm of Internet of Things (IoT), efficiently managing and analyzing sensor data in real-time is crucial for applications ranging from environmental monitoring to smart homes. This tutorial will guide you through creating an API that ingests, processes, and analyzes data from various IoT sensors. By leveraging Tinybird, a data analytics backend for software developers, you'll learn how to monitor sensor readings, detect anomalies, and generate statistics over specified time periods without worrying about the underlying infrastructure. Tinybird facilitates building real-time analytics APIs by providing data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), which we'll utilize to create our solution. ## Understanding the data
+In the realm of Internet of Things (IoT), efficiently managing and analyzing sensor data in real-time is crucial for applications ranging from environmental monitoring to smart homes. This tutorial will guide you through creating an API that ingests, processes, and analyzes data from various IoT sensors. By leveraging Tinybird, a data analytics backend for software developers, you'll learn how to monitor sensor readings, detect anomalies, and generate statistics over specified time periods without worrying about the underlying infrastructure. Tinybird facilitates building real-time analytics APIs by providing data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), which we'll utilize to create our solution. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -29,10 +31,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "device_id, sensor_type, timestamp"
 ```
 
-The schema is designed to optimize query performance, with sorting keys on `device_id`, `sensor_type`, and `timestamp` to facilitate fast data retrieval. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This method is ideal for real-time data streaming, ensuring low latency. Here is an example of how to ingest sensor data using the Events API:
+The schema is designed to optimize query performance, with sorting keys on `device_id`, `sensor_type`, and `timestamp` to facilitate fast data retrieval. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This method is ideal for real-time data streaming, ensuring low latency. Here is an example of how to ingest sensor data using the Events API:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=sensor_data" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=sensor_data&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{
            "device_id": "device_123",
@@ -45,7 +47,7 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=sensor_dat
          }'
 ```
 
-Additionally, Tinybird provides other ingestion methods such as the Kafka connector for streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) or S3 connector for batch or file data. Here is how you can ingest data using the Tinybird CLI:
+Additionally, Tinybird provides other ingestion methods such as the Kafka connector for streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) or S3 connector for batch or file data. Here is how you can ingest data using the Tinybird CLI:
 
 ```bash
 tb datasource append sensor_data.datasource 'path/to/your/data.ndjson'
@@ -54,7 +56,9 @@ tb datasource append sensor_data.datasource 'path/to/your/data.ndjson'
 
 ## Transforming data and publishing APIs
 
-Tinybird's pipes enable data transformation and API publication. Here, we'll focus on creating API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints) for three main functionalities: retrieving the latest sensor readings, detecting anomalies, and generating aggregated sensor statistics. ### Latest Readings Endpoint
+Tinybird's pipes enable data transformation and API publication. Here, we'll focus on creating API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) for three main functionalities: retrieving the latest sensor readings, detecting anomalies, and generating aggregated sensor statistics. 
+
+### Latest Readings Endpoint
 
 The `latest_readings` pipe provides the most recent readings from IoT sensors. It supports optional filtering by device ID, sensor type, or location. Here's the full SQL query for this endpoint:
 
@@ -87,7 +91,9 @@ ORDER BY timestamp DESC
 LIMIT {{Int(limit, 100)}}
 ```
 
-This SQL logic demonstrates how to apply dynamic filtering based on query parameters, making the API flexible for various use cases. ### Anomaly Detection Endpoint
+This SQL logic demonstrates how to apply dynamic filtering based on query parameters, making the API flexible for various use cases. 
+
+### Anomaly Detection Endpoint
 
 The `anomaly_detection` pipe identifies abnormal sensor readings. It calculates the deviation from historical averages using standard deviation as a threshold. Here's the SQL for anomaly detection:
 
@@ -123,7 +129,9 @@ ORDER BY deviation_score DESC
 LIMIT {{Int(limit, 100)}}
 ```
 
-This query calculates the deviation score for each sensor reading and filters results based on a specified threshold, helping identify significant anomalies. ### Sensor Stats Endpoint
+This query calculates the deviation score for each sensor reading and filters results based on a specified threshold, helping identify significant anomalies. 
+
+### Sensor Stats Endpoint
 
 The `sensor_stats` pipe aggregates statistics for sensor readings over a specified time period, providing insights into sensor performance and trends:
 
@@ -163,7 +171,9 @@ GROUP BY device_id, sensor_type
 ORDER BY device_id, sensor_type
 ```
 
-This query demonstrates how to use aggregation functions to compute statistics, offering a comprehensive view of sensor data over time. ## Deploying to production
+This query demonstrates how to use aggregation functions to compute statistics, offering a comprehensive view of sensor data over time. 
+
+## Deploying to production
 
 To deploy these resources to Tinybird Cloud, use the Tinybird CLI with the following command:
 
@@ -171,13 +181,13 @@ To deploy these resources to Tinybird Cloud, use the Tinybird CLI with the follo
 tb --cloud deploy
 ```
 
-This command deploys your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources) and pipes, creating production-ready, scalable API endpoints. Tinybird treats your project as code, enabling integration with CI/CD pipelines and facilitating a smooth deployment process. Additionally, Tinybird provides token-based authentication to secure your APIs. Here's an example of calling the deployed `latest_readings` endpoint:
+This command deploys your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and pipes, creating production-ready, scalable API endpoints. Tinybird treats your project as code, enabling integration with CI/CD pipelines and facilitating a smooth deployment process. Additionally, Tinybird provides token-based authentication to secure your APIs. Here's an example of calling the deployed `latest_readings` endpoint:
 
 ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/latest_readings.json?token=$TB_ADMIN_TOKEN&device_id=device_123&hours_back=12"
+curl -X GET "https://api.tinybird.co/v0/pipes/latest_readings.json?token=%24TB_ADMIN_TOKEN&device_id=device_123&hours_back=12&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-Through this tutorial, you've learned how to ingest, transform, and analyze IoT sensor data in real-time using Tinybird. We've created a scalable solution that monitors sensor readings, detects anomalies, and generates aggregated statistics. By utilizing Tinybird's data sources and pipes, you can efficiently build and manage real-time analytics APIs, focusing on developing your application without the overhead of managing infrastructure. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+Through this tutorial, you've learned how to ingest, transform, and analyze IoT sensor data in real-time using Tinybird. We've created a scalable solution that monitors sensor readings, detects anomalies, and generates aggregated statistics. By utilizing Tinybird's data sources and pipes, you can efficiently build and manage real-time analytics APIs, focusing on developing your application without the overhead of managing infrastructure. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

@@ -198,6 +198,21 @@ def add_tinybird_links(content):
     
     return '\n'.join(processed_lines)
 
+def ensure_double_newlines_before_headers(content):
+    """Ensure every markdown header (##, ###, ####, etc.) has two newlines before it, unless at the very start."""
+    # This regex finds headers that are not at the start of the file and are not already preceded by two newlines
+    import re
+    # Replace single or no newline before header (not at start) with two newlines
+    # Handles ##, ###, ####, etc. but not # (main title)
+    def replacer(match):
+        header = match.group(2)
+        return f"\n\n{header}"
+    # Only match headers that are not at the start of the file
+    content = re.sub(r'([^\n])((?:\n)?(#{2,}[^#].*))', lambda m: m.group(1) + replacer(m), content)
+    # Also handle the case where a header is at the start but not at the very beginning (e.g. after a code block)
+    content = re.sub(r'(?<!\n)\n(#{2,}[^#].*)', r'\n\n\1', content)
+    return content
+
 def generate_blog_post(readme_content, template_dir):
     """Generate a blog post from README.md content using OpenAI"""
     system_prompt = get_system_prompt()
@@ -250,7 +265,10 @@ Please transform this README.md into a tutorial-style blog post according to the
 def format_blog_post(blog_content):
     """Apply formatting rules to an existing blog post"""
     # Apply Tinybird documentation links
-    return add_tinybird_links(blog_content)
+    blog_content = add_tinybird_links(blog_content)
+    # Ensure double newlines before headers
+    blog_content = ensure_double_newlines_before_headers(blog_content)
+    return blog_content
 
 def process_template(template_dir, force=False, rewrite=False, formatting_only=False):
     """Process a single template directory to create a BLOG.md file"""
@@ -293,8 +311,10 @@ def process_template(template_dir, force=False, rewrite=False, formatting_only=F
         blog_content = generate_blog_post(readme_content, template_dir)
         
         if blog_content:
+            # Apply formatting (including double newlines before headers)
+            formatted_content = format_blog_post(blog_content)
             # Write BLOG.md file
-            write_file(blog_path, blog_content)
+            write_file(blog_path, formatted_content)
             print(f"Successfully {'rewrote' if blog_exists else 'created'} BLOG.md in {template_dir}")
             return True
         else:

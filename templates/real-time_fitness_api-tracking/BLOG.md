@@ -1,6 +1,8 @@
 # Build a Real-Time Analytics API for a Fitness App with Tinybird
 
-In this tutorial, we'll guide you through building a real-time analytics API for a fitness application using Tinybird. As developers, creating a backend that can handle streaming data and provide instant insights into user behavior is crucial for engaging and personalized user experiences. Whether you're tracking workout trends, app usage metrics, or individual user activity summaries, the ability to analyze and act on data in real-time is a game-changer. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), you can ingest, transform, and serve large volumes of data through APIs with minimal latency, enabling real-time analytics at scale. In this tutorial, we will cover how to structure your data, create data sources, transform your data with pipes, and finally, deploy your APIs to production. By the end, you'll have a fully functional real-time analytics API for a fitness app. ## Understanding the data
+In this tutorial, we'll guide you through building a real-time analytics API for a fitness application using Tinybird. As developers, creating a backend that can handle streaming data and provide instant insights into user behavior is crucial for engaging and personalized user experiences. Whether you're tracking workout trends, app usage metrics, or individual user activity summaries, the ability to analyze and act on data in real-time is a game-changer. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), you can ingest, transform, and serve large volumes of data through APIs with minimal latency, enabling real-time analytics at scale. In this tutorial, we will cover how to structure your data, create data sources, transform your data with pipes, and finally, deploy your APIs to production. By the end, you'll have a fully functional real-time analytics API for a fitness app. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -52,15 +54,15 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "timestamp, user_id, event_type"
 ```
 
-This schema carefully selects column types to optimize storage and performance, using sorting keys to enhance query efficiency. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This real-time nature and low latency are ideal for fitness apps where timely data is crucial. Here's how you can send data:
+This schema carefully selects column types to optimize storage and performance, using sorting keys to enhance query efficiency. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This real-time nature and low latency are ideal for fitness apps where timely data is crucial. Here's how you can send data:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=app_events" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=app_events&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
   -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
   -d '{...}'
 ```
 
-Additionally, for event/streaming data, the Kafka connector can be beneficial for integrating with existing Kafka streams. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector provide flexible ingestion options. Use the Tinybird CLI for command-line interactions:
+Additionally, for event/streaming data, the Kafka connector can be beneficial for integrating with existing Kafka streams. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector provide flexible ingestion options. Use the Tinybird CLI for command-line interactions:
 
 ```bash
 tb datasource append app_events.datasource 'app_events.ndjson'
@@ -69,14 +71,20 @@ tb datasource append app_events.datasource 'app_events.ndjson'
 
 ## Transforming data and publishing APIs
 
-With your data ingested into Tinybird, the next step is to transform it and publish APIs using pipes. ### Batch Transformations and Real-time Transformations
+With your data ingested into Tinybird, the next step is to transform it and publish APIs using pipes. 
 
-Tinybird pipes can perform both batch transformations (copies) and real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views)). When applicable, materialized views pre-aggregate data, significantly speeding up API response times. ### Creating API Endpoints
+### Batch Transformations and Real-time Transformations
+
+Tinybird pipes can perform both batch transformations (copies) and real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV)). When applicable, materialized views pre-aggregate data, significantly speeding up API response times. 
+
+### Creating API Endpoints
 
 For each endpoint, you will define a pipe that executes SQL queries to transform and serve the data. Here’s how you can create APIs for popular activities, app usage metrics, and user activity summary:
 
 
-#### Popular Activities Endpoint
+#
+
+### Popular Activities Endpoint
 
 ```sql
 DESCRIPTION >
@@ -102,7 +110,9 @@ SQL >
 TYPE endpoint
 ```
 
-This pipe creates an endpoint that aggregates workout data to find the most popular activities. It showcases the use of query parameters (`start_date`, `end_date`, `limit`) to make the API flexible. #### App Usage Metrics Endpoint
+This pipe creates an endpoint that aggregates workout data to find the most popular activities. It showcases the use of query parameters (`start_date`, `end_date`, `limit`) to make the API flexible. 
+
+#### App Usage Metrics Endpoint
 
 ```sql
 DESCRIPTION >
@@ -128,7 +138,9 @@ SQL >
 TYPE endpoint
 ```
 
-This endpoint calculates daily app usage metrics, demonstrating filtering by device OS and app version. #### User Activity Summary Endpoint
+This endpoint calculates daily app usage metrics, demonstrating filtering by device OS and app version. 
+
+#### User Activity Summary Endpoint
 
 ```sql
 DESCRIPTION >
@@ -152,15 +164,17 @@ SQL >
 TYPE endpoint
 ```
 
-This API provides a comprehensive summary of a user's activities, suitable for personal dashboards or fitness tracking features. ## Deploying to production
+This API provides a comprehensive summary of a user's activities, suitable for personal dashboards or fitness tracking features. 
 
-Deploying your project to production with Tinybird is as simple as running `tb --cloud deploy`. This command publishes your data sources and pipes to Tinybird Cloud, creating scalable, production-ready API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). Tinybird manages resources as code, integrating seamlessly into CI/CD pipelines for continuous deployment. To secure your APIs, Tinybird uses token-based authentication. Here’s how to call your deployed endpoints:
+## Deploying to production
+
+Deploying your project to production with Tinybird is as simple as running `tb --cloud deploy`. This command publishes your data sources and pipes to Tinybird Cloud, creating scalable, production-ready API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). Tinybird manages resources as code, integrating seamlessly into CI/CD pipelines for continuous deployment. To secure your APIs, Tinybird uses token-based authentication. Here’s how to call your deployed endpoints:
 
 ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/popular_activities.json?token=$TB_ADMIN_TOKEN&..."
+curl -X GET "https://api.tinybird.co/v0/pipes/popular_activities.json?token=%24TB_ADMIN_TOKEN&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-Throughout this tutorial, you've learned how to build real-time analytics APIs for a fitness app using Tinybird. From designing data schemas and ingesting streaming data to transforming that data and deploying scalable APIs, you now have the tools to implement similar solutions in your own projects. The technical benefits of using Tinybird include efficient data management, flexible API creation, and seamless deployment workflows. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+Throughout this tutorial, you've learned how to build real-time analytics APIs for a fitness app using Tinybird. From designing data schemas and ingesting streaming data to transforming that data and deploying scalable APIs, you now have the tools to implement similar solutions in your own projects. The technical benefits of using Tinybird include efficient data management, flexible API creation, and seamless deployment workflows. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

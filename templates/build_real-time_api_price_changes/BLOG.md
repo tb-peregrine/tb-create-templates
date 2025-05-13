@@ -1,6 +1,8 @@
 # Build a Real-Time E-commerce Price Change Monitoring API with Tinybird
 
-E-commerce platforms are dynamic environments where product prices change frequently due to promotions, stock levels, and competitive pricing strategies. Tracking these changes in real-time can provide valuable insights into market trends, competitor behavior, and consumer demand. However, managing streaming data and providing real-time analytics can be technically challenging. This tutorial guides you through creating an API that monitors product price changes in e-commerce platforms using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), you can ingest, transform, and query large volumes of data in real-time, making it an ideal solution for monitoring e-commerce price changes. ## Understanding the data
+E-commerce platforms are dynamic environments where product prices change frequently due to promotions, stock levels, and competitive pricing strategies. Tracking these changes in real-time can provide valuable insights into market trends, competitor behavior, and consumer demand. However, managing streaming data and providing real-time analytics can be technically challenging. This tutorial guides you through creating an API that monitors product price changes in e-commerce platforms using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), you can ingest, transform, and query large volumes of data in real-time, making it an ideal solution for monitoring e-commerce price changes. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -33,21 +35,27 @@ ENGINE_PARTITION_KEY "toYYYYMM(change_timestamp)"
 ENGINE_SORTING_KEY "category, merchant_id, product_id, change_timestamp"
 ```
 
-The schema design choices, including sorting keys, optimize query performance by organizing data efficiently. To ingest data, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This method is ideal for real-time data collection, providing low latency. Here is a sample ingestion code:
+The schema design choices, including sorting keys, optimize query performance by organizing data efficiently. To ingest data, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This method is ideal for real-time data collection, providing low latency. Here is a sample ingestion code:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=product_price_changes" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=product_price_changes&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{
        "product_id": "ABC123",
        ... }'
 ```
 
-For event/streaming data, the Kafka connector offers benefits like scalable ingestion from Kafka topics. For batch/file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector facilitate efficient data uploads and synchronization. ## Transforming data and publishing APIs
+For event/streaming data, the Kafka connector offers benefits like scalable ingestion from Kafka topics. For batch/file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector facilitate efficient data uploads and synchronization. 
 
-Tinybird transforms data through pipes, which can perform batch transformations, real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views)), and create API endpoints. ### Materialized Views
+## Transforming data and publishing APIs
 
-If your project includes materialized views, these optimize your data pipeline by pre-aggregating data, thus improving query performance and reducing response times. ### Endpoint pipes
+Tinybird transforms data through pipes, which can perform batch transformations, real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV)), and create API endpoints. 
+
+### Materialized Views
+
+If your project includes materialized views, these optimize your data pipeline by pre-aggregating data, thus improving query performance and reducing response times. 
+
+### Endpoint pipes
 
 For each endpoint pipe, the complete SQL query is crucial for understanding the logic behind the API. For example, the `price_changes_by_product` endpoint looks like this:
 
@@ -78,7 +86,7 @@ TYPE endpoint
 This query retrieves the price change history for a given product, highlighting how query parameters like `product_id` and `limit` make the API flexible. Example API call:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/price_changes_by_product.json?product_id=ABC123&limit=5&token=$TB_ADMIN_TOKEN"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/price_changes_by_product.json?product_id=ABC123&limit=5&token=%24TB_ADMIN_TOKEN&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
@@ -90,13 +98,13 @@ Deploy your project to Tinybird Cloud with the following command:
 tb --cloud deploy
 ```
 
-This creates production-ready, scalable API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). Tinybird manages resources as code, integrating seamlessly with CI/CD pipelines. Secure your APIs with token-based authentication. Example curl command to call the deployed endpoint:
+This creates production-ready, scalable API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). Tinybird manages resources as code, integrating seamlessly with CI/CD pipelines. Secure your APIs with token-based authentication. Example curl command to call the deployed endpoint:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/price_changes_by_product.json?product_id=ABC123&limit=5&token=$TB_ADMIN_TOKEN"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/price_changes_by_product.json?product_id=ABC123&limit=5&token=%24TB_ADMIN_TOKEN&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-In this tutorial, you've learned how to build a real-time API for monitoring e-commerce price changes using Tinybird. By following these steps, you've seen how to ingest, transform, and query large volumes of data, creating efficient, scalable APIs for real-time analytics. Using Tinybird for this use case offers significant technical benefits, including the ability to handle streaming data, real-time transformations, and the ease of deploying and securing your APIs. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+In this tutorial, you've learned how to build a real-time API for monitoring e-commerce price changes using Tinybird. By following these steps, you've seen how to ingest, transform, and query large volumes of data, creating efficient, scalable APIs for real-time analytics. Using Tinybird for this use case offers significant technical benefits, including the ability to handle streaming data, real-time transformations, and the ease of deploying and securing your APIs. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

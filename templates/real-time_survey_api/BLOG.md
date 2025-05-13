@@ -1,6 +1,8 @@
 # Build a Real-Time Survey Response Analytics API with Tinybird
 
-In the realm of data analytics, swiftly processing and analyzing survey data can provide crucial insights into user feedback and trends. Developers often face the challenge of creating scalable, real-time APIs to handle this data efficiently. This tutorial will guide you through building a real-time API for survey response analytics using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), you can ingest survey data, transform it, and expose it through flexible, scalable APIs. ## Understanding the data
+In the realm of data analytics, swiftly processing and analyzing survey data can provide crucial insights into user feedback and trends. Developers often face the challenge of creating scalable, real-time APIs to handle this data efficiently. This tutorial will guide you through building a real-time API for survey response analytics using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), you can ingest survey data, transform it, and expose it through flexible, scalable APIs. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -40,12 +42,14 @@ This dataset represents individual responses to surveys, capturing details like 
 }
 ```
 
-When designing your schema, consider the types of queries you'll run. Sorting keys, for example, can significantly impact query performance, especially for time-series data. ### Data Ingestion
+When designing your schema, consider the types of queries you'll run. Sorting keys, for example, can significantly impact query performance, especially for time-series data. 
 
-Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This real-time nature and low latency make it ideal for ingesting survey responses as they are collected:
+### Data Ingestion
+
+Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This real-time nature and low latency make it ideal for ingesting survey responses as they are collected:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=survey_responses" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=survey_responses&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
   -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
   -d '{
     "response_id": "resp_123",
@@ -60,9 +64,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=survey_res
   }'
 ```
 
-For event or streaming data, consider the Kafka connector for its reliability and scalability. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector provide efficient bulk ingestion methods. ## Transforming data and publishing APIs
+For event or streaming data, consider the Kafka connector for its reliability and scalability. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector provide efficient bulk ingestion methods. 
 
-With the data ingested into Tinybird, the next step is to transform this data and publish APIs using pipes. Pipes in Tinybird allow for both batch and real-time data transformations, as well as the creation of API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). ### Endpoint: get_survey_stats
+## Transforming data and publishing APIs
+
+With the data ingested into Tinybird, the next step is to transform this data and publish APIs using pipes. Pipes in Tinybird allow for both batch and real-time data transformations, as well as the creation of API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). 
+
+### Endpoint: get_survey_stats
 
 ```sql
 SELECT
@@ -90,15 +98,17 @@ ORDER BY total_responses DESC
 TYPE endpoint
 ```
 
-This pipe aggregates survey statistics, providing a flexible API for fetching metrics like average ratings and response counts. Query parameters make the API adaptable to various client needs. ### Deploying to production
+This pipe aggregates survey statistics, providing a flexible API for fetching metrics like average ratings and response counts. Query parameters make the API adaptable to various client needs. 
 
-Deploying your Tinybird project to production is straightforward with the `tb --cloud deploy` command. This command packages your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources) and pipes, deploying them to Tinybird Cloud to create scalable, production-ready endpoints. Tinybird manages resources as code, facilitating integration with CI/CD pipelines for automated deployments. Secure your APIs with token-based authentication to ensure only authorized users can access them. Example API call:
+### Deploying to production
+
+Deploying your Tinybird project to production is straightforward with the `tb --cloud deploy` command. This command packages your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and pipes, deploying them to Tinybird Cloud to create scalable, production-ready endpoints. Tinybird manages resources as code, facilitating integration with CI/CD pipelines for automated deployments. Secure your APIs with token-based authentication to ensure only authorized users can access them. Example API call:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/get_survey_stats.json?token=$TB_ADMIN_TOKEN&survey_id=survey_456&from_date=2023-01-01 00:00:00&to_date=2023-12-31 23:59:59"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/get_survey_stats.json?token=%24TB_ADMIN_TOKEN&survey_id=survey_456&from_date=2023-01-01&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV 00:00:00&to_date=2023-12-31 23:59:59"
 ```
 
 
 ## Conclusion
 
-Throughout this tutorial, we've walked through creating a real-time API for survey response analytics using Tinybird. From ingesting data with the Events API to transforming it with pipes and deploying scalable endpoints, Tinybird provides a comprehensive platform for building real-time analytics APIs. The technical benefits include efficient data ingestion, flexible transformations, and the ability to publish and scale APIs rapidly. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes. With Tinybird's local-first development workflows and git-based deployments, you're equipped to handle real-time data analytics at scale, without the operational overhead.
+Throughout this tutorial, we've walked through creating a real-time API for survey response analytics using Tinybird. From ingesting data with the Events API to transforming it with pipes and deploying scalable endpoints, Tinybird provides a comprehensive platform for building real-time analytics APIs. The technical benefits include efficient data ingestion, flexible transformations, and the ability to publish and scale APIs rapidly. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes. With Tinybird's local-first development workflows and git-based deployments, you're equipped to handle real-time data analytics at scale, without the operational overhead.

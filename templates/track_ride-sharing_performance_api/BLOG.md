@@ -1,6 +1,8 @@
 # Build a Real-Time Analytics API for Ride-Sharing Services with Tinybird
 
-When managing a ride-sharing service, understanding various metrics like ride details, driver performance, and usage patterns is crucial for optimizing operations and enhancing customer experience. A real-time analytics API can provide these insights efficiently, enabling quick decision-making and improvements. This tutorial will guide you through building such an API using Tinybird, a data analytics backend designed for software developers. Tinybird facilitates the creation of real-time analytics APIs without the hassle of setting up or managing the underlying infrastructure. It leverages data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes) to ingest, transform, and expose your data through fast, scalable APIs. ## Understanding the data
+When managing a ride-sharing service, understanding various metrics like ride details, driver performance, and usage patterns is crucial for optimizing operations and enhancing customer experience. A real-time analytics API can provide these insights efficiently, enabling quick decision-making and improvements. This tutorial will guide you through building such an API using Tinybird, a data analytics backend designed for software developers. Tinybird facilitates the creation of real-time analytics APIs without the hassle of setting up or managing the underlying infrastructure. It leverages data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to ingest, transform, and expose your data through fast, scalable APIs. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -52,10 +54,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "city, driver_id, timestamp"
 ```
 
-In this schema, you define the data types and ingestion paths for each attribute. The `ENGINE` settings, such as the partition and sorting keys, optimize query performance by organizing data in a way that aligns with your query patterns. To ingest data into this data source, Tinybird offers various options, including the [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api). Here's how you can use it to stream JSON events:
+In this schema, you define the data types and ingestion paths for each attribute. The `ENGINE` settings, such as the partition and sorting keys, optimize query performance by organizing data in a way that aligns with your query patterns. To ingest data into this data source, Tinybird offers various options, including the [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). Here's how you can use it to stream JSON events:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=rides" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=rides&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
   -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
   -d '{
     "ride_id": "r123456",
@@ -76,13 +78,21 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=rides" \
   }'
 ```
 
-The Events API is designed for real-time, low-latency data ingestion from your application's frontend or backend. Other ingestion methods include Kafka connectors for event/streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) or S3 connectors for batch/file data. ## Transforming data and publishing APIs
+The Events API is designed for real-time, low-latency data ingestion from your application's frontend or backend. Other ingestion methods include Kafka connectors for event/streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) or S3 connectors for batch/file data. 
 
-With the data ingested, the next step is to transform it and publish APIs. Tinybird's pipes facilitate this process. ### Batch transformations and real-time transformations
+## Transforming data and publishing APIs
 
-Pipes in Tinybird can be used for batch transformations (copies) or real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views)). They serve as the building blocks for creating flexible and efficient data pipelines. ### Creating API endpoints
+With the data ingested, the next step is to transform it and publish APIs. Tinybird's pipes facilitate this process. 
 
-Each endpoint in Tinybird is built using a pipe, enabling you to expose specific data transformations as RESTful APIs. Here are examples of three [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints): Driver Performance, Hourly Ride Trends, and Ride Statistics. #### Driver Performance
+### Batch transformations and real-time transformations
+
+Pipes in Tinybird can be used for batch transformations (copies) or real-time transformations ([Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV)). They serve as the building blocks for creating flexible and efficient data pipelines. 
+
+### Creating API endpoints
+
+Each endpoint in Tinybird is built using a pipe, enabling you to expose specific data transformations as RESTful APIs. Here are examples of three [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV): Driver Performance, Hourly Ride Trends, and Ride Statistics. 
+
+#### Driver Performance
 
 This endpoint tracks individual driver performance metrics with filtering options. The SQL logic aggregates data by driver, calculating total rides, average rating, duration, earnings, and distance. ```sql
 SELECT 
@@ -113,7 +123,9 @@ LIMIT {{Int32(limit, 100)}}
 ```
 
 
-#### Hourly Ride Trends
+#
+
+### Hourly Ride Trends
 
 This endpoint aggregates rides by hour to identify peak times. The SQL query groups data by hour and city, calculating total rides, average fare, and duration. ```sql
 SELECT 
@@ -141,7 +153,9 @@ ORDER BY hour_of_day ASC
 ```
 
 
-#### Ride Statistics
+#
+
+### Ride Statistics
 
 This endpoint provides overall ride statistics, including total rides, average duration, distance, fare, rating, and counts of completed and cancelled rides. ```sql
 SELECT 
@@ -171,13 +185,13 @@ ORDER BY total_rides DESC
 
 ## Deploying to production
 
-Deploying your project to Tinybird Cloud is straightforward. Use the `tb --cloud deploy` command to deploy all your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources) and pipes to production. This command creates production-ready, scalable API endpoints. Tinybird manages resources as code, making it easy to integrate with CI/CD pipelines for automated deployments. To secure your APIs, Tinybird uses token-based authentication. Here's how you can call one of your deployed endpoints:
+Deploying your project to Tinybird Cloud is straightforward. Use the `tb --cloud deploy` command to deploy all your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and pipes to production. This command creates production-ready, scalable API endpoints. Tinybird manages resources as code, making it easy to integrate with CI/CD pipelines for automated deployments. To secure your APIs, Tinybird uses token-based authentication. Here's how you can call one of your deployed endpoints:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/driver_performance.json?token=$TB_ADMIN_TOKEN&driver_id=d789012&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59&city=New%20York&limit=10"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/driver_performance.json?token=%24TB_ADMIN_TOKEN&driver_id=d789012&start_date=2023-01-01+00%3A00%3A00&end_date=2023-12-31+23%3A59%3A59&city=New+York&limit=10&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-In this tutorial, you've learned how to ingest, transform, and expose ride-sharing service data using Tinybird. We covered creating data sources, transforming data with pipes, and publishing scalable, real-time analytics APIs. Tinybird's infrastructure simplifies the process, enabling developers to focus on building and deploying powerful data-driven solutions quickly. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+In this tutorial, you've learned how to ingest, transform, and expose ride-sharing service data using Tinybird. We covered creating data sources, transforming data with pipes, and publishing scalable, real-time analytics APIs. Tinybird's infrastructure simplifies the process, enabling developers to focus on building and deploying powerful data-driven solutions quickly. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

@@ -1,6 +1,8 @@
 # Build a Real-time Mobile Analytics API with Tinybird
 
-In today's digital age, understanding user interactions within mobile applications can be the key to optimizing user experience and increasing engagement. To achieve this, developers and product managers rely on real-time analytics to track and analyze user behavior, app performance, and system events. However, building a backend capable of processing and serving this data in real time can be challenging. This is where Tinybird comes into play. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), developers can easily ingest streaming event data from mobile applications, transform this data, and publish APIs to serve real-time analytics. This tutorial will guide you through creating a real-time mobile analytics API. You'll learn how to ingest event data from mobile apps, transform this data to derive meaningful insights, and then publish APIs to access these insights in real time. ## Understanding the data
+In today's digital age, understanding user interactions within mobile applications can be the key to optimizing user experience and increasing engagement. To achieve this, developers and product managers rely on real-time analytics to track and analyze user behavior, app performance, and system events. However, building a backend capable of processing and serving this data in real time can be challenging. This is where Tinybird comes into play. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), developers can easily ingest streaming event data from mobile applications, transform this data, and publish APIs to serve real-time analytics. This tutorial will guide you through creating a real-time mobile analytics API. You'll learn how to ingest event data from mobile apps, transform this data to derive meaningful insights, and then publish APIs to access these insights in real time. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -42,10 +44,10 @@ This sample represents an event logged by a mobile application, capturing detail
 }
 ```
 
-In this schema, we've defined columns corresponding to each piece of data we're interested in, along with their types. The sorting key is chosen to optimize query performance, especially for time-based queries and filtering by event type or user ID. To ingest data, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. Here's how you can send data to the `app_events` data source:
+In this schema, we've defined columns corresponding to each piece of data we're interested in, along with their types. The sorting key is chosen to optimize query performance, especially for time-based queries and filtering by event type or user ID. To ingest data, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. Here's how you can send data to the `app_events` data source:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=app_events" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=app_events&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
     -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
     -d '{
         "event_id": "e123456789",
@@ -61,16 +63,24 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=app_events
     }'
 ```
 
-For event/streaming data, the Kafka connector is an excellent option for high-volume, real-time data ingestion. For batch or file-based data, you can use the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) or S3 connector, depending on your data source. ## Transforming data and publishing APIs
+For event/streaming data, the Kafka connector is an excellent option for high-volume, real-time data ingestion. For batch or file-based data, you can use the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) or S3 connector, depending on your data source. 
 
-With your data flowing into Tinybird, the next step is to transform this data and publish APIs to access real-time insights. Tinybird's pipes enable you to do both. ### Batch transformations and real-time views
+## Transforming data and publishing APIs
 
-First, let's assume you've created some [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views) to optimize your data pipeline. These views pre-aggregate or restructure your data to speed up query performance. Unfortunately, the original README does not include materialized views, so let's focus on the endpoint pipes. ### API Endpoints
+With your data flowing into Tinybird, the next step is to transform this data and publish APIs to access real-time insights. Tinybird's pipes enable you to do both. 
+
+### Batch transformations and real-time views
+
+First, let's assume you've created some [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to optimize your data pipeline. These views pre-aggregate or restructure your data to speed up query performance. Unfortunately, the original README does not include materialized views, so let's focus on the endpoint pipes. 
+
+### API Endpoints
 
 Each of the following pipes creates an API endpoint for a specific analysis or query:
 
 
-#### Events by Type
+#
+
+### Events by Type
 
 ```sql
 SELECT 
@@ -91,7 +101,9 @@ GROUP BY event_type
 ORDER BY event_count DESC
 ```
 
-This query aggregates events by type, allowing you to filter by date range and app version. Query parameters make this API flexible and adaptable to different use cases. #### Event Properties
+This query aggregates events by type, allowing you to filter by date range and app version. Query parameters make this API flexible and adaptable to different use cases. 
+
+#### Event Properties
 
 ```sql
 SELECT 
@@ -115,7 +127,9 @@ ORDER BY count DESC
 LIMIT 100
 ```
 
-This endpoint allows you to drill down into the properties of specific event types, providing insights into additional data captured for each event. #### User Sessions
+This endpoint allows you to drill down into the properties of specific event types, providing insights into additional data captured for each event. 
+
+#### User Sessions
 
 ```sql
 SELECT 
@@ -141,15 +155,17 @@ GROUP BY day
 ORDER BY day DESC
 ```
 
-This query calculates daily user session metrics, such as total sessions, unique users, and sessions per user, with filtering options for country and device type. ## Deploying to production
+This query calculates daily user session metrics, such as total sessions, unique users, and sessions per user, with filtering options for country and device type. 
 
-To deploy these analytics APIs to production, use Tinybird's CLI with the `tb --cloud deploy` command. This command deploys your data sources and pipes to Tinybird Cloud, making your real-time analytics APIs scalable and production-ready. Tinybird manages resources as code, enabling integration with CI/CD pipelines and ensuring that your analytics backend is as agile as your application codebase. Use token-based authentication to secure your APIs and ensure that only authorized users can access your data. Here's an example command to call one of your deployed [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints):
+## Deploying to production
+
+To deploy these analytics APIs to production, use Tinybird's CLI with the `tb --cloud deploy` command. This command deploys your data sources and pipes to Tinybird Cloud, making your real-time analytics APIs scalable and production-ready. Tinybird manages resources as code, enabling integration with CI/CD pipelines and ensuring that your analytics backend is as agile as your application codebase. Use token-based authentication to secure your APIs and ensure that only authorized users can access your data. Here's an example command to call one of your deployed [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV):
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/events_by_type.json?token=$TB_ADMIN_TOKEN&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59&app_version=1.2.3"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/events_by_type.json?token=%24TB_ADMIN_TOKEN&start_date=2023-01-01+00%3A00%3A00&end_date=2023-12-31+23%3A59%3A59&app_version=1.2.3&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-Throughout this tutorial, you've seen how to ingest mobile app event data into Tinybird, transform it to derive insights, and publish real-time analytics APIs. Tinybird simplifies the process of building and scaling real-time analytics backends, freeing you to focus on what matters: delivering exceptional app experiences and insights. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+Throughout this tutorial, you've seen how to ingest mobile app event data into Tinybird, transform it to derive insights, and publish real-time analytics APIs. Tinybird simplifies the process of building and scaling real-time analytics backends, freeing you to focus on what matters: delivering exceptional app experiences and insights. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

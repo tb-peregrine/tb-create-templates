@@ -1,6 +1,8 @@
 # Build a Real-time Messaging Analytics API with Tinybird
 
-In the realms of messaging applications, understanding user behavior and conversation dynamics is crucial for delivering a seamless user experience. Analyzing messaging data in real-time can provide invaluable insights into conversation trends, user engagement, and peak activity hours. This tutorial will guide you through building a real-time messaging analytics API using Tinybird, focusing on conversation retrieval, user messaging statistics, and hourly activity analysis. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and pipes, you'll be able to ingest messaging data, transform it, and expose the resulting analytics through API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints). Let's dive into the technical steps to create a scalable analytics API that can handle large volumes of messaging data in real-time. ## Understanding the data
+In the realms of messaging applications, understanding user behavior and conversation dynamics is crucial for delivering a seamless user experience. Analyzing messaging data in real-time can provide invaluable insights into conversation trends, user engagement, and peak activity hours. This tutorial will guide you through building a real-time messaging analytics API using Tinybird, focusing on conversation retrieval, user messaging statistics, and hourly activity analysis. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and pipes, you'll be able to ingest messaging data, transform it, and expose the resulting analytics through API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV). Let's dive into the technical steps to create a scalable analytics API that can handle large volumes of messaging data in real-time. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -31,10 +33,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "conversation_id, timestamp"
 ```
 
-This schema highlights the importance of choosing the right data types and sorting keys. Sorting by `conversation_id` and `timestamp` optimizes query performance for retrieving conversation messages in chronological order. To ingest data into this datasource, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request:
+This schema highlights the importance of choosing the right data types and sorting keys. Sorting by `conversation_id` and `timestamp` optimizes query performance for retrieving conversation messages in chronological order. To ingest data into this datasource, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=messages" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=messages&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
   -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
   -d '{
     "message_id": "msg123",
@@ -50,9 +52,11 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=messages" 
   }'
 ```
 
-For event/streaming data, the Kafka connector can further enhance your data ingestion pipeline by providing a robust and scalable method to stream data into Tinybird. For batch or file-based data ingestion, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector are excellent choices, allowing for efficient bulk data loading. ## Transforming data and publishing APIs
+For event/streaming data, the Kafka connector can further enhance your data ingestion pipeline by providing a robust and scalable method to stream data into Tinybird. For batch or file-based data ingestion, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector are excellent choices, allowing for efficient bulk data loading. 
 
-Tinybird's pipes enable you to transform your data in real-time and publish it as API endpoints. Pipes can perform batch transformations, act as [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views), or directly serve as API endpoints. Consider the `get_messages_by_conversation` endpoint:
+## Transforming data and publishing APIs
+
+Tinybird's pipes enable you to transform your data in real-time and publish it as API endpoints. Pipes can perform batch transformations, act as [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), or directly serve as API endpoints. Consider the `get_messages_by_conversation` endpoint:
 
 ```sql
 DESCRIPTION >
@@ -90,7 +94,7 @@ TYPE endpoint
 This pipe selects messages by conversation ID with optional date range filtering. The SQL query demonstrates how to use templating logic for dynamic parameter handling, making the API flexible and adaptable to different use cases. To call this API, use:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/[pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes)/get_messages_by_conversation.json?token=$TB_ADMIN_TOKEN&conversation_id=conv123&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59&limit=50"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/[pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV)/get_messages_by_conversation.json?token=$TB_ADMIN_TOKEN&conversation_id=conv123&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59&limit=50"
 ```
 
 
@@ -99,10 +103,10 @@ curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/[pipes](https://www.tin
 Deploying your project to the Tinybird Cloud is straightforward with the `tb --cloud deploy` command. This operation creates production-ready, scalable API endpoints. Tinybird manages resources as code, which facilitates integration with CI/CD pipelines and ensures that your data infrastructure is version-controlled and reproducible. For securing your APIs, Tinybird utilizes token-based authentication:
 
 ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/your_pipe_name.json?token=<your_token>"
+curl -X GET "https://api.tinybird.co/v0/pipes/your_pipe_name.json?token=%3Cyour_token&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV>"
 ```
 
 
 ## Conclusion
 
-Throughout this tutorial, you've learned how to ingest messaging data into Tinybird, transform it using pipes, and publish real-time analytics APIs. Tinybird simplifies handling large volumes of data in real-time, making it a great choice for building scalable analytics backends. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes. Tinybird is free to start, with no time limit and no credit card required, enabling you to immediately begin implementing the solutions outlined in this tutorial.
+Throughout this tutorial, you've learned how to ingest messaging data into Tinybird, transform it using pipes, and publish real-time analytics APIs. Tinybird simplifies handling large volumes of data in real-time, making it a great choice for building scalable analytics backends. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes. Tinybird is free to start, with no time limit and no credit card required, enabling you to immediately begin implementing the solutions outlined in this tutorial.

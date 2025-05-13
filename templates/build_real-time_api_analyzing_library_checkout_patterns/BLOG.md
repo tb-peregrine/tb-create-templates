@@ -1,6 +1,8 @@
 # Build a Real-Time Library Checkout Analytics API with Tinybird
 
-In this tutorial, we'll guide you through creating a real-time API to analyze library book checkout patterns. This solution addresses the need to track book checkout events, providing insights into trends, popular books, and overdue items, all in real-time. It's a practical example of how to architect an analytics backend for situations requiring immediate data processing and availability. Tinybird, a data analytics backend for software developers, enables building real-time analytics APIs effortlessly. With Tinybird, you can focus on developing your application without worrying about the underlying data infrastructure. It facilitates working with data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes) to ingest, transform, and expose your data through highly performant APIs. This tutorial will showcase how to leverage Tinybird's capabilities to solve our library analytics challenge. ## Understanding the data
+In this tutorial, we'll guide you through creating a real-time API to analyze library book checkout patterns. This solution addresses the need to track book checkout events, providing insights into trends, popular books, and overdue items, all in real-time. It's a practical example of how to architect an analytics backend for situations requiring immediate data processing and availability. Tinybird, a data analytics backend for software developers, enables building real-time analytics APIs effortlessly. With Tinybird, you can focus on developing your application without worrying about the underlying data infrastructure. It facilitates working with data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to ingest, transform, and expose your data through highly performant APIs. This tutorial will showcase how to leverage Tinybird's capabilities to solve our library analytics challenge. 
+
+## Understanding the data
 
 Imagine your data looks like this, represented in a `.ndjson` file from our fixtures:
 
@@ -31,10 +33,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(checkout_date)"
 ENGINE_SORTING_KEY "checkout_date, book_id, user_id"
 ```
 
-The choice of column types and sorting keys enhances query performance, crucial for real-time analytics. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request:
+The choice of column types and sorting keys enhances query performance, crucial for real-time analytics. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=book_checkouts" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=book_checkouts&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{
        "checkout_id": "c123456",
@@ -50,9 +52,11 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=book_check
      }'
 ```
 
-This real-time nature and low latency make it ideal for applications requiring immediate data updates. Alternative ingestion methods include the Kafka connector for event/streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) or S3 connector for batch/file data. ## Transforming data and publishing APIs
+This real-time nature and low latency make it ideal for applications requiring immediate data updates. Alternative ingestion methods include the Kafka connector for event/streaming data and the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) or S3 connector for batch/file data. 
 
-Tinybird's pipes facilitate both batch and real-time transformations. They also enable the creation of API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints) to expose transformed data. Let's explore the `checkout_trends.pipe`, which analyzes checkout trends over time:
+## Transforming data and publishing APIs
+
+Tinybird's pipes facilitate both batch and real-time transformations. They also enable the creation of API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to expose transformed data. Let's explore the `checkout_trends.pipe`, which analyzes checkout trends over time:
 
 ```sql
 DESCRIPTION >
@@ -78,10 +82,12 @@ SQL >
 This pipe's SQL logic counts checkout events, optionally grouping them by genre. Query parameters increase flexibility, allowing users to tailor the API response to their needs. Here's how to call this API endpoint with different parameters:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/checkout_trends.json?token=$TB_ADMIN_TOKEN&group_by=genre&start_date=2023-03-01 00:00:00&end_date=2023-03-31 23:59:59"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/checkout_trends.json?token=%24TB_ADMIN_TOKEN&group_by=genre&start_date=2023-03-01&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV 00:00:00&end_date=2023-03-31 23:59:59"
 ```
 
-The same approach applies to creating endpoints for `popular_books` and `overdue_books`, each with its specific SQL logic and query parameters. ## Deploying to production
+The same approach applies to creating endpoints for `popular_books` and `overdue_books`, each with its specific SQL logic and query parameters. 
+
+## Deploying to production
 
 Deploy your project to Tinybird Cloud using:
 
@@ -92,10 +98,10 @@ tb --cloud deploy
 This command creates scalable, production-ready API endpoints. Tinybird manages resources as code, facilitating integration with CI/CD pipelines and ensuring secure, token-based API access. Here’s an example curl command to call your deployed endpoint:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/popular_books.json?token=$TB_ADMIN_TOKEN"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/popular_books.json?token=%24TB_ADMIN_TOKEN&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-Throughout this tutorial, you've learned to ingest, transform, and expose real-time library checkout data using Tinybird. From the initial data source setup to deploying production-ready API endpoints, you've seen how Tinybird simplifies data analytics workflows, enabling you to focus on building your application. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes. Begin with Tinybird today to leverage real-time analytics in your projects, free to start, with no time limit and no credit card required.
+Throughout this tutorial, you've learned to ingest, transform, and expose real-time library checkout data using Tinybird. From the initial data source setup to deploying production-ready API endpoints, you've seen how Tinybird simplifies data analytics workflows, enabling you to focus on building your application. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes. Begin with Tinybird today to leverage real-time analytics in your projects, free to start, with no time limit and no credit card required.

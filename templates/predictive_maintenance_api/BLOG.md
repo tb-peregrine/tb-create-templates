@@ -1,6 +1,8 @@
 # Build a Predictive Maintenance API for Industrial Equipment with Tinybird
 
-Predictive maintenance is critical for managing industrial equipment, reducing downtime, and preventing costly repairs. By leveraging sensor data, organizations can monitor equipment health in real-time, identify potential issues before they escalate, and schedule maintenance more effectively. In this tutorial, you'll learn how to build a predictive maintenance API using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. You'll develop a solution that ingests sensor data from industrial equipment, such as temperature, vibration, and pressure readings, and provides [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints) to analyze equipment health, detect anomalies, and observe performance trends over time. By utilizing Tinybird's data sources and pipes, this project streamlines the process from data ingestion to API deployment, enabling real-time analytics at scale. ## Understanding the data
+Predictive maintenance is critical for managing industrial equipment, reducing downtime, and preventing costly repairs. By leveraging sensor data, organizations can monitor equipment health in real-time, identify potential issues before they escalate, and schedule maintenance more effectively. In this tutorial, you'll learn how to build a predictive maintenance API using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. You'll develop a solution that ingests sensor data from industrial equipment, such as temperature, vibration, and pressure readings, and provides [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to analyze equipment health, detect anomalies, and observe performance trends over time. By utilizing Tinybird's data sources and pipes, this project streamlines the process from data ingestion to API deployment, enabling real-time analytics at scale. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -30,10 +32,10 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "equipment_id, timestamp"
 ```
 
-This schema outlines the types and names of each column and specifies the engine as `MergeTree`, ideal for time-series data. The sorting key improves query performance by organizing data by `equipment_id` and `timestamp`. For ingesting this data, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request, providing low-latency, real-time data ingestion. Here's how you might send a single event:
+This schema outlines the types and names of each column and specifies the engine as `MergeTree`, ideal for time-series data. The sorting key improves query performance by organizing data by `equipment_id` and `timestamp`. For ingesting this data, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request, providing low-latency, real-time data ingestion. Here's how you might send a single event:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=equipment_logs" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=equipment_logs&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
   -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
   -d '{
     "equipment_id": "EQ-1001",
@@ -47,9 +49,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=equipment_
   }'
 ```
 
-Additionally, Tinybird supports Kafka for streaming data and offers a [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connectors for batch ingestion, catering to various data integration needs. ## Transforming data and publishing APIs
+Additionally, Tinybird supports Kafka for streaming data and offers a [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connectors for batch ingestion, catering to various data integration needs. 
 
-Tinybird transforms raw data into actionable endpoints through [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), which can perform batch and real-time transformations. These transformations prepare the data for API endpoints, which can serve real-time analytics based on queries. ### Equipment Health Endpoint
+## Transforming data and publishing APIs
+
+Tinybird transforms raw data into actionable endpoints through [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), which can perform batch and real-time transformations. These transformations prepare the data for API endpoints, which can serve real-time analytics based on queries. 
+
+### Equipment Health Endpoint
 
 The `equipment_health` endpoint aggregates sensor data to provide a health overview for each equipment. It calculates average readings and the ratio of abnormal readings, indicating potential issues. ```sql
 DESCRIPTION >
@@ -78,13 +84,17 @@ TYPE endpoint
 This SQL query demonstrates how to parameterize inputs like `equipment_id`, `start_date`, and `end_date`, making the API flexible for various queries. The calculation of `abnormal_readings_ratio` helps identify equipment that may require attention. Example API call:
 
 ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/equipment_health.json?token=$TB_ADMIN_TOKEN&equipment_id=EQ-1001&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/equipment_health.json?token=%24TB_ADMIN_TOKEN&equipment_id=EQ-1001&start_date=2023-01-01+00%3A00%3A00&end_date=2023-12-31+23%3A59%3A59&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
-### Anomalies and Trends Endpoints
+#
 
-Similarly, the `equipment_anomalies` and `equipment_trends` endpoints detect anomalies and analyze performance trends over time. These pipes use aggregate functions and statistical calculations to process the data, providing insights into equipment behavior and potential issues. ## Deploying to production
+## Anomalies and Trends Endpoints
+
+Similarly, the `equipment_anomalies` and `equipment_trends` endpoints detect anomalies and analyze performance trends over time. These pipes use aggregate functions and statistical calculations to process the data, providing insights into equipment behavior and potential issues. 
+
+## Deploying to production
 
 To deploy your project to Tinybird Cloud, use the command:
 
@@ -92,7 +102,7 @@ To deploy your project to Tinybird Cloud, use the command:
 tb --cloud deploy
 ```
 
-This command deploys your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources) and pipes, creating scalable, production-ready API endpoints. Tinybird manages these resources as code, facilitating integration with CI/CD pipelines and offering a robust solution for real-time analytics applications. Secure your APIs with token-based authentication, ensuring only authorized requests can access your data. Example curl command:
+This command deploys your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and pipes, creating scalable, production-ready API endpoints. Tinybird manages these resources as code, facilitating integration with CI/CD pipelines and offering a robust solution for real-time analytics applications. Secure your APIs with token-based authentication, ensuring only authorized requests can access your data. Example curl command:
 
 ```bash
 curl -X GET "https://api.yourdomain.com/v0/pipes/equipment_health.json?token=$YOUR_TOKEN&equipment_id=EQ-1001&..."
@@ -101,4 +111,4 @@ curl -X GET "https://api.yourdomain.com/v0/pipes/equipment_health.json?token=$YO
 
 ## Conclusion
 
-Throughout this tutorial, you've learned how to build a predictive maintenance API using Tinybird, from ingesting sensor data to deploying real-time analytics endpoints. By leveraging Tinybird's capabilities, you can efficiently process large volumes of time-series data, transform it into meaningful insights, and expose it through scalable API endpoints. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes. Whether you're monitoring industrial equipment or analyzing any other time-series data, Tinybird provides the tools and infrastructure to support your real-time analytics needs.
+Throughout this tutorial, you've learned how to build a predictive maintenance API using Tinybird, from ingesting sensor data to deploying real-time analytics endpoints. By leveraging Tinybird's capabilities, you can efficiently process large volumes of time-series data, transform it into meaningful insights, and expose it through scalable API endpoints. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes. Whether you're monitoring industrial equipment or analyzing any other time-series data, Tinybird provides the tools and infrastructure to support your real-time analytics needs.

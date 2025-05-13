@@ -1,6 +1,8 @@
 # Build a Real-Time Tourist Movement Analytics API with Tinybird
 
-Tourism is a dynamic and ever-evolving industry, requiring constant adaptation and understanding of tourist behavior to optimize services and enhance visitor experiences. Analyzing tourist movement patterns in real-time can significantly aid in this endeavor, providing immediate insights into popular locations, peak visiting times, and demographic trends. This tutorial will guide you through creating a real-time API for analyzing tourist movement data using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and pipes, you can implement powerful APIs capable of handling large volumes of data with low latency, enabling real-time analysis and decision-making. In this guide, we'll cover how to ingest tourist movement data into Tinybird, perform transformations to generate meaningful insights, and ultimately publish [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints) for querying this data in real-time. Whether you're working for a tourism board, city planning department, or in the hospitality industry, this API can provide valuable insights into visitor behavior. ## Understanding the data
+Tourism is a dynamic and ever-evolving industry, requiring constant adaptation and understanding of tourist behavior to optimize services and enhance visitor experiences. Analyzing tourist movement patterns in real-time can significantly aid in this endeavor, providing immediate insights into popular locations, peak visiting times, and demographic trends. This tutorial will guide you through creating a real-time API for analyzing tourist movement data using Tinybird. Tinybird is a data analytics backend for software developers. You use Tinybird to build real-time analytics APIs without needing to set up or manage the underlying infrastructure. Tinybird offers a local-first development workflows, git-based deployments, resource definitions as code, and features for AI-native developers. By leveraging Tinybird's data sources and pipes, you can implement powerful APIs capable of handling large volumes of data with low latency, enabling real-time analysis and decision-making. In this guide, we'll cover how to ingest tourist movement data into Tinybird, perform transformations to generate meaningful insights, and ultimately publish [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) for querying this data in real-time. Whether you're working for a tourism board, city planning department, or in the hospitality industry, this API can provide valuable insights into visitor behavior. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -31,8 +33,8 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "timestamp, location_id, tourist_id"
 ```
 
-In this schema, we've chosen data types that best represent the nature of our data, such as `String` for textual data, `Float64` for geographic coordinates, and `DateTime` for timestamps. The sorting key is particularly important for query performance, as it determines the order in which data is stored on disk. Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This real-time capability ensures that your data is always up-to-date, enabling immediate analysis and reaction to trends. ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=tourist_movements" \
+In this schema, we've chosen data types that best represent the nature of our data, such as `String` for textual data, `Float64` for geographic coordinates, and `DateTime` for timestamps. The sorting key is particularly important for query performance, as it determines the order in which data is stored on disk. Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This real-time capability ensures that your data is always up-to-date, enabling immediate analysis and reaction to trends. ```bash
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=tourist_movements&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
      -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
      -d '{
        "tourist_id": "t12345",
@@ -50,9 +52,13 @@ curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=tourist_mo
      }'
 ```
 
-For event or streaming data, the Kafka connector can be particularly beneficial for integrating with existing streams. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector provide flexible options for data ingestion. ## Transforming data and publishing APIs
+For event or streaming data, the Kafka connector can be particularly beneficial for integrating with existing streams. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector provide flexible options for data ingestion. 
 
-With the data ingested, the next step is to transform this data into insightful metrics and expose them through APIs. Tinybird facilitates this through [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), which can perform batch transformations, real-time transformations, and create API endpoints. ### Hourly Movement Patterns
+## Transforming data and publishing APIs
+
+With the data ingested, the next step is to transform this data into insightful metrics and expose them through APIs. Tinybird facilitates this through [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), which can perform batch transformations, real-time transformations, and create API endpoints. 
+
+### Hourly Movement Patterns
 
 ```sql
 DESCRIPTION >
@@ -77,7 +83,9 @@ SQL >
 TYPE endpoint
 ```
 
-This pipe computes the number of movements, unique tourists, and locations visited per hour of day, providing insights into peak visiting times and average visit duration. The query parameters allow for flexible API requests, filtering by date range, location, and activity type. ### Tourist Origin Analysis
+This pipe computes the number of movements, unique tourists, and locations visited per hour of day, providing insights into peak visiting times and average visit duration. The query parameters allow for flexible API requests, filtering by date range, location, and activity type. 
+
+### Tourist Origin Analysis
 
 ```sql
 DESCRIPTION >
@@ -103,17 +111,19 @@ SQL >
 TYPE endpoint
 ```
 
-This endpoint enables querying of tourist movements based on their origin country, providing insights into the most frequent visitors and their behavior patterns. ## Deploying to production
+This endpoint enables querying of tourist movements based on their origin country, providing insights into the most frequent visitors and their behavior patterns. 
 
-Deploying your Tinybird project to production is as simple as using the Tinybird CLI with the `tb --cloud deploy` command. This command deploys your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources), pipes, and endpoints to the Tinybird Cloud, making them scalable and ready for production use. ```bash
+## Deploying to production
+
+Deploying your Tinybird project to production is as simple as using the Tinybird CLI with the `tb --cloud deploy` command. This command deploys your [data sources](https://www.tinybird.co/docs/forward/get-data-in/data-sources?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), pipes, and endpoints to the Tinybird Cloud, making them scalable and ready for production use. ```bash
 tb --cloud deploy
 ```
 
 Tinybird manages resources as code, which means your entire data pipeline can be versioned and integrated into your CI/CD workflows. This approach ensures that changes can be rolled out reliably and consistently across environments. To secure your APIs, Tinybird uses token-based authentication, ensuring that only authorized users can access your endpoints. ```bash
-curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/popular_locations.json?token=$TB_ADMIN_TOKEN&start_date=2023-01-01%2000:00:00&end_date=2023-12-31%2023:59:59&country=Spain&city=Barcelona&limit=5"
+curl -X GET "https://api.europe-west2.gcp.tinybird.co/v0/pipes/popular_locations.json?token=%24TB_ADMIN_TOKEN&start_date=2023-01-01+00%3A00%3A00&end_date=2023-12-31+23%3A59%3A59&country=Spain&city=Barcelona&limit=5&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-By following this tutorial, you've learned how to ingest tourist movement data into Tinybird, transform it into insightful metrics, and publish real-time APIs to access these insights. Tinybird's capabilities enable you to handle large volumes of data efficiently, making it an ideal choice for building real-time analytics applications. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+By following this tutorial, you've learned how to ingest tourist movement data into Tinybird, transform it into insightful metrics, and publish real-time APIs to access these insights. Tinybird's capabilities enable you to handle large volumes of data efficiently, making it an ideal choice for building real-time analytics applications. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.

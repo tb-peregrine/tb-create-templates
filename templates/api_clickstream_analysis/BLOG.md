@@ -1,6 +1,8 @@
 # Build a Clickstream Analytics API with Tinybird
 
-In the realm of web analytics, understanding user behavior through their clicks, page views, and navigation paths is crucial for enhancing the user experience and optimizing website content. A clickstream analytics API serves as a powerful tool for tracking and analyzing these user interactions in real time. This tutorial will guide you through building such an API using Tinybird, a data analytics backend designed for software developers. Tinybird facilitates the creation of real-time analytics APIs by handling the underlying infrastructure, allowing you to focus on leveraging your data to its fullest potential. Through data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes), Tinybird transforms raw clickstream data into insightful analytics that can power your applications or websites. ## Understanding the data
+In the realm of web analytics, understanding user behavior through their clicks, page views, and navigation paths is crucial for enhancing the user experience and optimizing website content. A clickstream analytics API serves as a powerful tool for tracking and analyzing these user interactions in real time. This tutorial will guide you through building such an API using Tinybird, a data analytics backend designed for software developers. Tinybird facilitates the creation of real-time analytics APIs by handling the underlying infrastructure, allowing you to focus on leveraging your data to its fullest potential. Through data sources and [pipes](https://www.tinybird.co/docs/forward/work-with-data/pipes?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), Tinybird transforms raw clickstream data into insightful analytics that can power your applications or websites. 
+
+## Understanding the data
 
 Imagine your data looks like this:
 
@@ -44,24 +46,32 @@ ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
 ENGINE_SORTING_KEY "timestamp, user_id, session_id"
 ```
 
-This schema defines the structure of your clickstream events data, including types and ingestion keys, optimized for querying performance. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This facilitates real-time data capture with minimal latency. Here’s how you can ingest an event:
+This schema defines the structure of your clickstream events data, including types and ingestion keys, optimized for querying performance. For data ingestion, Tinybird's [Events API](https://www.tinybird.co/docs/forward/get-data-in/events-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) allows you to stream JSON/NDJSON events from your application frontend or backend with a simple HTTP request. This facilitates real-time data capture with minimal latency. Here’s how you can ingest an event:
 
 ```bash
-curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=clickstream_events" \
+curl -X POST "https://api.europe-west2.gcp.tinybird.co/v0/events?name=clickstream_events&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV" \
     -H "Authorization: Bearer $TB_ADMIN_TOKEN" \
     -d '{ /* event data */ }'
 ```
 
-Besides the Events API, Tinybird supports other ingestion methods. For streaming data, the Kafka connector can be highly beneficial due to its ability to handle high volumes of data efficiently. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api) and S3 connector are excellent choices, enabling bulk ingestion of historical data or periodic dumps. ## Transforming data and publishing APIs
+Besides the Events API, Tinybird supports other ingestion methods. For streaming data, the Kafka connector can be highly beneficial due to its ability to handle high volumes of data efficiently. For batch or file data, the [Data Sources API](https://www.tinybird.co/docs/api-reference/datasource-api?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) and S3 connector are excellent choices, enabling bulk ingestion of historical data or periodic dumps. 
 
-In Tinybird, pipes are the building blocks for transforming data and publishing APIs. They can perform batch transformations, create real-time [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views), and establish API endpoints. ### Materialized Views
+## Transforming data and publishing APIs
 
-Though our example doesn’t include materialized views, it’s worth noting that they are used to pre-aggregate data and speed up query performance. They are especially useful in clickstream analytics for summarizing user activities or session information. ### API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints)
+In Tinybird, pipes are the building blocks for transforming data and publishing APIs. They can perform batch transformations, create real-time [Materialized views](https://www.tinybird.co/docs/forward/work-with-data/optimize/materialized-views?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV), and establish API endpoints. 
+
+### Materialized Views
+
+Though our example doesn’t include materialized views, it’s worth noting that they are used to pre-aggregate data and speed up query performance. They are especially useful in clickstream analytics for summarizing user activities or session information. 
+
+### API [Endpoints](https://www.tinybird.co/docs/forward/work-with-data/publish-data/endpoints?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV)
 
 Each endpoint pipe transforms raw event data into actionable information. Let's explore the provided pipes:
 
 
-#### User Journey
+#
+
+### User Journey
 
 ```sql
 DESCRIPTION >
@@ -89,7 +99,9 @@ SQL >
 TYPE endpoint
 ```
 
-This pipe creates an API endpoint that retrieves a user's journey across sessions. The SQL query filters events by `user_id`, `start_date`, and `end_date`, ordering the results by `timestamp` for chronological analysis. #### Session Events
+This pipe creates an API endpoint that retrieves a user's journey across sessions. The SQL query filters events by `user_id`, `start_date`, and `end_date`, ordering the results by `timestamp` for chronological analysis. 
+
+#### Session Events
 
 ```sql
 DESCRIPTION >
@@ -116,7 +128,9 @@ SQL >
 TYPE endpoint
 ```
 
-This endpoint focuses on a single session, providing detailed insights into the user's actions within that session. #### Popular Pages
+This endpoint focuses on a single session, providing detailed insights into the user's actions within that session. 
+
+#### Popular Pages
 
 ```sql
 DESCRIPTION >
@@ -140,13 +154,15 @@ SQL >
 TYPE endpoint
 ```
 
-This pipe creates an API to identify the most popular pages, useful for content and marketing strategy adjustments. To call these endpoints, you’d use `curl` commands with the appropriate parameters, as shown in the original README. ## Deploying to production
+This pipe creates an API to identify the most popular pages, useful for content and marketing strategy adjustments. To call these endpoints, you’d use `curl` commands with the appropriate parameters, as shown in the original README. 
+
+## Deploying to production
 
 Deploying your project to Tinybird's cloud is straightforward with the command `tb --cloud deploy`. This process makes your API endpoints production-ready and scalable, meeting any demand. Tinybird treats all resources as code, facilitating integration with CI/CD pipelines for automated deployments and version control. You’ll secure these APIs using token-based authentication, ensuring that only authorized users can access the data. ```bash
-curl -X GET "https://api.tinybird.co/v0/pipes/get_user_journey.json?token=$TB_ADMIN_TOKEN&user_id=usr_abc123"
+curl -X GET "https://api.tinybird.co/v0/pipes/get_user_journey.json?token=%24TB_ADMIN_TOKEN&user_id=usr_abc123&utm_source=DEV&utm_campaign=tb+create+--prompt+DEV"
 ```
 
 
 ## Conclusion
 
-Throughout this tutorial, you've learned how to build a Clickstream Analytics API using Tinybird, covering data ingestion, transformation, and API endpoint creation. Tinybird enables efficient handling of clickstream data, providing real-time insights into user behavior and website performance. By leveraging Tinybird, you can focus on deriving value from your data, without the overhead of managing the infrastructure. [Sign up for Tinybird](https://cloud.tinybird.co/signup) to build and deploy your first real-time data APIs in a few minutes.
+Throughout this tutorial, you've learned how to build a Clickstream Analytics API using Tinybird, covering data ingestion, transformation, and API endpoint creation. Tinybird enables efficient handling of clickstream data, providing real-time insights into user behavior and website performance. By leveraging Tinybird, you can focus on deriving value from your data, without the overhead of managing the infrastructure. [Sign up for Tinybird](https://cloud.tinybird.co/signup?utm_source=DEV&utm_campaign=tb+create+--prompt+DEV) to build and deploy your first real-time data APIs in a few minutes.
